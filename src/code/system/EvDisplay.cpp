@@ -83,7 +83,7 @@ void        EvDisplay::KbdDelete(void)
   if (Kbd != NULL)
   {
     if (Kbd->FocusObj != NULL)
-      Kbd->FocusObj->LostFocus();
+      Kbd->FocusObj->LostKbdFocus();
 
     Kbd->Delete();
     Kbd = NULL;

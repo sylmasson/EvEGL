@@ -54,4 +54,8 @@ class EvToggle : public EvObj
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+extern uint32_t   millis_nz(void);
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
 #endif  /* _EV_TOGGLE_H_ */

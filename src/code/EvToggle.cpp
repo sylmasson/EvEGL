@@ -217,9 +217,7 @@ void        EvToggle::touchEvent(EvTouchEvent *Touch)
     case TOUCH_END:
       if (!mSkipUp && pos > 0 && pos < toogleSize)
       {
-        if ((mTimerKnob = millis()) == 0)
-          mTimerKnob--;
-
+        mTimerKnob = millis_nz();
         mDirKnob = mValue ? -1 : 1;
       }
 
@@ -239,9 +237,7 @@ void        EvToggle::touchEvent(EvTouchEvent *Touch)
             mDirKnob = 1;
           else break;
 
-          if ((mTimerKnob = millis()) == 0)
-            mTimerKnob--;
-
+          mTimerKnob = millis_nz();
           mSkipUp = true;
         }
       }
@@ -252,5 +248,17 @@ void        EvToggle::touchEvent(EvTouchEvent *Touch)
       mSkipUp = true;
       break;
   }
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+uint32_t      millis_nz(void)
+{
+  uint32_t    msec = millis();
+
+  if (msec == 0)
+    msec--;
+
+  return msec;
 }
 

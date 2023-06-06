@@ -440,7 +440,7 @@ void        EvScrollBar::wakeup(void)
       Show();
 
     case SCROLL_BAR_ON:
-      mTimer = millis();
+      mTimer = millis_nz();
       mScrolling |= SCROLL_TIMER;
 
     case SCROLL_BAR_OFF:

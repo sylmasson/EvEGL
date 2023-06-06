@@ -274,7 +274,7 @@ void        EvKbd::touchEvent(EvTouchEvent *Touch)
       switch (mPrevKey = mKey)
       {
         case 0: break;
-        case CLOSE_KEY: LostFocus(); break;
+        case CLOSE_KEY: LostKbdFocus(); break;
         case NUM_KEY: SetLayout(LAYOUT_NUM1); break;
         case SYM2_KEY: SetLayout(LAYOUT_NUM1); break;
         case SYM1_KEY: SetLayout(LAYOUT_NUM2); break;
@@ -299,7 +299,7 @@ void        EvKbd::touchEvent(EvTouchEvent *Touch)
 
 void        EvKbd::writeKey(uint8_t Key)
 {
-  int16_t   newLayout = GetFocus()->WriteKey(Key, mLayout, mShiftKey, mDoubleTouch);
+  int16_t   newLayout = GetKbdFocus()->WriteKey(Key, mLayout, mShiftKey, mDoubleTouch);
 
   if (newLayout != -1)
     SetLayout(newLayout);

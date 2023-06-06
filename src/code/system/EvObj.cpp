@@ -590,19 +590,19 @@ void        EvObj::ToFront(bool AllOwner)
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
- * @brief      Set the focus on the current Object.
+ * @brief      Set the keyboard focus on the current Object.
  * 
- * The focus is implemented on any EvObj with inheritance of the Print class. You can use 
- * any method of the Print class to send characters to the focused object. For example, 
- * the keyboard sends the keys with the Print class method to the focused object.
+ * The keyboard focus is implemented on any EvObj with inheritance of the Print class.
+ * You can use any method of the Print class to send characters to the focused object.
+ * For example, the keyboard sends the keys with the Print class method to the focused object.
  * 
  * @param[in]  LayoutStart  The Layout at the start.
  * 
- * @see        LostFocus, GetFocus, IsOnFocus
+ * @see        LostKbdFocus, GetKbdFocus, IsOnKbdFocus
  * 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvObj::SetFocus(uint8_t LayoutStart)
+void        EvObj::SetKbdFocus(uint8_t LayoutStart)
 {
   if (Disp->Kbd != NULL || (Disp->Kbd = EvKbd::Create(0, 0, 0, 0, Disp, "KbdSystem", SYSTEM_OBJ)) != NULL)
   {
@@ -611,31 +611,31 @@ void        EvObj::SetFocus(uint8_t LayoutStart)
     if (kbd->FocusObj != this)
     {
       if (kbd->FocusObj != NULL)
-        kbd->FocusObj->lostFocusEvent();
+        kbd->FocusObj->lostKbdFocusEvent();
 
       kbd->FocusObj = this;
       kbd->SetLayout(LayoutStart);
       kbd->Open();
-      setFocusEvent();
+      setKbdFocusEvent();
     }
   }
 }
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
- * @brief      Lost focus of current Object.
+ * @brief      Lost keyboard focus of current Object.
  * 
- * @see        SetFocus, GetFocus, IsOnFocus
+ * @see        SetKbdFocus, GetKbdFocus, IsOnKbdFocus
  * 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvObj::LostFocus(void)
+void        EvObj::LostKbdFocus(void)
 {
   EvKbd     *kbd = Disp->Kbd;
 
   if (kbd != NULL && kbd->FocusObj != NULL)
   {
-    kbd->FocusObj->lostFocusEvent();
+    kbd->FocusObj->lostKbdFocusEvent();
     kbd->FocusObj = NULL;
     kbd->Close();
   }
@@ -643,32 +643,32 @@ void        EvObj::LostFocus(void)
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
- * @brief      Gets who has the focus.
+ * @brief      Gets who has the keyboard focus.
  * 
- * @return     Current object that has the focus.
+ * @return     Current object that has the keyboard focus.
  *
- * @see        SetFocus, LostFocus, IsOnFocus
+ * @see        SetKbdFocus, LostKbdFocus, IsOnKbdFocus
  * 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-EvObj       *EvObj::GetFocus(void)
+EvObj       *EvObj::GetKbdFocus(void)
 {
   return (Disp->Kbd == NULL) ? NULL : Disp->Kbd->FocusObj;
 }
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
- * @brief      Check if the focus is on the current Object.
+ * @brief      Check if the keyboard focus is on the current Object.
  * 
- * @return     True if the focus is on the current Object, otherwise returns False.
+ * @return     True if the keyboard focus is on the current Object, otherwise returns False.
  *
- * @see        SetFocus, LostFocus, GetFocus
+ * @see        SetKbdFocus, LostKbdFocus, GetKbdFocus
  * 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-bool        EvObj::IsOnFocus(void)
+bool        EvObj::IsOnKbdFocus(void)
 {
-  return GetFocus() == this;
+  return GetKbdFocus() == this;
 }
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *

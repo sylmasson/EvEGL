@@ -63,10 +63,10 @@ EvTextBox::EvTextBox(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height,
   BdWidth(24);
   SetOnTouch(NULL);
   SetOnChange(NULL);
+  SetOnReturn(NULL);
   SetOnFilter(NULL);
-  SetOnFocus(NULL, NULL);
-  SelectAllOnFocus = false;
-  mCursorIndex = 0;
+  SetOnKbdFocus(NULL, NULL);
+  SelectAllOnSetKbdFocus = false;
   mMaxLength = 0;
 
   if ((Cursor = EvTextCursor::Create(0, 0, 0, 0, this, NULL, DISABLED_OBJ | FIXED_OBJ)) == NULL)
@@ -104,6 +104,8 @@ void        EvTextBox::TextClear(void)
 {
   Unselect();
   mLabel = "";
+  mOffsetX = 0;
+  mCursorIndex = 0;
   SetEditedText();
 }
 
@@ -113,14 +115,15 @@ void        EvTextBox::TextLabel(const char *Label)
 {
   TextClear();
   write((const uint8_t *)Label, strlen(Label));
+  mCursorIndex = 0;
+  mOffsetX = 0;
 }
 
 /// @copydoc EvObj::TextLabel()
 
 void        EvTextBox::TextLabel(const String &Label)
 {
-  TextClear();
-  write((const uint8_t *)c_str(Label), Label.length());
+  TextLabel(c_str(Label));
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -154,6 +157,13 @@ void        EvTextBox::SetOnChange(void (*OnChange)(EvTextBox *Sender, const Str
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+void        EvTextBox::SetOnReturn(void (*OnReturn)(EvTextBox *Sender, const String &Str))
+{
+  mOnReturn = OnReturn;
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
 void        EvTextBox::SetOnFilter(int (*OnFilter)(EvTextBox *Sender, const uint8_t C))
 {
   mOnFilter = OnFilter;
@@ -161,10 +171,10 @@ void        EvTextBox::SetOnFilter(int (*OnFilter)(EvTextBox *Sender, const uint
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvTextBox::SetOnFocus(void (*OnSetFocus)(EvTextBox *Sender), void (*OnLostFocus)(EvTextBox *Sender))
+void        EvTextBox::SetOnKbdFocus(void (*OnSetKbdFocus)(EvTextBox *Sender), void (*OnLostKbdFocus)(EvTextBox *Sender))
 {
-  mOnSetFocus = OnSetFocus;
-  mOnLostFocus = OnLostFocus;
+  mOnSetKbdFocus = OnSetKbdFocus;
+  mOnLostKbdFocus = OnLostKbdFocus;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -229,6 +239,13 @@ size_t      EvTextBox::WriteKey(uint8_t Key, uint8_t Layout, uint8_t ShiftKey, b
         nextLayout = LAYOUT_ALPHA;
       break;
 
+    case '\n':
+      if (mOnReturn != NULL)
+        (*mOnReturn)(this, mLabel);
+
+      LostKbdFocus();
+      break;
+
     default:
       if (ShiftKey == 1 && isupper(Key))
         nextLayout = LAYOUT_ALPHA;
@@ -263,6 +280,7 @@ size_t      EvTextBox::write(const uint8_t *Buffer, size_t Count)
       {
         mLabel.remove(mCursorIndex = mSelectBegin, mSelectCount);
         SetEditedText();
+        moveCursor();
         Unselect();
       }
       else if (mCursorIndex > 0)
@@ -277,6 +295,7 @@ size_t      EvTextBox::write(const uint8_t *Buffer, size_t Count)
       {
         mLabel.remove(mCursorIndex = mSelectBegin, mSelectCount);
         SetEditedText();
+        moveCursor();
         Unselect();
       }
 
@@ -305,7 +324,7 @@ size_t      EvTextBox::write(const uint8_t *Buffer, size_t Count)
 
 void        EvTextBox::selectWord(EvTouchEvent *Touch)
 {
-  int16_t   c, x = textLeft();
+  int16_t   c, x = textLeft() + mOffsetX;
   uint16_t  ind = 0, length = mLabel.length();
 
   Unselect();
@@ -342,7 +361,7 @@ void        EvTextBox::selectWord(EvTouchEvent *Touch)
 
 void        EvTextBox::moveToWord(EvTouchEvent *Touch)
 {
-  int16_t   c, x = textLeft();
+  int16_t   c, x = textLeft() + mOffsetX;
   uint16_t  ind = 0, length = mLabel.length();
 
   Unselect();
@@ -373,7 +392,7 @@ void        EvTextBox::moveToWord(EvTouchEvent *Touch)
 
 void        EvTextBox::moveToChar(EvTouchEvent *Touch)
 {
-  int16_t   x = textLeft();
+  int16_t   x = textLeft() + mOffsetX;
   uint16_t  length = mLabel.length();
 
   if (mSelectCount)
@@ -389,7 +408,7 @@ void        EvTextBox::moveToChar(EvTouchEvent *Touch)
 
 void        EvTextBox::moveCursor(void)
 {
-  int16_t   i, x, y;
+  int16_t   x, y, w;
   int16_t   textHeight = TextHeight();
   int16_t   cursorWidth = TextCursorWidth();
   int16_t   cursorHeight = textHeight;
@@ -400,12 +419,16 @@ void        EvTextBox::moveCursor(void)
     cursorHeight = (textHeight * 3) / 2;
   }
 
-  for (i = 0, x = textLeft(); i < mCursorIndex; i++)
-    x += TextWidth(mLabel.charAt(i));
-
+  w = TextWidth(c_str(mLabel), mStyle.font, mCursorIndex);
   y = textTop() - ((cursorHeight - textHeight) / 2);
+  x = textLeft() + w;
 
-  Cursor->MoveTo(x, y);
+  if (x + mOffsetX < mStyle.padX)
+    mOffsetX = -w;
+  else if (x + mOffsetX > mWidth - mStyle.padX)
+    mOffsetX = mWidth - w - (mStyle.padX * 2) - 1;
+
+  Cursor->MoveTo(x + mOffsetX, y);
   Cursor->ReSize(cursorWidth, cursorHeight);
   ClrMoveCursor();
 }
@@ -464,10 +487,10 @@ void        EvTextBox::drawEvent(void)
     int16_t   x = textLeft() + TextWidth(str, mStyle.font, mSelectBegin);
     int16_t   w = TextWidth(str + mSelectBegin, mStyle.font, mSelectCount);
 
-    FillRectangle(x, textTop(), w, TextHeight(), SELECT_COLOR);
+    FillRectangle(x + mOffsetX, textTop(), w, TextHeight(), SELECT_COLOR);
   }
 
-  DrawText(0, 0, mWidth, mHeight, c_str(Label));
+  DrawText(mOffsetX, 0, mWidth, mHeight, c_str(Label));
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -501,28 +524,33 @@ void        EvTextBox::refreshEvent(void)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvTextBox::setFocusEvent(void)
+void        EvTextBox::setKbdFocusEvent(void)
 {
   Cursor->Show();
   BdColor(FOCUS_COLOR);
+  mAlign = mStyle.align;
+  TextAlign(mAlign & ~3);
 
-  if (mOnSetFocus != NULL)
-    (*mOnSetFocus)(this);
+  if (mOnSetKbdFocus != NULL)
+    (*mOnSetKbdFocus)(this);
 
-  if (SelectAllOnFocus)
+  if (SelectAllOnSetKbdFocus)
     SelectAll();
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvTextBox::lostFocusEvent(void)
+void        EvTextBox::lostKbdFocusEvent(void)
 {
   Unselect();
   Cursor->Hide();
   BdColor(BD_COLOR);
+  TextAlign((mStyle.align & ~3) | (mAlign & 3));
+  mCursorIndex = 0;
+  mOffsetX = 0;
 
-  if (mOnLostFocus != NULL)
-    (*mOnLostFocus)(this);
+  if (mOnLostKbdFocus != NULL)
+    (*mOnLostKbdFocus)(this);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -539,20 +567,40 @@ void        EvTextBox::touchEvent(EvTouchEvent *Touch)
       SetMoveToWord();
       Cursor->Style(CURSOR_SOLID);
       Touch->repeatTimer = 200;
+      Touch->repeatDelay = 40;
       Touch->event = 0;
       break;
 
     case TOUCH_HOLD:
-      SetFocus();
+      SetKbdFocus();
       SetTouchBox();
 
     case TOUCH_MOVE:
       if (IsTouchBox())
       {
-        moveToChar(Touch);
+        if (Touch->x > mStyle.padX && Touch->x < (mWidth - mStyle.padX))
+          moveToChar(Touch);
+
         ClrMoveToWord();
         Touch->event = 0;
       }
+      break;
+
+    case TOUCH_REPEAT:
+      if (Touch->x < 0 && mCursorIndex > 0)
+      {
+        mCursorIndex--;
+        SetMoveCursor();
+        Modified();
+      }
+      else if (Touch->x > mWidth && mCursorIndex < mLabel.length())
+      {
+        mCursorIndex++;
+        SetMoveCursor();
+        Modified();
+      }
+
+      Touch->event = 0;
       break;
 
     case TOUCH_DOUBLE:
@@ -565,7 +613,7 @@ void        EvTextBox::touchEvent(EvTouchEvent *Touch)
       if (IsMoveToWord())
         moveToWord(Touch);
 
-      SetFocus();
+      SetKbdFocus();
 
     case TOUCH_CANCEL:
       Cursor->Style(CURSOR_SMOOTH);

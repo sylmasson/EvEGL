@@ -136,10 +136,10 @@ class EvObj : public Print
     EvPanel       *GetOwner(void);
     void          SetOwner(EvPanel *Owner);
     void          ToFront(bool AllOwner = true);
-    void          SetFocus(uint8_t Layout = LAYOUT_SHIFT);
-    void          LostFocus(void);
-    EvObj         *GetFocus(void);
-    bool          IsOnFocus(void);
+    void          SetKbdFocus(uint8_t Layout = LAYOUT_SHIFT);
+    void          LostKbdFocus(void);
+    EvObj         *GetKbdFocus(void);
+    bool          IsOnKbdFocus(void);
 
     virtual void    SetOpacity(uint16_t Opacity);
     virtual void    ModifiedAll(void) { Modified(); };
@@ -192,8 +192,8 @@ class EvObj : public Print
     virtual void  Refresh(void);
     virtual void  Draw(void);
 
-    virtual void  setFocusEvent(void) {};
-    virtual void  lostFocusEvent(void) {};
+    virtual void  setKbdFocusEvent(void) {};
+    virtual void  lostKbdFocusEvent(void) {};
 
   protected:
     virtual void  drawEvent(void) {};

@@ -15,8 +15,9 @@ class EvTextBox : public EvPanel
     void          SetMaxLength(uint16_t MaxLength);
     void          SetOnTouch(void (*OnTouch)(EvTextBox *Sender, EvTouchEvent *Touch));
     void          SetOnChange(void (*OnChange)(EvTextBox *Sender, const String &Str));
+    void          SetOnReturn(void (*OnChange)(EvTextBox *Sender, const String &Str));
     void          SetOnFilter(int (*OnFilter)(EvTextBox *Sender, const uint8_t C));
-    void          SetOnFocus(void (*OnSetFocus)(EvTextBox *Sender), void (*OnLostFocus)(EvTextBox *Sender));
+    void          SetOnKbdFocus(void (*OnSetKbdFocus)(EvTextBox *Sender), void (*OnLostKbdFocus)(EvTextBox *Sender));
 
     EvTextBox     &operator+=(const char C);
     EvTextBox     &operator+=(const char *Str);
@@ -27,8 +28,8 @@ class EvTextBox : public EvPanel
     virtual size_t  write(const uint8_t *Buffer, size_t Count);
 //    virtual int     availableForWrite(void) { return 1; };
 
-    virtual void  setFocusEvent(void);
-    virtual void  lostFocusEvent(void);
+    virtual void  setKbdFocusEvent(void);
+    virtual void  lostKbdFocusEvent(void);
 
   protected:
     EvTextBox(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag = NULL, uint16_t State = VISIBLE_OBJ);
@@ -47,6 +48,7 @@ class EvTextBox : public EvPanel
     virtual void  touchEvent(EvTouchEvent *Touch);
 
     uint8_t       mFlags;
+    uint8_t       mAlign;
     uint16_t      mMaxLength;
     uint16_t      mCursorIndex;
     int16_t       mSelectBegin;
@@ -55,14 +57,15 @@ class EvTextBox : public EvPanel
   private:
     void          (*mOnTouch)(EvTextBox *Sender, EvTouchEvent *Touch);
     void          (*mOnChange)(EvTextBox *Sender, const String &Str);
+    void          (*mOnReturn)(EvTextBox *Sender, const String &Str);
     int           (*mOnFilter)(EvTextBox *Sender, const uint8_t C);
-    void          (*mOnSetFocus)(EvTextBox *Sender);
-    void          (*mOnLostFocus)(EvTextBox *Sender);
+    void          (*mOnSetKbdFocus)(EvTextBox *Sender);
+    void          (*mOnLostKbdFocus)(EvTextBox *Sender);
 
   public:
     EvTextCursor  *Cursor;
     const String  &Text = mLabel;
-    bool          SelectAllOnFocus;
+    bool          SelectAllOnSetKbdFocus;
 
     static EvTextBox  *Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag = NULL, uint16_t State = VISIBLE_OBJ);
 };
