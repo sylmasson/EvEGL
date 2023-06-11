@@ -330,6 +330,8 @@ class EvEVE : public EvSPI
 
     void          ClearContext(void);
     void          ClearPrimitive(void);
+    void          ClearConvertToGray(void);
+    void          ConvertToGray(uint8_t Min = 0, uint8_t Max = 255);
     void          ColorCalibration(int8_t R, int8_t G, int8_t B);
     void          Brightness(uint8_t Level);
     uint16_t      Opacity(uint16_t Opacity);
@@ -432,6 +434,7 @@ class EvEVE : public EvSPI
     Context       mStackContext[4];
     int16_t       mStackContextCount;
     uint32_t      mColorCalibration;
+    uint32_t      mConvertToGray;
 };
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

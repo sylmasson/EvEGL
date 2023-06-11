@@ -21,7 +21,7 @@
  * @param[in]  Height  The height of the Toggle switch.
  * @param[out] *Dest   The address pointer of the EvPanel destination. Cannot be NULL.
  * @param[in]  Tag     The tag name of the Toggle switch. If NULL, the default tag name is "EvToggle".
- * @param[in]  State   The initial state of the Toggle switch. Default is set to VISIBLE_OBJ.
+ * @param[in]  State   The initial state of the Toggle switch. Default is set to VISIBLE_OBJ | FILTER_DIS_OBJ.
  *
  * @return     EvToggle address pointer on success, otherwise returns NULL.
  * 

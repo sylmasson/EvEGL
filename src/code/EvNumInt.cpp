@@ -19,7 +19,7 @@
  * @param[in]  Height  The height of the EvNumInt.
  * @param[out] *Dest   The address pointer of the EvPanel destination. Cannot be NULL.
  * @param[in]  Tag     The tag name of the EvNumInt. If NULL, the default tag name is "EvNumInt".
- * @param[in]  State   The initial state of the EvNumInt. Default is set to VISIBLE_OBJ.
+ * @param[in]  State   The initial state of the EvNumInt. Default is set to VISIBLE_OBJ | FILTER_DIS_OBJ.
  *
  * @return     EvNumInt address pointer on success, otherwise returns NULL.
  * 

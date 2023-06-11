@@ -47,6 +47,7 @@
 #define     CONTROL_OBJ     (1 << 7)
 #define     MODIF_TEXT_OBJ  (1 << 8)
 #define     FUNCT_USED_OBJ  (1 << 9)
+#define  		FILTER_DIS_OBJ	(1 << 13)
 #define     ABORT_OBJ       (1 << 14)
 #define     SYSTEM_OBJ      (1 << 15) // reserved for GUI System
 
@@ -74,6 +75,8 @@
 #define     RIGHT_BOTTOM    10
 #define     JUSTIFY_BOTTOM  11
 #define     CENTER          5
+
+#define  		ALIGNMENT_LOCK 	(1 << 7)
 
 // EvSysFont constant
 

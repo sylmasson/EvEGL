@@ -36,7 +36,7 @@
  * @param[in]  Height  The height of the TextBox.
  * @param[out] *Dest   The address pointer of the EvPanel destination. Cannot be NULL.
  * @param[in]  Tag     The tag name of the TextBox. If NULL, the default tag name is "EvTextBox".
- * @param[in]  State   The initial state of the TextBox. Default is set to VISIBLE_OBJ.
+ * @param[in]  State   The initial state of the TextBox. Default is set to VISIBLE_OBJ | FILTER_DIS_OBJ.
  *
  * @return     EvTextBox address pointer on success, otherwise returns NULL.
  * 
@@ -529,7 +529,7 @@ void        EvTextBox::setKbdFocusEvent(void)
   Cursor->Show();
   BdColor(FOCUS_COLOR);
   mAlign = mStyle.align;
-  TextAlign(mAlign & ~3);
+  TextAlign((mAlign & ~3) | ALIGNMENT_LOCK);
 
   if (mOnSetKbdFocus != NULL)
     (*mOnSetKbdFocus)(this);
@@ -545,7 +545,7 @@ void        EvTextBox::lostKbdFocusEvent(void)
   Unselect();
   Cursor->Hide();
   BdColor(BD_COLOR);
-  TextAlign((mStyle.align & ~3) | (mAlign & 3));
+  TextAlign(mAlign);
   mCursorIndex = 0;
   mOffsetX = 0;
 

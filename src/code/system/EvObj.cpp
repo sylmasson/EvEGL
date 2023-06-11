@@ -30,7 +30,7 @@ EvObj::EvObj(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDispl
   mStyle.padX = 0;
   mStyle.padY = 0;
   mStyle.color = RGB555(255, 255, 255);
-  mStyle.highLight = 0;
+  mStyle.color2 = 0;
   mLabel = "";
   ModifiedText();
   SetView();
@@ -789,17 +789,17 @@ void        EvObj::TextPadding(int8_t X, int8_t Y)
  * 
  * The colors are defined in RGB555 format.
  *
- * @param[in]  Color      The normal text color.
- * @param[in]  HighLight  The highLight text color.
+ * @param[in]  Color      Normal text color.
+ * @param[in]  Color2     Second text color option.
  * 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvObj::TextColor(uint16_t Color, uint16_t HighLight)
+void        EvObj::TextColor(uint16_t Color, uint16_t Color2)
 {
-  if (mStyle.color != Color || mStyle.highLight != HighLight)
+  if (mStyle.color != Color || mStyle.color2 != Color2)
   {
     mStyle.color = Color;
-    mStyle.highLight = HighLight;
+    mStyle.color2 = Color2;
     Modified();
   }
 }
@@ -1467,6 +1467,12 @@ void        EvObj::Draw(void)
         {
           Disp->TagMask(0);
           FillRectangle2f(0, 0, mWidth << 4, mHeight << 4, 0, mBdRadius, mBdWidth, mBdColor);
+        }
+
+        if ((mStatus & (DISABLED_OBJ | FILTER_DIS_OBJ)) == (DISABLED_OBJ | FILTER_DIS_OBJ))
+        {
+          Disp->ColorA(150);
+          FillRectangle2f(0, 0, mWidth << 4, mHeight << 4, RGB555(230, 230, 230), mBdRadius);
         }
       }
 

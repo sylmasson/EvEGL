@@ -90,7 +90,7 @@ struct EvTextStyle
   int8_t      padX;         ///< Horizontal text padding.
   int8_t      padY;         ///< Vertical text padding.
   uint16_t    color;        ///< Normal text color.
-  uint16_t    highLight;    ///< HighLight text color.
+  uint16_t    color2;       ///< Second text color option. See object details.
 };
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -153,7 +153,7 @@ class EvObj : public Print
     void          TextFont(uint8_t Font);
     void          TextAlign(uint8_t Align);
     void          TextPadding(int8_t X, int8_t Y);
-    void          TextColor(uint16_t Color, uint16_t HighLight = 0);
+    void          TextColor(uint16_t Color, uint16_t Color2 = 0);
     void          TextLabel(const char *Label);
     void          TextLabel(const String &Label);
     int16_t       TextHeight(uint8_t Font = 0);

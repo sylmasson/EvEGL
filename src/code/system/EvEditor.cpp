@@ -171,8 +171,18 @@ void        SetEditObj(EvObj *Obj)
       property->NumPadX->Enable();
       property->NumPadY->Enable();
       property->SelShape->Enable();
-      property->SelAlignX->Enable();
-      property->SelAlignY->Enable();
+
+      if (Obj->Style.align & ALIGNMENT_LOCK)
+      {
+        property->SelAlignX->Disable();
+        property->SelAlignY->Disable();
+      }
+      else
+      {
+        property->SelAlignX->Enable();
+        property->SelAlignY->Enable();
+      }
+
       editor->Show();
     }
     else
@@ -497,19 +507,19 @@ EvProperty::EvProperty(EvDisplay *Disp, const char *Tag) : EvPanel(0, 0, 150, 31
       !(LabTop = EvLabel::Create(5, 50, 63, 32, PanObj, NULL, VISIBLE_OBJ | DISABLED_OBJ | SYSTEM_OBJ)) ||
       !(LabWidth = EvLabel::Create(5, 90, 63, 32, PanObj, NULL, VISIBLE_OBJ | DISABLED_OBJ | SYSTEM_OBJ)) ||
       !(LabHeight = EvLabel::Create(5, 130, 63, 32, PanObj, NULL, VISIBLE_OBJ | DISABLED_OBJ | SYSTEM_OBJ)) ||
-      !(NumLeft = EvNumInt::Create(73, 10, 65, 32, PanObj, NULL, VISIBLE_OBJ | SYSTEM_OBJ)) ||
-      !(NumTop = EvNumInt::Create(73, 50, 65, 32, PanObj, NULL, VISIBLE_OBJ | SYSTEM_OBJ)) ||
-      !(NumWidth = EvNumInt::Create(73, 90, 65, 32, PanObj, NULL, VISIBLE_OBJ | SYSTEM_OBJ)) ||
-      !(NumHeight = EvNumInt::Create(73, 130, 65, 32, PanObj, NULL, VISIBLE_OBJ | SYSTEM_OBJ)) ||
-      !(SelShape = EvSelector::Create(10, 172, 128, 32, PanObj, NULL, VISIBLE_OBJ | SYSTEM_OBJ)) ||
+      !(NumLeft = EvNumInt::Create(73, 10, 65, 32, PanObj, NULL, VISIBLE_OBJ | SYSTEM_OBJ | FILTER_DIS_OBJ)) ||
+      !(NumTop = EvNumInt::Create(73, 50, 65, 32, PanObj, NULL, VISIBLE_OBJ | SYSTEM_OBJ | FILTER_DIS_OBJ)) ||
+      !(NumWidth = EvNumInt::Create(73, 90, 65, 32, PanObj, NULL, VISIBLE_OBJ | SYSTEM_OBJ | FILTER_DIS_OBJ)) ||
+      !(NumHeight = EvNumInt::Create(73, 130, 65, 32, PanObj, NULL, VISIBLE_OBJ | SYSTEM_OBJ | FILTER_DIS_OBJ)) ||
+      !(SelShape = EvSelector::Create(10, 172, 128, 32, PanObj, NULL, VISIBLE_OBJ | SYSTEM_OBJ | FILTER_DIS_OBJ)) ||
       !(LabFont = EvLabel::Create(5, 10, 63, 32, PanText, NULL, VISIBLE_OBJ | DISABLED_OBJ | SYSTEM_OBJ)) ||
       !(LabPadX = EvLabel::Create(5, 50, 63, 32, PanText, NULL, VISIBLE_OBJ | DISABLED_OBJ | SYSTEM_OBJ)) ||
       !(LabPadY = EvLabel::Create(5, 90, 63, 32, PanText, NULL, VISIBLE_OBJ | DISABLED_OBJ | SYSTEM_OBJ)) ||
-      !(NumFont = EvNumInt::Create(73, 10, 65, 32, PanText, NULL, VISIBLE_OBJ | SYSTEM_OBJ)) ||
-      !(NumPadX = EvNumInt::Create(73, 50, 65, 32, PanText, NULL, VISIBLE_OBJ | SYSTEM_OBJ)) ||
-      !(NumPadY = EvNumInt::Create(73, 90, 65, 32, PanText, NULL, VISIBLE_OBJ | SYSTEM_OBJ)) ||
-      !(SelAlignX = EvSelector::Create(10, 132, 128, 32, PanText, NULL, VISIBLE_OBJ | SYSTEM_OBJ)) ||
-      !(SelAlignY = EvSelector::Create(10, 172, 128, 32, PanText, NULL, VISIBLE_OBJ | SYSTEM_OBJ)) ||
+      !(NumFont = EvNumInt::Create(73, 10, 65, 32, PanText, NULL, VISIBLE_OBJ | SYSTEM_OBJ | FILTER_DIS_OBJ)) ||
+      !(NumPadX = EvNumInt::Create(73, 50, 65, 32, PanText, NULL, VISIBLE_OBJ | SYSTEM_OBJ | FILTER_DIS_OBJ)) ||
+      !(NumPadY = EvNumInt::Create(73, 90, 65, 32, PanText, NULL, VISIBLE_OBJ | SYSTEM_OBJ | FILTER_DIS_OBJ)) ||
+      !(SelAlignX = EvSelector::Create(10, 132, 128, 32, PanText, NULL, VISIBLE_OBJ | SYSTEM_OBJ | FILTER_DIS_OBJ)) ||
+      !(SelAlignY = EvSelector::Create(10, 172, 128, 32, PanText, NULL, VISIBLE_OBJ | SYSTEM_OBJ | FILTER_DIS_OBJ)) ||
       !SelShape->SetBmp(ShapeIcons, 4) || !SelAlignX->SetBmp(AlignIconsX, 4) || !SelAlignY->SetBmp(AlignIconsY, 3))
     {
       Abort();
@@ -659,6 +669,17 @@ void        EvProperty::refreshEvent(void)
     NumPadY->SetValue((int32_t)editObj->Style.padY);
     SelAlignX->SetValue((int32_t)editObj->Style.align & 3);
     SelAlignY->SetValue((int32_t)(editObj->Style.align >> 2) & 3);
+
+    if (TglEdit->Value() == 0 || editObj->Style.align & ALIGNMENT_LOCK)
+    {
+      SelAlignX->Disable();
+      SelAlignY->Disable();
+    }
+    else
+    {
+      SelAlignX->Enable();
+      SelAlignY->Enable();
+    }
   }
 }
 

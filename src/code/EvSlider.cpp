@@ -160,6 +160,7 @@ void        EvSlider::drawEvent(void)
   x = y = (mSliderWidth - mThickness) >> 1;
   radius = mBdRadius >> 1;
   Disp->Clear(0, 1, 1);
+  Disp->StencilOp(INCR, INCR);
 
   if ((border = mSliderWidth >> 6) < 24)
     border = 24;
@@ -178,6 +179,13 @@ void        EvSlider::drawEvent(void)
     FillRectangle2f(x, y, mThickness, ((mHeight - 1) << 4) - y, mColorLower, radius);
     Disp->TagValue(KNOB_TAG);
     FillRectangle2f(0, y - (mKnobSize >> 1), mSliderWidth, mKnobSize, mColorKnob, mBdRadius, border, mColorUpper);
+  }
+
+  if (!IsEnabled())
+  {
+    Disp->ColorA(150);
+    Disp->StencilFunc(GREATER, 0, 255);
+    FillRectangle(0, 0, mWidth, mHeight, RGB555(230, 230, 230), mBdRadius);
   }
 }
 

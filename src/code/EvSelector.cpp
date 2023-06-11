@@ -26,7 +26,7 @@
  * @param[in]  Height  The height of the Tab selector.
  * @param[out] *Dest   The address pointer of the EvPanel destination. Cannot be NULL.
  * @param[in]  Tag     The tag name of the Tab selector. If NULL, the default tag name is "EvTab".
- * @param[in]  State   The initial state of the Tab selector. Default is set to VISIBLE_OBJ.
+ * @param[in]  State   The initial state of the Tab selector. Default is set to VISIBLE_OBJ | FILTER_DIS_OBJ.
  *
  * @return     EvTab address pointer on success, otherwise returns NULL.
  * 
@@ -105,7 +105,7 @@ void        EvTab::SetOnChange(void (*OnChange)(EvTab *Sender, int16_t Value))
  * @param[in]  Height  The height of the Selector.
  * @param[out] *Dest   The address pointer of the EvPanel destination. Cannot be NULL.
  * @param[in]  Tag     The tag name of the Selector. If NULL, the default tag name is "EvSelector".
- * @param[in]  State   The initial state of the Selector. Default is set to VISIBLE_OBJ.
+ * @param[in]  State   The initial state of the Selector. Default is set to VISIBLE_OBJ | FILTER_DIS_OBJ.
  *
  * @return     EvSelector address pointer on success, otherwise returns NULL.
  * 
@@ -328,7 +328,7 @@ void        EvSelector::drawEvent(void)
       if (!drawBmp(mValue * size, y, size, h))
         for (i = 0; i < mCount; i++)
           if (i < mCount)
-            DrawText((i * size) >> 4 , 0, size >> 4, mHeight, c_str(Items[i]), (i == mValue) ? mStyle.highLight : mStyle.color);
+            DrawText((i * size) >> 4 , 0, size >> 4, mHeight, c_str(Items[i]), (i == mValue) ? mStyle.color2 : mStyle.color);
 
       if ((mOption & SEPARATOR_ON) != 0 && mCount > 2)
       {
@@ -368,7 +368,7 @@ void        EvSelector::drawEvent(void)
       if (!drawBmp(x, mValue * size, w, size))
         for (i = 0; i < mCount; i++)
           if (i < mCount)
-            DrawText(0, (i * size) >> 4 , mWidth, size >> 4, c_str(Items[i]), (i == mValue) ? mStyle.highLight : mStyle.color);
+            DrawText(0, (i * size) >> 4 , mWidth, size >> 4, c_str(Items[i]), (i == mValue) ? mStyle.color2 : mStyle.color);
 
       if ((mOption & SEPARATOR_ON) != 0 && mCount > 2)
       {
@@ -474,7 +474,7 @@ bool        EvSelector::drawBmp(int16_t Left, int16_t Top, uint16_t Width, uint1
 
   Disp->RestoreContext();
   Disp->StencilFunc(EQUAL, 1, 255);
-  Disp->ColorRGB(mStyle.highLight);
+  Disp->ColorRGB(mStyle.color2);
   Disp->Begin(BITMAPS);
   Disp->Vertex2ii(0, 0);
   Disp->StencilFunc(ALWAYS, 0, 255);

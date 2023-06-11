@@ -19,7 +19,7 @@
  * @param[in]  Height  The height of the **EvButton**.
  * @param[out] *Dest   The destination **EvPanel** address pointer.
  * @param[in]  Tag     The tag name of the **EvButton**. If NULL, the default tag name is **"EvButton"**.
- * @param[in]  State   The initial state of the **EvButton**. Default is set to VISIBLE_OBJ.
+ * @param[in]  State   The initial state of the **EvButton**. Default is set to VISIBLE_OBJ | FILTER_DIS_OBJ.
  *
  * @return     **EvButton** address pointer on success, otherwise returns NULL.
  * 
@@ -157,7 +157,7 @@ void        EvButton::drawEvent(void)
   if (mValue)
   {
     colorButton = mColorDown;
-    colorText = mStyle.highLight;
+    colorText = mStyle.color2;
   }
 
   if (mBdShape & SHADOW)

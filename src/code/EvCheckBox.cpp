@@ -5,6 +5,7 @@
 #define     COLOR_UNCHECK   RGB555(255, 255, 255)
 #define     COLOR_BORDER    RGB555(160, 160, 160)
 #define     COLOR_TEXT      RGB555(  0,   0,   0)
+#define     COLOR_TEXT_2    RGB555(150, 150, 150)
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
@@ -38,7 +39,7 @@ EvCheckBox::EvCheckBox(int16_t Left, int16_t Top, uint16_t Width, uint16_t Heigh
   mTouchBox = false;
   TextLabel("CheckBox");
   TextAlign(LEFT_CENTER);
-  TextColor(COLOR_TEXT);
+  TextColor(COLOR_TEXT, COLOR_TEXT_2);
   SetColor(COLOR_CHECK, COLOR_UNCHECK, COLOR_BORDER);
   BdShape(RATIO_CORNERS);
   SetOnTouch(NULL);
@@ -155,7 +156,13 @@ void        EvCheckBox::drawEvent(void)
     Disp->Vertex2f(12 * size, 5 * size);
   }
 
-  DrawText(size + 4, 0, mWidth - (size + 4), mHeight, c_str(Label));
+  DrawText(size + 4, 0, mWidth - (size + 4), mHeight, c_str(Label), IsEnabled() ? mStyle.color : mStyle.color2);
+
+  if (!IsEnabled())
+  {
+    Disp->ColorA(150);
+    FillRectangle(0, 0, size, size, RGB555(230, 230, 230), radius);
+  }
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
