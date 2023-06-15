@@ -38,7 +38,7 @@
 #define     EDGE_STRIP_B    8
 #define     RECTS           9
 
-// Bitmap Layout Format constant
+// Bitmap Layout/ext Format constant
 
 #define     ARGB1555        0
 #define     L1              1
@@ -55,6 +55,20 @@
 #define     PALETTED4444    15
 #define     PALETTED8       16
 #define     L2              17
+#define     ASTC_4x4        37808
+#define     ASTC_5x4        37809
+#define     ASTC_5x5        37810
+#define     ASTC_6x5        37811
+#define     ASTC_6x6        37812
+#define     ASTC_8x5        37813
+#define     ASTC_8x6        37814
+#define     ASTC_8x8        37815
+#define     ASTC_10x5       37816
+#define     ASTC_10x6       37817
+#define     ASTC_10x8       37818
+#define     ASTC_10x10      37819
+#define     ASTC_12x10      37820
+#define     ASTC_12x12      37821
 
 // Bitmap Rendering mode constant
 
@@ -93,6 +107,13 @@
 #define     DST_ALPHA               3
 #define     ONE_MINUS_SRC_ALPHA     4
 #define     ONE_MINUS_DST_ALPHA     5
+
+// BitmapSwizzle constant
+
+#define     RED                     2
+#define     GREEN                   3
+#define     BLUE                    4
+#define     ALPHA                   5
 
 // Memory Register Mapping Address
 
@@ -219,6 +240,8 @@
 #define     CMD_APPEND              0xFFFFFF1E
 #define     CMD_CALIBRATE           0xFFFFFF15
 #define     CMD_DLSTART             0xFFFFFF00
+#define     CMD_GRADIENT            0xFFFFFF0B
+#define     CMD_GRADIENTA           0xFFFFFF57
 #define     CMD_INFLATE             0xFFFFFF22
 #define     CMD_LOADIDENTITY        0xFFFFFF26
 #define     CMD_LOADIMAGE           0xFFFFFF24
@@ -245,17 +268,19 @@
 
 #define     EV_ALPHA_FUNC(func,ref)        ((0x09UL << 24) | (((func) & 7) << 8) | (uint8_t)(ref))
 #define     EV_BEGIN(prim)                 ((0x1FUL << 24) | ((prim) & 0x0F))
+#define     EV_BITMAP_EXT_FORMAT(fmt)      ((0x2EUL << 24) | (fmt))
 #define     EV_BITMAP_HANDLE(handle)       ((0x05UL << 24) | ((handle) & 0x1F))
 #define     EV_BITMAP_LAYOUT(fmt,ls,h)     ((0x07UL << 24) | (((fmt) & 0x1F) << 19) | (((ls) & 0x3FF) << 9) | ((h) & 0x1FF))
 #define     EV_BITMAP_LAYOUT_H(ls,h)       ((0x28UL << 24) | (((ls) >> 10) << 2) | (((h) >> 9) & 3))
 #define     EV_BITMAP_SIZE(ft,wx,wy,w,h)   ((0x08UL << 24) | (((ft) & 1) << 20) | (((wx) & 1) << 19) | (((wy) & 1) << 18) | (((w) & 0x1FF) << 9) | ((h) & 0x1FF))
 #define     EV_BITMAP_SIZE_H(w,h)          ((0x29UL << 24) | (((w) >> 9) << 2) | (((h) >> 9) & 3))
-#define     EV_BITMAP_SOURCE(addr)         ((0x01UL << 24) | ((addr) & 0x3FFFFF))
-#define     EV_BITMAP_TRANSFORM_A(coeff)   ((0x15UL << 24) | ((coeff) & 0x1FFFF))
-#define     EV_BITMAP_TRANSFORM_B(coeff)   ((0x16UL << 24) | ((coeff) & 0x1FFFF))
+#define     EV_BITMAP_SOURCE(addr)         ((0x01UL << 24) | ((addr) & 0xFFFFFF))
+#define     EV_BITMAP_SWIZZLE(r,g,b,a)     ((0x2FUL << 24) | ((((r) & 7) << 9) | (((g) & 7) << 6) | (((b) & 7) << 3) | ((a) & 7)))
+#define     EV_BITMAP_TRANSFORM_A(coeff)   ((0x15UL << 24) | ((coeff) & 0x3FFFF))
+#define     EV_BITMAP_TRANSFORM_B(coeff)   ((0x16UL << 24) | ((coeff) & 0x3FFFF))
 #define     EV_BITMAP_TRANSFORM_C(coeff)   ((0x17UL << 24) | ((coeff) & 0xFFFFFF))
-#define     EV_BITMAP_TRANSFORM_D(coeff)   ((0x18UL << 24) | ((coeff) & 0x1FFFF))
-#define     EV_BITMAP_TRANSFORM_E(coeff)   ((0x19UL << 24) | ((coeff) & 0x1FFFF))
+#define     EV_BITMAP_TRANSFORM_D(coeff)   ((0x18UL << 24) | ((coeff) & 0x3FFFF))
+#define     EV_BITMAP_TRANSFORM_E(coeff)   ((0x19UL << 24) | ((coeff) & 0x3FFFF))
 #define     EV_BITMAP_TRANSFORM_F(coeff)   ((0x1AUL << 24) | ((coeff) & 0xFFFFFF))
 #define     EV_BLEND_FUNC(src,dst)         ((0x0BUL << 24) | (((src) & 7) << 3) | ((dst) & 7))
 #define     EV_CALL(dest)                  ((0x1DUL << 24) | ((dest) & 0xFFFF))
@@ -345,10 +370,12 @@ class EvEVE : public EvSPI
     // Display list command supported
     void          AlphaFunc(uint8_t Func, uint8_t Ref);
     void          Begin(uint8_t Prim);
+    void          BitmapExtFormat(uint16_t Format);
     void          BitmapHandle(uint8_t Handle);
     void          BitmapLayout(uint8_t Format, uint16_t Linestride, uint16_t Height);
     void          BitmapSize(uint8_t Filter, uint8_t WrapX, uint8_t WrapY, uint16_t Width, uint16_t Height);
     void          BitmapSource(uint32_t Addr);
+    void          BitmapSwizzle(uint8_t R, uint8_t G, uint8_t B, uint8_t A);
     void          BitmapTransformA(int32_t Coeff);
     void          BitmapTransformB(int32_t Coeff);
     void          BitmapTransformC(int32_t Coeff);
@@ -403,6 +430,8 @@ class EvEVE : public EvSPI
     void          CmdAppend(uint32_t Addr, uint32_t Num);
     void          CmdCalibrate(void);
     void          CmdDlStart(void);
+    void          CmdGradient(int16_t X0, int16_t Y0, uint32_t Color0, int16_t X1, int16_t Y1, uint32_t Color1);
+    void          CmdGradientA(int16_t X0, int16_t Y0, uint32_t Color0, int16_t X1, int16_t Y1, uint32_t Color1);
     void          CmdInflate(uint32_t Addr);
     void          CmdLoadIdentity(void);
     void          CmdLoadImage(uint32_t Addr, uint32_t Options);

@@ -238,6 +238,13 @@ void        EvEVE::Begin(uint8_t Prim)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+void        EvEVE::BitmapExtFormat(uint16_t Format)
+{
+  wrCmdBuf32(EV_BITMAP_EXT_FORMAT(Format));
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
 void        EvEVE::BitmapHandle(uint8_t Handle)
 {
   if ((Handle &= 0x1F) != mActiveContext.handle)
@@ -268,6 +275,13 @@ void        EvEVE::BitmapSize(uint8_t Filter, uint8_t WrapX, uint8_t WrapY, uint
 void        EvEVE::BitmapSource(uint32_t Addr)
 {
   wrCmdBuf32(EV_BITMAP_SOURCE(Addr));
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+void        EvEVE::BitmapSwizzle(uint8_t R, uint8_t G, uint8_t B, uint8_t A)
+{
+  wrCmdBuf32(EV_BITMAP_SWIZZLE(R, G, B, A));
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -749,6 +763,32 @@ void        EvEVE::CmdCalibrate(void)
 void        EvEVE::CmdDlStart(void)
 {
   wrCmdBuf32(CMD_DLSTART);
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+void        EvEVE::CmdGradient(int16_t X0, int16_t Y0, uint32_t Color0, int16_t X1, int16_t Y1, uint32_t Color1)
+{
+  wrCmdBuf32(CMD_GRADIENT);
+  wrCmdBuf16(X0);
+  wrCmdBuf16(Y0);
+  wrCmdBuf32(colorCorrection(Color0));
+  wrCmdBuf16(X1);
+  wrCmdBuf16(Y1);
+  wrCmdBuf32(colorCorrection(Color1));
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+void        EvEVE::CmdGradientA(int16_t X0, int16_t Y0, uint32_t Color0, int16_t X1, int16_t Y1, uint32_t Color1)
+{
+  wrCmdBuf32(CMD_GRADIENTA);
+  wrCmdBuf16(X0);
+  wrCmdBuf16(Y0);
+  wrCmdBuf32(colorCorrection(Color0) | (Color0 & 0xFF000000));
+  wrCmdBuf16(X1);
+  wrCmdBuf16(Y1);
+  wrCmdBuf32(colorCorrection(Color1) | (Color1 & 0xFF000000));
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
