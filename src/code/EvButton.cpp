@@ -142,7 +142,7 @@ void        EvButton::SetOnTouch(void (*OnTouch)(EvButton *Sender, EvTouchEvent 
  * 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvButton::SetOnChange(void (*OnChange)(EvButton *Sender, int16_t Value))
+void        EvButton::SetOnChange(void (*OnChange)(EvButton *Sender, int32_t Value))
 {
   mOnChange = OnChange;
 }

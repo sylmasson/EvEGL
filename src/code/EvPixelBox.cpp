@@ -182,8 +182,10 @@ void        EvPixelBox::drawEvent(void)
   Disp->ColorMask(14);
   Disp->BlendFunc(DST_ALPHA, ONE_MINUS_DST_ALPHA);
   Disp->Begin(BITMAPS);
-  Disp->CmdSetBitmap(mDest->addr + mBmp.PalSize + (mBufInd ? mBmp.BmpSize : 0), mBmp.Layout, mBmp.Width, mBmp.Height);
-//  Disp->CmdSetBitmap(mDest->addr + mBmp.PalSize, mBmp.Layout, mBmp.Width, mBmp.Height);
+  Disp->BitmapHandle(0);
+  Disp->BitmapSource(mDest->addr + mBmp.PalSize + (mBufInd ? mBmp.BmpSize : 0));
+  Disp->BitmapLayout(mBmp.Layout, mBmp.Width, mBmp.Height);
+  Disp->BitmapSize(NEAREST, BORDER, BORDER, mBmp.Width, mBmp.Height);
 
   if (mBmp.PalSize > 0)
     Disp->PaletteSource(mDest->addr);

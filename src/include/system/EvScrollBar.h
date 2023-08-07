@@ -33,7 +33,7 @@ class EvScrollBar : public EvObj
     void          SetPageSize(uint16_t PageSize, uint16_t ViewSize);
     void          SetBarColor(uint16_t ColorKnob, uint16_t ColorTouch, uint8_t Opacity = 128);
     void          SetBarStyle(uint8_t Mode, uint8_t Padding = 6, uint16_t Delay = 1500);
-    void          SetOnChange(void (*OnChange)(EvScrollBar *Sender, int16_t Value));
+    void          SetOnChange(void (*OnChange)(EvScrollBar *Sender, int32_t Value));
 
   protected:
     EvScrollBar(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag = NULL, uint16_t State = VISIBLE_OBJ);
@@ -63,7 +63,7 @@ class EvScrollBar : public EvObj
     virtual void  touchEvent(EvTouchEvent *Touch);
 
   private:
-    void          (*mOnChange)(EvScrollBar *Sender, int16_t Value);
+    void          (*mOnChange)(EvScrollBar *Sender, int32_t Value);
 
     void          wakeup(void);
     void          resize(void);

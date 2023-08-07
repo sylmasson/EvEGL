@@ -179,6 +179,7 @@ class       EvVuBar;
 #include    <include/EvProgress.h>
 #include    <include/EvSlider.h>
 #include    <include/EvCheckBox.h>
+#include  	<include/EvImage.h>
 #include    <include/EvTextBlock.h>
 #include    <include/EvTextBox.h>
 #include    <include/EvTextCursor.h>

@@ -25,7 +25,7 @@ class EvSlider : public EvObj
     void          SetColor(uint16_t ColorLower, uint16_t ColorUpper, uint16_t ColorKnob);
     void          SetRange(int16_t Min, int16_t Max);
     void          SetOnTouch(void (*OnTouch)(EvSlider *Sender, EvTouchEvent *Touch));
-    void          SetOnChange(void (*OnChange)(EvSlider *Sender, int16_t Value));
+    void          SetOnChange(void (*OnChange)(EvSlider *Sender, int32_t Value));
 
   protected:
     EvSlider(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag = NULL, uint16_t State = VISIBLE_OBJ);
@@ -52,9 +52,8 @@ class EvSlider : public EvObj
 
   private:
     void          (*mOnTouch)(EvSlider *Sender, EvTouchEvent *Touch);
-    void          (*mOnChange)(EvSlider *Sender, int16_t Value);
+    void          (*mOnChange)(EvSlider *Sender, int32_t Value);
 
-    void          resize(void);
     bool          setValue(int16_t Value);
 
   public:

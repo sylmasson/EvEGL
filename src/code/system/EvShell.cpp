@@ -494,8 +494,8 @@ void        EvShell::DisplayListCommand(EvDisplay *Disp, uint32_t Addr, uint32_t
     case 18: snprintf(param, sizeof(param) - 1, "(%.2f);", (float)(w[0] & 0x1FFF) / 16.0); break;
     case 19: snprintf(param, sizeof(param) - 1, "(%7.2f);", (cmd == 0x2B) ? mVt.x : mVt.y); break;
     case 20: snprintf(param, sizeof(param) - 1, "(%7.2f,%7.2f);", x = ((float)((int16_t)((d >> 14) & 0xFFFE)) / (1 << (mVt.fmt + 1))), y = ((float)((int16_t)(d << 1)) / (1 << (mVt.fmt + 1)))); break;
-    case 21: snprintf(param, sizeof(param) - 1, "(%+.5f);", (float)((int32_t)(d & 0xFFFFFF)) / (1L << 8)); break;
-    case 22: snprintf(param, sizeof(param) - 1, "(%+.5f);", (b[2] & 2) ? ((float)(d & 0x01FFFF) / (1L << 16)) : ((float)((int32_t)(d & 0x01FFFF)) / (1L << 8))); break;
+    case 21: snprintf(param, sizeof(param) - 1, "(%+.5f);", (float)((int32_t)(d << 8)) / (1L << (8 + 8))); break;
+    case 22: snprintf(param, sizeof(param) - 1, "(%+.5f);", (b[2] & 2) ? ((float)((int32_t)(d << 15)) / (1L << (15 + 15))) : ((float)((int32_t)(d << 15)) / (1L << (15 + 8)))); break;
     case 23: snprintf(param, sizeof(param) - 1, "(0x%02X);", b[0] & mask); break;
     case 24: snprintf(param, sizeof(param) - 1, "(%s);", w[0] < 18 ? layout[w[0]] : ((w[0] < 37808 || w[0] > 37821) ? invalid : extFmt[w[0] - 37808])); break;
     case 25: snprintf(param, sizeof(param) - 1, "(%s, %s, %s, %s);", chanSrc[(w[0]>>9) & 3], chanSrc[(w[0]>>6) & 3], chanSrc[(w[0]>>3) & 3], chanSrc[w[0] & 3]); break;

@@ -331,7 +331,7 @@ void        EvScrollBox::scrollY(int16_t Y)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvScrollBox::sOnChangeScrollBarX(EvScrollBar *Sender, int16_t Value)
+void        EvScrollBox::sOnChangeScrollBarX(EvScrollBar *Sender, int32_t Value)
 {
   EvScrollBox *Owner = (EvScrollBox *)Sender->GetOwner();
 
@@ -342,7 +342,7 @@ void        EvScrollBox::sOnChangeScrollBarX(EvScrollBar *Sender, int16_t Value)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvScrollBox::sOnChangeScrollBarY(EvScrollBar *Sender, int16_t Value)
+void        EvScrollBox::sOnChangeScrollBarY(EvScrollBar *Sender, int32_t Value)
 {
   EvScrollBox *Owner = (EvScrollBox *)Sender->GetOwner();
 

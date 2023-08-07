@@ -36,7 +36,7 @@ class EvSelector : public EvObj
     bool          SetBmp(const EvBmp *Bmp, uint16_t Count);
     void          SetColor(uint16_t ColorNone, uint16_t ColorSelect, uint16_t ColorNew);
     void          SetOnTouch(void (*OnTouch)(EvSelector *Sender, EvTouchEvent *Touch));
-    void          SetOnChange(void (*OnChange)(EvSelector *Sender, int16_t Value));
+    void          SetOnChange(void (*OnChange)(EvSelector *Sender, int32_t Value));
 
     virtual void  SetDisp(EvDisplay *Disp);
 
@@ -58,12 +58,12 @@ class EvSelector : public EvObj
 
   private:
     void          (*mOnTouch)(EvSelector *Sender, EvTouchEvent *Touch);
-    void          (*mOnChange)(EvSelector *Sender, int16_t Value);
+    void          (*mOnChange)(EvSelector *Sender, int32_t Value);
 
     void          setNewVal(int16_t Value);
     bool          drawBmp(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height);
 
-    static void   sOnStringListChange(EvObj *Sender, int16_t Count);
+    static void   sOnStringListChange(EvObj *Sender, int32_t Count);
 
   public:
     EvStringList  Items;
@@ -97,7 +97,7 @@ class EvTab : public EvSelector
     void          SetTabLeftTop(void);
     void          SetTabRightBottom(void);
     void          SetOnTouch(void (*OnTouch)(EvTab *Sender, EvTouchEvent *Touch));
-    void          SetOnChange(void (*OnChange)(EvTab *Sender, int16_t Value));
+    void          SetOnChange(void (*OnChange)(EvTab *Sender, int32_t Value));
 
   protected:
     EvTab(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag = NULL, uint16_t State = VISIBLE_OBJ);

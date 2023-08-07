@@ -29,7 +29,7 @@ class EvStringList
     int           Sort(void);
     String        &Get(int Index);
     String        &operator[](const int Index);         // no modified call
-    void          SetOnChange(void (*OnChange)(EvObj *Sender, int16_t Count), EvObj *Sender);
+    void          SetOnChange(void (*OnChange)(EvObj *Sender, int32_t Count), EvObj *Sender);
     void          Modified(void);
 
   protected:
@@ -39,7 +39,7 @@ class EvStringList
     String        **mStringList;
 
   private:
-    void          (*mOnChange)(EvObj *Sender, int16_t Count);
+    void          (*mOnChange)(EvObj *Sender, int32_t Count);
 
     void          modified(bool Sort);
     int           addStr(const char *Str);

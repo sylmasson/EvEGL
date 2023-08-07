@@ -40,7 +40,7 @@ EvSlider::EvSlider(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, E
 {
   mTouchKnob = false;
   BdShape(ROUND_CORNERS);
-  resize();
+  resizeEvent();
   SetDelay(SLIDER_DELAY);
   SetRange(0, 100);
   SetColor(COLOR_LOWER, COLOR_UPPER, COLOR_KNOB);
@@ -144,7 +144,7 @@ void        EvSlider::SetOnTouch(void (*OnTouch)(EvSlider *Sender, EvTouchEvent 
 
 /// @copydoc EvButton::SetOnChange()
 
-void        EvSlider::SetOnChange(void (*OnChange)(EvSlider *Sender, int16_t Value))
+void        EvSlider::SetOnChange(void (*OnChange)(EvSlider *Sender, int32_t Value))
 {
   mOnChange = OnChange;
 }
@@ -193,7 +193,18 @@ void        EvSlider::drawEvent(void)
 
 void        EvSlider::resizeEvent(void)
 {
-  resize();
+  if (mWidth >= mHeight)
+  {
+    mThickness = mHeight << 2;
+    mSliderWidth = mHeight << 4;
+    mSliderLength = mWidth << 4;
+  }
+  else
+  {
+    mThickness = mWidth << 2;
+    mSliderWidth = mWidth << 4;
+    mSliderLength = mHeight << 4;
+  }
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -263,24 +274,6 @@ void        EvSlider::touchEvent(EvTouchEvent *Touch)
     case TOUCH_CANCEL:
       Touch->event = 0;
       break;
-  }
-}
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-void        EvSlider::resize(void)
-{
-  if (mWidth >= mHeight)
-  {
-    mThickness = mHeight << 2;
-    mSliderWidth = mHeight << 4;
-    mSliderLength = mWidth << 4;
-  }
-  else
-  {
-    mThickness = mWidth << 2;
-    mSliderWidth = mWidth << 4;
-    mSliderLength = mHeight << 4;
   }
 }
 

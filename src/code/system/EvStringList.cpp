@@ -303,7 +303,7 @@ String      &EvStringList::operator[](const int Index)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvStringList::SetOnChange(void (*OnChange)(EvObj *Sender, int16_t Count), EvObj *Sender)
+void        EvStringList::SetOnChange(void (*OnChange)(EvObj *Sender, int32_t Count), EvObj *Sender)
 {
   mOnChange = OnChange;
   mSender = Sender;

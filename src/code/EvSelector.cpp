@@ -83,9 +83,9 @@ void        EvTab::SetOnTouch(void (*OnTouch)(EvTab *Sender, EvTouchEvent *Touch
 
 /// @copydoc EvButton::SetOnChange()
 
-void        EvTab::SetOnChange(void (*OnChange)(EvTab *Sender, int16_t Value))
+void        EvTab::SetOnChange(void (*OnChange)(EvTab *Sender, int32_t Value))
 {
-  EvSelector::SetOnChange((void (*)(EvSelector *Sender, int16_t Value))OnChange);
+  EvSelector::SetOnChange((void (*)(EvSelector *Sender, int32_t Value))OnChange);
 }
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -277,7 +277,7 @@ void        EvSelector::SetOnTouch(void (*OnTouch)(EvSelector *Sender, EvTouchEv
 
 /// @copydoc EvButton::SetOnChange()
 
-void        EvSelector::SetOnChange(void (*OnChange)(EvSelector *Sender, int16_t Value))
+void        EvSelector::SetOnChange(void (*OnChange)(EvSelector *Sender, int32_t Value))
 {
   mOnChange = OnChange;
 }
@@ -455,7 +455,10 @@ bool        EvSelector::drawBmp(int16_t Left, int16_t Top, uint16_t Width, uint1
   if (mBmp != NULL)
   {
     Disp->Begin(BITMAPS);
-    Disp->CmdSetBitmap(mDest->addr + mBmp->PalSize, mBmp->Layout, mBmp->Width, mBmp->Height);
+    Disp->BitmapHandle(0);
+    Disp->BitmapSource(mDest->addr + mBmp->PalSize);
+    Disp->BitmapLayout(mBmp->Layout, mBmp->Width, mBmp->Height);
+    Disp->BitmapSize(NEAREST, BORDER, BORDER, mBmp->Width, mBmp->Height);
 
     if (mBmp->PalSize > 0)
       Disp->PaletteSource(mDest->addr);
@@ -491,7 +494,7 @@ void        EvSelector::setNewVal(int16_t Value)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvSelector::sOnStringListChange(EvObj *Sender, int16_t Count)
+void        EvSelector::sOnStringListChange(EvObj *Sender, int32_t Count)
 {
   EvSelector  *obj = (EvSelector *)Sender;
 

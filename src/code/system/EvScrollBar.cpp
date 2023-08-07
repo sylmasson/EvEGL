@@ -279,7 +279,7 @@ void        EvScrollBar::SetBarStyle(uint8_t Mode, uint8_t Padding, uint16_t Del
 
 /// @copydoc EvButton::SetOnChange()
 
-void        EvScrollBar::SetOnChange(void (*OnChange)(EvScrollBar *Sender, int16_t Value))
+void        EvScrollBar::SetOnChange(void (*OnChange)(EvScrollBar *Sender, int32_t Value))
 {
   mOnChange = OnChange;
 }

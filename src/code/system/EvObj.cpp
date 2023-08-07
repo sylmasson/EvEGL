@@ -1305,7 +1305,7 @@ void        EvObj::TouchUpdate(EvTouchEvent *Touch)
       DisplayTagList();
     }
 
-    if (Touch->event == TOUCH_START && !(mStatus & SYSTEM_OBJ))
+    if (Touch->event == TOUCH_DOUBLE && !(mStatus & SYSTEM_OBJ))
       SetEditObj(this);
 
     if (IsEnabled())
@@ -1451,9 +1451,6 @@ void        EvObj::Draw(void)
       Disp->ScissorSize(mView.w, mView.h);
       Disp->Opacity(mOpacity);
       Disp->ClearPrimitive();
-
-//      if (mWidth > 1024 || mHeight > 1024)
-//        Disp->VertexFormat(3);
 
       if (Disp->ColorA(255) != 0)
       {

@@ -96,7 +96,7 @@ bool        EvToggle::SetValue(int16_t Value)
   Modified();
 
   if (mOnChange != NULL)
-    (*mOnChange)(this, Value);
+    (*mOnChange)(this, mValue);
 
   return true;
 }
@@ -133,7 +133,7 @@ void        EvToggle::SetOnTouch(void (*OnTouch)(EvToggle *Sender, EvTouchEvent 
 
 /// @copydoc EvButton::SetOnChange()
 
-void        EvToggle::SetOnChange(void (*OnChange)(EvToggle *Sender, int16_t Value))
+void        EvToggle::SetOnChange(void (*OnChange)(EvToggle *Sender, int32_t Value))
 {
   mOnChange = OnChange;
 }

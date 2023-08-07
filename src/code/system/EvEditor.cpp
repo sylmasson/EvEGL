@@ -220,7 +220,7 @@ void        SetEditObjDestroyed(EvObj *Obj)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-static void OnChangeMinimize(EvButton *Sender, int16_t Value)
+static void OnChangeMinimize(EvButton *Sender, int32_t Value)
 {
   if (Value == true)
     return;
@@ -241,14 +241,14 @@ static void OnChangeMinimize(EvButton *Sender, int16_t Value)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-static void OnChangeEdit(EvToggle *Sender, int16_t Value)
+static void OnChangeEdit(EvToggle *Sender, int32_t Value)
 {
   SetEditObj(editObj);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-static void OnChangeTab(EvTab *Sender, int16_t Value)
+static void OnChangeTab(EvTab *Sender, int32_t Value)
 {
   switch (Value)
   {
@@ -298,7 +298,7 @@ static void OnChangeHeight(EvNumInt *Sender, int32_t Value)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-static void OnChangeShape(EvSelector *Sender, int16_t Value)
+static void OnChangeShape(EvSelector *Sender, int32_t Value)
 {
   if (editObj)
     editObj->BdShape((editObj->Shape() & ~7) | Value);
@@ -333,7 +333,7 @@ static void OnChangePadY(EvNumInt *Sender, int32_t Value)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-static void OnChangeAlignX(EvSelector *Sender, int16_t Value)
+static void OnChangeAlignX(EvSelector *Sender, int32_t Value)
 {
   if (editObj)
     editObj->TextAlign((editObj->Style.align & ~3) | Value);
@@ -341,7 +341,7 @@ static void OnChangeAlignX(EvSelector *Sender, int16_t Value)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-static void OnChangeAlignY(EvSelector *Sender, int16_t Value)
+static void OnChangeAlignY(EvSelector *Sender, int32_t Value)
 {
   if (editObj)
     editObj->TextAlign((editObj->Style.align & ~0x0C) | (Value << 2));
@@ -658,17 +658,19 @@ void        EvProperty::refreshEvent(void)
 {
   if (editObj)
   {
-    NumLeft->SetValue((int32_t)editObj->Left());
-    NumTop->SetValue((int32_t)editObj->Top());
-    NumWidth->SetValue((int32_t)editObj->Width());
-    NumHeight->SetValue((int32_t)editObj->Height());
-    SelShape->SetValue((int32_t)editObj->Shape() & 7);
-    NumFont->SetValue((int32_t)editObj->Style.font);
+    int16_t shape = editObj->Shape() & 7;
+
+    NumLeft->SetValue(editObj->Left());
+    NumTop->SetValue(editObj->Top());
+    NumWidth->SetValue(editObj->Width());
+    NumHeight->SetValue(editObj->Height());
+    SelShape->SetValue((shape == USER_CORNERS ? -1 : shape));
+    NumFont->SetValue(editObj->Style.font);
     NumFont->TextColor(editObj->Disp->SystemFont[editObj->Style.font] == NULL ? TEXT_ERROR : TEXT_COLOR);
-    NumPadX->SetValue((int32_t)editObj->Style.padX);
-    NumPadY->SetValue((int32_t)editObj->Style.padY);
-    SelAlignX->SetValue((int32_t)editObj->Style.align & 3);
-    SelAlignY->SetValue((int32_t)(editObj->Style.align >> 2) & 3);
+    NumPadX->SetValue(editObj->Style.padX);
+    NumPadY->SetValue(editObj->Style.padY);
+    SelAlignX->SetValue(editObj->Style.align & 3);
+    SelAlignY->SetValue((editObj->Style.align >> 2) & 3);
 
     if (TglEdit->Value() == 0 || editObj->Style.align & ALIGNMENT_LOCK)
     {

@@ -250,6 +250,7 @@
 #define     CMD_MEMWRITE            0xFFFFFF1A
 #define     CMD_MEMZERO             0xFFFFFF1C
 #define     CMD_ROTATE              0xFFFFFF29
+#define     CMD_ROTATEAROUND        0xFFFFFF51
 #define     CMD_ROMFONT             0xFFFFFF3F
 #define     CMD_SCALE               0xFFFFFF28
 #define     CMD_SETBITMAP           0xFFFFFF43
@@ -372,16 +373,16 @@ class EvEVE : public EvSPI
     void          Begin(uint8_t Prim);
     void          BitmapExtFormat(uint16_t Format);
     void          BitmapHandle(uint8_t Handle);
-    void          BitmapLayout(uint8_t Format, uint16_t Linestride, uint16_t Height);
+    void          BitmapLayout(uint8_t Format, uint16_t Width, uint16_t Height);
     void          BitmapSize(uint8_t Filter, uint8_t WrapX, uint8_t WrapY, uint16_t Width, uint16_t Height);
     void          BitmapSource(uint32_t Addr);
     void          BitmapSwizzle(uint8_t R, uint8_t G, uint8_t B, uint8_t A);
-    void          BitmapTransformA(int32_t Coeff);
-    void          BitmapTransformB(int32_t Coeff);
-    void          BitmapTransformC(int32_t Coeff);
-    void          BitmapTransformD(int32_t Coeff);
-    void          BitmapTransformE(int32_t Coeff);
-    void          BitmapTransformF(int32_t Coeff);
+    void          BitmapTransformA(int32_t Coeff);  //
+    void          BitmapTransformB(int32_t Coeff);  // All Coeff must be s15f16 format.
+    void          BitmapTransformC(int32_t Coeff);  // Coeff is converted to s15f8,
+    void          BitmapTransformD(int32_t Coeff);  // s1f15 or s8f8 optimized for
+    void          BitmapTransformE(int32_t Coeff);  // the selected EVE chip.
+    void          BitmapTransformF(int32_t Coeff);  //
     void          BlendFunc(uint8_t Src, uint8_t Dst);
     void          Call(uint16_t Dest);
     void          Cell(uint8_t Cell);
@@ -455,6 +456,7 @@ class EvEVE : public EvSPI
     bool          CapacitiveTouchEngine;  
 
   private:
+    int32_t       transformCoeff(int32_t Coeff);
     uint32_t      colorCorrection(uint32_t Color);
 
     uint8_t       mActivePrim;

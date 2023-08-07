@@ -22,7 +22,7 @@ class EvButton : public EvObj
     bool          SetValue(int16_t Value);
     void          SetColor(uint16_t ColorUp, uint16_t ColorDown);
     void          SetOnTouch(void (*OnTouch)(EvButton *Sender, EvTouchEvent *Touch));
-    void          SetOnChange(void (*OnChange)(EvButton *Sender, int16_t Value));
+    void          SetOnChange(void (*OnChange)(EvButton *Sender, int32_t Value));
 
   protected:
     EvButton(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag = NULL, uint16_t State = VISIBLE_OBJ);
@@ -36,7 +36,7 @@ class EvButton : public EvObj
 
   private:
     void          (*mOnTouch)(EvButton *Sender, EvTouchEvent *Touch);
-    void          (*mOnChange)(EvButton *Sender, int16_t Value);
+    void          (*mOnChange)(EvButton *Sender, int32_t Value);
 
   public:
     static EvButton *Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag = NULL, uint16_t State = VISIBLE_OBJ | FILTER_DIS_OBJ);

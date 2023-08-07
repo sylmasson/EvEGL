@@ -54,8 +54,8 @@ class EvScrollBox : public EvPanel
     void          scrollX(int16_t X);
     void          scrollY(int16_t Y);
 
-    static void   sOnChangeScrollBarX(EvScrollBar *Sender, int16_t Value);
-    static void   sOnChangeScrollBarY(EvScrollBar *Sender, int16_t Value);
+    static void   sOnChangeScrollBarX(EvScrollBar *Sender, int32_t Value);
+    static void   sOnChangeScrollBarY(EvScrollBar *Sender, int32_t Value);
 
   public:
     static EvScrollBox *Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag = NULL, uint16_t State = VISIBLE_OBJ | CONTROL_OBJ);

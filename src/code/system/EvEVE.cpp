@@ -21,6 +21,10 @@
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+static const char   bitPixel[18] = {16, 1, 4, 8, 8, 8, 16, 16, 0, 0, 0, 0, 0, 0, 8, 8, 8, 2};
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
 EvEVE::EvEVE(const uint32_t *Config, uint8_t CS, int16_t RST, SPIClass *Spi, uint32_t Baudrate)
 {
   uint32_t  reg;
@@ -256,8 +260,10 @@ void        EvEVE::BitmapHandle(uint8_t Handle)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvEVE::BitmapLayout(uint8_t Format, uint16_t Linestride, uint16_t Height)
+void        EvEVE::BitmapLayout(uint8_t Format, uint16_t Width, uint16_t Height)
 {
+  uint16_t  Linestride = (((uint32_t)Width * bitPixel[Format]) + 7) / 8;
+
   wrCmdBuf32(EV_BITMAP_LAYOUT_H(Linestride, Height));
   wrCmdBuf32(EV_BITMAP_LAYOUT(Format, Linestride, Height));
 }
@@ -288,42 +294,42 @@ void        EvEVE::BitmapSwizzle(uint8_t R, uint8_t G, uint8_t B, uint8_t A)
 
 void        EvEVE::BitmapTransformA(int32_t Coeff)
 {
-  wrCmdBuf32(EV_BITMAP_TRANSFORM_A(Coeff));
+  wrCmdBuf32(EV_BITMAP_TRANSFORM_A(transformCoeff(Coeff)));
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 void        EvEVE::BitmapTransformB(int32_t Coeff)
 {
-  wrCmdBuf32(EV_BITMAP_TRANSFORM_B(Coeff));
+  wrCmdBuf32(EV_BITMAP_TRANSFORM_B(transformCoeff(Coeff)));
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 void        EvEVE::BitmapTransformC(int32_t Coeff)
 {
-  wrCmdBuf32(EV_BITMAP_TRANSFORM_C(Coeff));
+  wrCmdBuf32(EV_BITMAP_TRANSFORM_C(Coeff >> 8));
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 void        EvEVE::BitmapTransformD(int32_t Coeff)
 {
-  wrCmdBuf32(EV_BITMAP_TRANSFORM_D(Coeff));
+  wrCmdBuf32(EV_BITMAP_TRANSFORM_D(transformCoeff(Coeff)));
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 void        EvEVE::BitmapTransformE(int32_t Coeff)
 {
-  wrCmdBuf32(EV_BITMAP_TRANSFORM_E(Coeff));
+  wrCmdBuf32(EV_BITMAP_TRANSFORM_E(transformCoeff(Coeff)));
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 void        EvEVE::BitmapTransformF(int32_t Coeff)
 {
-  wrCmdBuf32(EV_BITMAP_TRANSFORM_F(Coeff));
+  wrCmdBuf32(EV_BITMAP_TRANSFORM_F(Coeff >> 8));
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -672,7 +678,7 @@ void        EvEVE::TagMask(uint8_t Mask)
 
 void        EvEVE::Vertex2f(int16_t X, int16_t Y)
 {
-  int16_t   shift, fmt = mActiveContext.format;
+  int16_t   absXY, shift, fmt = mActiveContext.format;
 
   if (fmt < 4)
   {
@@ -681,18 +687,21 @@ void        EvEVE::Vertex2f(int16_t X, int16_t Y)
     Y >>= shift;
   }
 
-  if (abs(X) >> 14 || abs(Y) >> 14)
+  absXY = (abs(X) | abs(Y)) >> 14;
+
+  if (absXY)
   {
     do
     {
       if (fmt == 0)
         break;
 
+      absXY >>= 1;
       X >>= 1;
       Y >>= 1;
       fmt--;
     }
-    while (abs(X) >> 14 || abs(Y) >> 14);
+    while (absXY);
 
     VertexFormat(fmt);
   }
@@ -938,6 +947,16 @@ void        EvEVE::CmdTranslate(int32_t X, int32_t Y)
   wrCmdBuf32(CMD_TRANSLATE);
   wrCmdBuf32(X);
   wrCmdBuf32(Y);
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+int32_t     EvEVE::transformCoeff(int32_t Coeff)
+{
+  if (ChipID < 0x817 || abs(Coeff) > 0x1FFFF)
+    return ((Coeff >> 8) & 0x1FFFF);
+  else
+    return ((Coeff >> 1) | 0x20000);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

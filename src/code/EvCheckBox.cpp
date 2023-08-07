@@ -122,7 +122,7 @@ void        EvCheckBox::SetOnTouch(void (*OnTouch)(EvCheckBox *Sender, EvTouchEv
 
 /// @copydoc EvButton::SetOnChange()
 
-void        EvCheckBox::SetOnChange(void (*OnChange)(EvCheckBox *Sender, int16_t Value))
+void        EvCheckBox::SetOnChange(void (*OnChange)(EvCheckBox *Sender, int32_t Value))
 {
   mOnChange = OnChange;
 }

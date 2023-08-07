@@ -64,7 +64,7 @@ bool        EvBitmap::Setup(int16_t &X, int16_t &Y, int16_t Angle, int32_t Scale
   Disp->Begin(BITMAPS);
   Disp->BitmapHandle(0);
   Disp->BitmapSource(mDest->addr + mBmp->PalSize);
-  Disp->BitmapLayout(mBmp->Layout, (((uint32_t)mBmp->Width * bitPixel[mBmp->Layout]) + 7) / 8, mBmp->Height);
+  Disp->BitmapLayout(mBmp->Layout, mBmp->Width /* (((uint32_t)mBmp->Width * bitPixel[mBmp->Layout]) + 7) / 8 */, mBmp->Height);
 
   if (ScaleY == 0)
     ScaleY = ScaleX;
