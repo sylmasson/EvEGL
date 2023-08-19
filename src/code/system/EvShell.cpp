@@ -8,18 +8,19 @@ static EvShell  sShell;
 
 static EvCmd    sCmdList[] =
 {
-  {CD,       1,    "", "cd",      "cd [1-4|Name]         Change display"},
-  {LIST,     1,   "l", "list",    "l, list [DL|#Id|Tag]  List display memory"},
-  {DUMP,     1,   "d", "dump",    "d, dump [0x|#Id|Tag]  Dump display memory"},
-  {RADIX,    1,   "r", "radix",   "r, radix [b|w|d]      Change radix"},
-  {EDITOR,   1,   "e", "editor",  "e, editor [close]     Open/close editor"},
-  {TRACE,    1,   "t", "trace",   "t, trace opt          [modif|touch|fps|off]"},
-  {ROTATE,   1, "rot", "rotate",  "rot, rotate 0-3       Set display orientation"},
-  {CALIB,    0,    "", "calib",   "calib                 Touchscreen calibration"},
-  {INFO,     0,    "", "info",    "info                  Show display information"},
-  {FONT,     0,    "", "font",    "font                  List font metrix block"},
-  {ROMFONT,  0,    "", "romfont", "romfont               List display romfont"},
-  {HELP,     0,   "h", "help",    "h, help               Show shell commands"}
+  {CD,       1,    "", "cd",       "cd [1-4|Name]         Change display"},
+  {LIST,     1,   "l", "list",     "l, list [DL|#Id|Tag]  List display memory"},
+  {DUMP,     1,   "d", "dump",     "d, dump [0x|#Id|Tag]  Dump display memory"},
+  {RADIX,    1,   "r", "radix",    "r, radix [b|w|d]      Change radix"},
+  {EDITOR,   1,   "e", "editor",   "e, editor [close]     Open/close editor"},
+  {TRACE,    1,   "t", "trace",    "t, trace opt          [modif|touch|fps|off]"},
+  {ROTATE,   1, "rot", "rotate",   "rot, rotate 0-3       Set display orientation"},
+  {CALIB,    0,    "", "calib",    "calib                 Touchscreen calibration"},
+  {INFO,     0,    "", "info",     "info                  Show display information"},
+  {FONT,     0,    "", "font",     "font                  List font metrix block"},
+  {ROMFONT,  0,    "", "romfont",  "romfont               List display romfont"},
+  {CLRCACHE, 0,  "cc", "clrcache", "cc, clrcache          Clear display list cache"},
+  {HELP,     0,   "h", "help",     "h, help               Show shell commands"}
 };
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -132,15 +133,15 @@ void        EvShell::Input(const char C)
             snprintf(str, sizeof(str) - 1, "DL Size:%-4lu (%.1f%%)  ", size, (float)(size * 100) / 8192.0);
             Serial.println(str);
           }
-          else if (((ptr = Disp->RAM_G.FindByTag(arg[1], EV_OBJ)) == NULL && (sscanf(arg[1], "#%d%c", &i, &c) != 1 || (ptr = Disp->RAM_G.FindById(i)) == NULL)) || ptr->size == 0 || ptr->typeId != EV_OBJ)
+          else if (((ptr = Disp->RAM_G.FindByTag(arg[1], EV_OBJ)) == NULL && (sscanf(arg[1], "#%d%c", &i, &c) != 1 || (ptr = Disp->RAM_G.FindById(i)) == NULL)) || ptr->used == 0 || ptr->typeId != EV_OBJ)
           {
             msg = InvalidArg;
             break;
           }
           else
           {
-            DisplayObjectRamG(Disp, ptr->addr, ptr->addr - ptr->startDL, ptr->size);
-            snprintf(str, sizeof(str) - 1, "Size:%-4lu (%.1f%%)  ", ptr->size, (float)(ptr->size * 100) / 8192.0);
+            DisplayObjectRamG(Disp, ptr->addr, ptr->addr - ptr->startDL, ptr->used);
+            snprintf(str, sizeof(str) - 1, "Size:%-4lu (%.1f%%)  ", ptr->used, (float)(ptr->used * 100) / 8192.0);
             Serial.print(str);
             ((EvObj *)(ptr->owner))->DisplayTagList();
             Serial.println();
@@ -154,16 +155,16 @@ void        EvShell::Input(const char C)
             if ((ptr = Disp->RAM_G.FindByTag(arg[1])) != NULL)
             {
               mAddr = ptr->addr;
-              mSize = ptr->size;
+              mSize = ptr->used;
             }
             else
             {
               if (sscanf(arg[1], "#%i%c", &i, &c) == 1)
               {
-                if ((ptr = Disp->RAM_G.FindById(i)) != NULL && ptr->size != 0)
+                if ((ptr = Disp->RAM_G.FindById(i)) != NULL && ptr->used != 0)
                 {
                   mAddr = ptr->addr;
-                  mSize = ptr->size;
+                  mSize = ptr->used;
                 }
                 else
                 {
@@ -242,6 +243,12 @@ void        EvShell::Input(const char C)
 
         case ROMFONT:
           DisplayRomFont(Disp);
+          msg = NULL;
+          break;
+
+        case CLRCACHE:
+          Disp->ClearCache();
+          DisplayMallocBlock(Disp);
           msg = NULL;
           break;
 
@@ -578,28 +585,31 @@ void        EvShell::DisplayMallocBlock(EvDisplay *Disp)
   const char  *tag;
   const void  *owner;
   char        str[80];
-  uint16_t    index, cnt;
+  uint16_t    cnt, cntFree;
   uint32_t    sumFree = 0;
+  uint32_t    sumUsed = 0;
+  uint32_t    sumMalloc = 0;
   static char tagNull[] = "nullptr";
 
   if ((ptr = (EvMem *)Disp->RAM_G.FindFirst()) == NULL)
     Serial.println("No list avaible");
   else
   {
-    for (index = cnt = 0; ptr != NULL; ptr = ptr->next, index++)
+    for (cnt = cntFree = 0; ptr != NULL; ptr = ptr->next)
     {
-      snprintf(str, sizeof(str) - 1, "0x%05lX:%7lu bytes", ptr->addr, ptr->length);
+      snprintf(str, sizeof(str) - 1, "0x%05lX:%7lu bytes", ptr->addr, ptr->size);
       Serial.print(str);
-      snprintf(str, sizeof(str) - 1, ptr->size == 0 ? "   free" : " %6lu used %5u ", ptr->size, ptr->id);
+      snprintf(str, sizeof(str) - 1, ptr->used == 0 ? "   free" : " %6lu used %5u ", ptr->used, ptr->id);
       Serial.print(str);
 
       if ((owner = ptr->owner) != NULL)
       {
         switch (ptr->typeId)
         {
+          case EV_VIDEO:
           case EV_UNDEFINED:
             tag = (char *)owner;
-            snprintf(str, sizeof(str) - 1, " N/A \"%s\"", !tag ? tagNull : tag);
+            snprintf(str, sizeof(str) - 1, " %s \"%s\"", ptr->typeId == EV_VIDEO ? "VDO" : "UND", !tag ? tagNull : tag);
             Serial.print(str);
             break;
 
@@ -629,14 +639,22 @@ void        EvShell::DisplayMallocBlock(EvDisplay *Disp)
 
       Serial.println();
 
-      if (ptr->size == 0)
+      if (ptr->used == 0)
       {
-        sumFree += ptr->length;
+        sumFree += ptr->size;
+        cntFree++;
+      }
+      else
+      {
+        sumMalloc += ptr->size;
+        sumUsed += ptr->used;
         cnt++;
       }
     }
 
-    snprintf(str, sizeof(str) - 1, "Total:  %7lu bytes   free (%.1f%%) in %u blocks", sumFree, sumFree * (100.0 / EV_MALLOC_SIZE), cnt);
+    snprintf(str, sizeof(str) - 1, "Malloc: %7lu bytes %6lu used in %u blocks", sumMalloc, sumUsed, cnt);
+    Serial.println(str);
+    snprintf(str, sizeof(str) - 1, "Free:   %7lu bytes (%.1f%%) in %u blocks", sumFree, sumFree * (100.0 / EV_MALLOC_SIZE), cntFree);
     Serial.println(str);
   }
 }

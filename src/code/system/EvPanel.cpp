@@ -147,6 +147,20 @@ EvObj       *EvPanel::FirstObj(void)
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
+ * @brief      Clear the display list cache of the Panel and all of its objects.
+ * 
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+void        EvPanel::ClearCache(void)
+{
+  EvObj::ClearCache();
+
+  for (Node *node = mFirst; node != NULL; node = node->next)
+    node->obj->ClearCache();
+}
+
+/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *
  * @brief      Sets the opacity of the Panel and all of its objects.
  * 
  * @param[in]  Opacity   The opacity of the all object. Can be from 0 to 256.

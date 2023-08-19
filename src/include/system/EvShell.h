@@ -8,7 +8,7 @@
 
 enum CmdId : uint8_t
 {
-  CD, DUMP, LIST, EDITOR, RADIX, TRACE, ROTATE, CALIB, INFO, FONT, ROMFONT, HELP
+  CD, DUMP, LIST, EDITOR, RADIX, TRACE, ROTATE, CALIB, INFO, FONT, ROMFONT, CLRCACHE, HELP
 };
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

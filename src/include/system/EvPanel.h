@@ -52,6 +52,7 @@ class EvPanel : public EvObj
     EvObj         *AddObj(EvObj *Obj, const char *Tag = NULL);
     EvObj         *RemoveObj(EvObj *Obj);
     EvObj         *FirstObj(void);
+    virtual void  ClearCache(void);
     virtual void  SetOpacity(uint16_t Opacity);
     virtual void  ModifiedAll(void);
 

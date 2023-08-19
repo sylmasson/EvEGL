@@ -59,6 +59,7 @@ EvEVE::EvEVE(const uint32_t *Config, uint8_t CS, int16_t RST, SPIClass *Spi, uin
     delay(10);
 
   wrCmdBufClear();
+  mVideoBuf = NULL;
   mConvertToGray = 0;
   mColorCalibration = 0;
   mStackContextCount = 0;
@@ -158,7 +159,7 @@ const EvMem *EvEVE::LoadBmp(const EvBmp *Bmp)
 
   if ((ptr = (EvMem *)RAM_G.FindByOwner(Bmp)) == NULL)
   {
-    if ((ptr = (EvMem *)RAM_G.Malloc(Bmp->PalSize + Bmp->BmpSize, Bmp, EV_BMP)) == NULL)
+    if ((ptr = (EvMem *)RAM_G.Malloc(Bmp->PalSize + Bmp->BmpSize, Bmp)) == NULL)
       return NULL;
 
     if (Bmp->DataSize)
@@ -197,6 +198,22 @@ bool        EvEVE::UnloadBmp(const EvMem *ptr)
     RAM_G.Free(ptr);
 
   return true;
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+uint32_t    EvEVE::SetPlayVideoBuffer(uint32_t Size)
+{
+  if (Size == 0 || mVideoBuf != NULL)
+  {
+    RAM_G.Free(mVideoBuf);
+    mVideoBuf = NULL;
+  }
+
+  if (Size > 0 && (mVideoBuf = RAM_G.Malloc(Size, "Video Buffer", EV_VIDEO)) != NULL)
+    return mVideoBuf->size;
+
+  return 0;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

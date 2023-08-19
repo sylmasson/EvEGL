@@ -364,6 +364,7 @@ class EvEVE : public EvSPI
     const EvMem   *LoadBmp(const EvBmp *Bmp);
     bool          UnloadBmp(const EvBmp *Bmp);
     bool          UnloadBmp(const EvMem *ptr);
+    uint32_t      SetPlayVideoBuffer(uint32_t Size);
 
     uint16_t      ReadDL(void);
     void          SwapDL(void);
@@ -459,6 +460,7 @@ class EvEVE : public EvSPI
     int32_t       transformCoeff(int32_t Coeff);
     uint32_t      colorCorrection(uint32_t Color);
 
+    const EvMem   *mVideoBuf;
     uint8_t       mActivePrim;
     uint8_t       mVertexCount;
     Context       mActiveContext;

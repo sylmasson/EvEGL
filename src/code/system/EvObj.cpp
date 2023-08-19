@@ -673,6 +673,18 @@ bool        EvObj::IsOnKbdFocus(void)
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
+ * @brief      Clear the display list cache of the Opject.
+ * 
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+void        EvObj::ClearCache(void)
+{
+  Disp->RAM_G.Free(mCache);
+  mCache = NULL;
+}
+
+/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *
  * @brief      Sets the opacity of the Object.
  * 
  * @param[in]  Opacity   The opacity of the Object. Can be from 0 to 256.
@@ -1438,7 +1450,7 @@ void        EvObj::Draw(void)
         mStatus &= ~MOVED_OBJ;
       }
 
-      Disp->CmdAppend(mCache->addr, mCache->size);
+      Disp->CmdAppend(mCache->addr, mCache->used);
     }
     else
     {
@@ -1475,7 +1487,7 @@ void        EvObj::Draw(void)
 
       Disp->RestoreContext();
       sizeDL = Disp->ReadDL() - startDL;
-      mCache = (mCache == NULL) ? Disp->RAM_G.Malloc(sizeDL, this, EV_OBJ) : Disp->RAM_G.Realloc(mCache, sizeDL);
+      mCache = (mCache == NULL) ? Disp->RAM_G.Malloc(sizeDL, this) : Disp->RAM_G.Realloc(mCache, sizeDL);
 
       if (mCache != NULL)
         Disp->CmdMemcpy(mCache->addr, (((EvMem *)mCache)->startDL = startDL) + RAM_DL, sizeDL);

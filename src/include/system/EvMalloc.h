@@ -15,11 +15,17 @@
 #define     EV_FONT         1
 #define     EV_BMP          2
 #define     EV_OBJ          3
+#define     EV_VIDEO        4
 
 #define     EV_MALLOC_ADDR  0x000000
 #define     EV_MALLOC_SIZE  0x100000
 
-#define     EV_MALLOC_MIN   64        // must be 32 bytes alignment
+#define     EV_MALLOC_MIN   64        // must be 32, 64, 128, 256 etc..
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+struct      EvFont;
+class       EvObj;
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
@@ -47,8 +53,8 @@ struct EvMem
 {
   EvMem           *next;        ///< Next block allocated or free.
   EvMem           *prev;        ///< Previous block allocated or free.
-  uint32_t        size;         ///< Real size used of the allocated block in RAM_G. If zero, the block is free.
-  uint32_t        length;       ///< Length of the allocated block in RAM_G.
+  uint32_t        used;         ///< Used bytes of allocated block in RAM_G. If zero, the block is free.
+  uint32_t        size;         ///< Size of the allocated block in RAM_G.
   uint32_t        addr;         ///< Address of the allocated block in RAM_G.
   const void      *owner;       ///< Owner pointer of the allocated block.
   uint8_t         typeId;       ///< Type Id of the owner pointer.
@@ -78,6 +84,9 @@ class EvMalloc
 
     void          Free(const EvMem *Ptr);
     const EvMem   *Malloc(size_t Size, const void *Owner = NULL, uint8_t TypeId = EV_UNDEFINED);
+    const EvMem   *Malloc(size_t Size, const EvFont *Owner);
+    const EvMem   *Malloc(size_t Size, const EvBmp *Owner);
+    const EvMem   *Malloc(size_t Size, const EvObj *Owner);
     const EvMem   *Realloc(const EvMem *Ptr, size_t Size);  // just resize, no copy
     const EvMem   *FindByTag(const char *Tag, uint8_t TypeId = EV_UNDEFINED);
     const EvMem   *FindByOwner(const void *Owner);
@@ -93,7 +102,7 @@ class EvMalloc
     void          renewAllIds();
     void          memFree(EvMem *Ptr);
     EvMem         *memAlloc(size_t Size);
-    EvMem         *memSplit(EvMem *Ptr, size_t Length, size_t Size);
+    EvMem         *memSplit(EvMem *Ptr, size_t Size, bool Bottom = false);
 };
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

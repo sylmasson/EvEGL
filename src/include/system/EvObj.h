@@ -141,6 +141,7 @@ class EvObj : public Print
     EvObj         *GetKbdFocus(void);
     bool          IsOnKbdFocus(void);
 
+    virtual void    ClearCache(void);
     virtual void    SetOpacity(uint16_t Opacity);
     virtual void    ModifiedAll(void) { Modified(); };
     virtual size_t  WriteKey(uint8_t Key, uint8_t Layout, uint8_t ShiftKey, bool DoubleTouch) { write(Key); return -1; };

@@ -1,7 +1,7 @@
 
 #include    <EvGUI.h>
 
-#define     align32(x)      (((x) + 31) & ~31)  // 32 bytes alignment
+#define     BLOCK_SIZE(x)   (((x) + (EV_MALLOC_MIN-1)) & ~(EV_MALLOC_MIN-1))
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
@@ -12,12 +12,12 @@ EvMalloc::EvMalloc(void)
   if ((mFirst = new EvMem) != NULL)
   {
     mFirst->id = 0;
-    mFirst->size = 0;
+    mFirst->used = 0;
     mFirst->owner = NULL;
     mFirst->typeId = 0;
     mFirst->count = 0;
     mFirst->startDL = -1;
-    mFirst->length = EV_MALLOC_SIZE;
+    mFirst->size = EV_MALLOC_SIZE;
     mFirst->addr = EV_MALLOC_ADDR;
     mFirst->next = mFirst->prev = NULL;
   }
@@ -65,18 +65,80 @@ const EvMem *EvMalloc::Malloc(size_t Size, const void *Owner, uint8_t TypeId)
 {
   EvMem     *ptr = NULL;
 
-  if (Size > 0 && (ptr = memAlloc(Size)) != NULL)
+  if (Size > 0)
   {
-    ptr->owner = Owner;
-    ptr->typeId = TypeId;
+    uint32_t  used, size;
 
-    if (mId == 0)
-      renewAllIds();
-    else
-      ptr->id = nextId();
+    if ((size = BLOCK_SIZE(used = Size)) < EV_MALLOC_MIN)
+      size = EV_MALLOC_MIN;
+
+    if (TypeId != EV_VIDEO)
+      ptr = memAlloc(size);
+    else if (mFirst->used == 0 && mFirst->size >= size)
+      ptr = memSplit(mFirst, size, true);
+
+    if (ptr != NULL)
+    {
+      ptr->used = used;
+      ptr->owner = Owner;
+      ptr->typeId = TypeId;
+
+      if (mId == 0)
+        renewAllIds();
+      else
+        ptr->id = nextId();
+    }
   }
 
   return ptr;
+}
+
+/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *
+ * @brief      Allocate an uninitialized RAM_G memory block.
+ *
+ * @param[in]  Size    Size of the memory block, in bytes.
+ * @param[in]  Owner   Owner pointer of the allocated EV_FONT block.
+ * 
+ * @return     EvMem struct pointer of the block on success, otherwise returns NULL.
+
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+const EvMem *EvMalloc::Malloc(size_t Size, const EvFont *Owner)
+{
+  return Malloc(Size, Owner, EV_FONT);
+}
+
+/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *
+ * @brief      Allocate an uninitialized RAM_G memory block.
+ *
+ * @param[in]  Size    Size of the memory block, in bytes.
+ * @param[in]  Owner   Owner pointer of the allocated EV_BMP block.
+ * 
+ * @return     EvMem struct pointer of the block on success, otherwise returns NULL.
+
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+const EvMem *EvMalloc::Malloc(size_t Size, const EvBmp *Owner)
+{
+  return Malloc(Size, Owner, EV_BMP);
+}
+
+/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *
+ * @brief      Allocate an uninitialized RAM_G memory block.
+ *
+ * @param[in]  Size    Size of the memory block, in bytes.
+ * @param[in]  Owner   Owner pointer of the allocated EV_OBJ block.
+ * 
+ * @return     EvMem struct pointer of the block on success, otherwise returns NULL.
+
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+const EvMem *EvMalloc::Malloc(size_t Size, const EvObj *Owner)
+{
+  return Malloc(Size, Owner, EV_OBJ);
 }
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -95,7 +157,6 @@ const EvMem *EvMalloc::Malloc(size_t Size, const void *Owner, uint8_t TypeId)
 const EvMem *EvMalloc::Realloc(const EvMem *Ptr, size_t Size)
 {
   EvMem     *ptr = (EvMem *)Ptr;
-  uint32_t  length = align32(Size);
 
   if (Size == 0)
   {
@@ -103,30 +164,29 @@ const EvMem *EvMalloc::Realloc(const EvMem *Ptr, size_t Size)
     return NULL;
   }
 
-  if (length < EV_MALLOC_MIN)
-    length = EV_MALLOC_MIN;
-
-  if (ptr != NULL && ptr->size > 0)
+  if (ptr != NULL && ptr->used > 0)
   {
-    EvMem   *next = ptr->next;
+    uint32_t  used, size;
 
-    if (length <= ptr->length)
+    if ((size = BLOCK_SIZE(used = Size)) < EV_MALLOC_MIN)
+      size = EV_MALLOC_MIN;
+
+    if (size <= ptr->size)
     { // decrease the size of the block
-      if ((ptr->length - length) < EV_MALLOC_MIN && next != NULL && next->size > 0)
-        ptr->size = Size;
-      else
-        ptr = memSplit(ptr, length, Size);
+      if ((ptr = memSplit(ptr, size)) != NULL)
+        ptr->used = used;
     }
     else
     { // increase the size of the block
-      uint32_t  lengthMissing = length - ptr->length;
+      EvMem     *next = ptr->next;
+      uint32_t  missing = size - ptr->size;
 
-      if (next != NULL && next->size == 0 && next->length >= lengthMissing)
+      if (next != NULL && next->used == 0 && next->size >= missing)
       { // next block is free and big enough to increase
-        if ((next->length - lengthMissing) < EV_MALLOC_MIN)
+        if ((next->size - missing) < EV_MALLOC_MIN)
         { // add all next free block
-          ptr->length += next->length;
-          ptr->size = Size;
+          ptr->size += next->size;
+          ptr->used = used;
 
           if ((ptr->next = next->next) != NULL)
             ptr->next->prev = ptr;
@@ -135,10 +195,10 @@ const EvMem *EvMalloc::Realloc(const EvMem *Ptr, size_t Size)
         }
         else
         { // add part of the next free block
-          next->length -= lengthMissing;
-          next->addr += lengthMissing;
-          ptr->length = length;
-          ptr->size = Size;
+          next->size -= missing;
+          next->addr += missing;
+          ptr->size = size;
+          ptr->used = used;
         }
       }
       else
@@ -150,11 +210,12 @@ const EvMem *EvMalloc::Realloc(const EvMem *Ptr, size_t Size)
 
         memFree(ptr);
 
-        if ((ptr = memAlloc(Size)) != NULL)
+        if ((ptr = memAlloc(size)) != NULL)
         { // set same typeId, owner, count and id
           ptr->typeId = typeId;
           ptr->owner = owner;
           ptr->count = count;
+          ptr->used = used;
           ptr->id = id;
         }
       }
@@ -180,7 +241,7 @@ const EvMem *EvMalloc::FindByTag(const char *Tag, uint8_t TypeId)
   EvMem     *ptr;
 
   for (ptr = mFirst; ptr != NULL; ptr = ptr->next)
-    if (ptr->size != 0 && ptr->owner != NULL && (TypeId == EV_UNDEFINED || TypeId == ptr->typeId))
+    if (ptr->used != 0 && ptr->owner != NULL && (TypeId == EV_UNDEFINED || TypeId == ptr->typeId))
     {
       const char  *tag = NULL;
 
@@ -214,7 +275,7 @@ const EvMem *EvMalloc::FindByOwner(const void *Owner)
   EvMem     *ptr;
 
   for (ptr = mFirst; ptr != NULL; ptr = ptr->next)
-    if (ptr->size != 0 && ptr->owner == Owner)
+    if (ptr->used != 0 && ptr->owner == Owner)
       break;
 
   return ptr;
@@ -235,7 +296,7 @@ const EvMem *EvMalloc::FindByAddr(uint32_t Addr)
   EvMem     *ptr;
 
   for (ptr = mFirst; ptr != NULL; ptr = ptr->next)
-    if (Addr >= ptr->addr && Addr < (ptr->addr + ptr->size))
+    if (Addr >= ptr->addr && Addr < (ptr->addr + ptr->used))
       break;
 
   return ptr;
@@ -256,7 +317,7 @@ const EvMem *EvMalloc::FindById(uint16_t Id)
   EvMem     *ptr;
 
   for (ptr = mFirst; ptr != NULL; ptr = ptr->next)
-    if (ptr->size != 0 && ptr->id == Id)
+    if (ptr->used != 0 && ptr->id == Id)
       break;
 
   return ptr;
@@ -294,7 +355,7 @@ void        EvMalloc::renewAllIds()
   EvMem     *ptr;
 
   for (ptr = mFirst, mId = 1; ptr != NULL; ptr = ptr->next)
-    if (ptr->size != 0)
+    if (ptr->used != 0)
       ptr->id = mId++;
 }
 
@@ -305,15 +366,15 @@ void        EvMalloc::memFree(EvMem *Ptr)
   EvMem     *prev, *next, *ptr = Ptr;
 
   ptr->id = 0;
-  ptr->size = 0;
+  ptr->used = 0;
   ptr->owner = NULL;
   ptr->typeId = 0;
   ptr->count = 0;
   ptr->startDL = -1;
 
-  if ((next = ptr->next) != NULL && next->size == 0)
+  if ((next = ptr->next) != NULL && next->used == 0)
   {
-    ptr->length += next->length;
+    ptr->size += next->size;
 
     if ((ptr->next = next->next) != NULL)
       ptr->next->prev = ptr;
@@ -321,9 +382,9 @@ void        EvMalloc::memFree(EvMem *Ptr)
     delete next;
   }
 
-  if ((prev = ptr->prev) != NULL && prev->size == 0)
+  if ((prev = ptr->prev) != NULL && prev->used == 0)
   {
-    prev->length += ptr->length;
+    prev->size += ptr->size;
 
     if ((prev->next = ptr->next) != NULL)
       prev->next->prev = prev;
@@ -337,64 +398,85 @@ void        EvMalloc::memFree(EvMem *Ptr)
 EvMem       *EvMalloc::memAlloc(size_t Size)
 {
   EvMem     *ptr = NULL;
-  uint32_t  length = align32(Size);
-
-  if (length < EV_MALLOC_MIN)
-    length = EV_MALLOC_MIN;
 
   for (EvMem *p = mFirst; p != NULL; p = p->next)
-  {
-    if (p->size == 0 && length <= p->length)
-      if (ptr == NULL || p->length < ptr->length)
-        ptr = p;
-  }
+    if (p->used == 0 && Size <= p->size && (ptr == NULL || p->size < ptr->size))
+      ptr = p;
 
-  if (ptr != NULL)
-  {
-    if ((ptr->length - length) < EV_MALLOC_MIN)
-      ptr->size = Size;
-    else
-      ptr = memSplit(ptr, length, Size);
-  }
+  if (ptr != NULL && (ptr = memSplit(ptr, Size)) != NULL)
+    ptr->used = ptr->size;
 
   return ptr;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-EvMem       *EvMalloc::memSplit(EvMem *Ptr, size_t Length, size_t Size)
+EvMem       *EvMalloc::memSplit(EvMem *Ptr, size_t Size, bool Bottom)
 {
   EvMem     *ptr = Ptr;
   EvMem     *next = ptr->next;
-  uint32_t  lengthFree = ptr->length - Length;
+  EvMem     *prev = ptr->prev;
+  uint32_t  free = ptr->size - Size;
 
-  if (next != NULL && next->size == 0)
-  { // next block is free
-    next->length += lengthFree;
-    next->addr -= lengthFree;
+  if (prev != NULL && prev->used == 0)
+  { // previous block is free
+    prev->size += free;
+    ptr->addr += free;
+    ptr->size -= free;
   }
-  else
-  { // next block is not free
+  else if (next != NULL && next->used == 0)
+  { // next block is free
+    next->size += free;
+    next->addr -= free;
+    ptr->size -= free;
+  }
+  else if (free >= EV_MALLOC_MIN)
+  { // next and/or previous block is NULL or not free
     if ((next = new EvMem) == NULL)
       return NULL;
 
-    next->id = 0;
-    next->size = 0;
-    next->owner = NULL;
-    next->typeId = 0;
-    next->count = 0;
-    next->startDL = -1;
-    next->length = lengthFree;
-    next->addr = ptr->addr + Length;
-    next->prev = ptr;
+    if (!Bottom)
+    { // Allocate memory block at top and free memory block at bottom (Default allocation)
+      *next = *ptr;
+      next->next = ptr->next;
 
-    if ((next->next = ptr->next) != NULL)
-      next->next->prev = next;
+      ptr->id = 0;
+      ptr->used = 0;
+      ptr->owner = NULL;
+      ptr->typeId = 0;
+      ptr->count = 0;
+      ptr->startDL = -1;
+      ptr->size = free;
 
-    ptr->next = next;
+      if ((next->next = ptr->next) != NULL)
+        next->next->prev = next;
+
+      ptr->next = next;
+      next->addr += free;
+      next->size -= free;
+      next->prev = ptr;
+      ptr = next;
+    }
+    else
+    { // Allocate memory block at bottom and free memory block at top (For video memory)
+      next->id = 0;
+      next->used = 0;
+      next->owner = NULL;
+      next->typeId = 0;
+      next->count = 0;
+      next->startDL = -1;
+      next->size = free;
+      next->addr = ptr->addr + Size;
+      next->prev = ptr;
+
+      if ((next->next = ptr->next) != NULL)
+        next->next->prev = next;
+
+      ptr->size -= free;
+      ptr->next = next;
+    }
   }
 
-  ptr->length = Length;
-  ptr->size = Size;
+  ptr->used = ptr->size;
   return ptr;
 }

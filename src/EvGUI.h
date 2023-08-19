@@ -3,9 +3,6 @@
 #ifndef     _EV_GUI_H_
 #define     _EV_GUI_H_
 
-#include    <Arduino.h>
-#include    <include/system/EvEVE.h>
-
 // Display constant
 
 #define     DISP_MAX        4
@@ -157,6 +154,9 @@ class       EvSmeter;
 class       EvVuBar;
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+#include    <Arduino.h>
+#include    <include/system/EvEVE.h>
 
 #include    <include/system/EvSysFont.h>
 #include    <include/system/EvBitmap.h>

@@ -314,7 +314,7 @@ uint8_t     EvSysFont::LoadFont(const EvFont *Fnt, uint8_t Font)
 
   if ((Dest = (EvMem *)Disp->RAM_G.FindByOwner(Fnt)) == NULL)
   {
-    if ((Dest = (EvMem *)Disp->RAM_G.Malloc(FMB_SIZE + Fnt->BmpSize, Fnt, EV_FONT)) == NULL)
+    if ((Dest = (EvMem *)Disp->RAM_G.Malloc(FMB_SIZE + Fnt->BmpSize, Fnt)) == NULL)
       return 0;
 
     Addr = Dest->addr + FMB_SIZE;
