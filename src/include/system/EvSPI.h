@@ -14,17 +14,17 @@ class EvSPI
     uint8_t       rd8(uint32_t Add);
     uint16_t      rd16(uint32_t Addr);
     uint32_t      rd32(uint32_t Addr);
-    void          rdData(uint32_t Addr, uint8_t *Data, uint16_t Count);
+    void          rdData(uint32_t Addr, uint8_t *Data, uint32_t Count);
 
     void          wr8(uint32_t Addr, uint8_t Data);
     void          wr16(uint32_t Addr, uint16_t Data);
     void          wr32(uint32_t Addr, uint32_t Data);
-    void          wrData(uint32_t Addr, const uint8_t *Data, uint16_t Count);
+    void          wrData(uint32_t Addr, const uint8_t *Data, uint32_t Count);
 
     void          wrCmdBuf8(uint8_t Data);
     void          wrCmdBuf16(uint16_t Data);
     void          wrCmdBuf32(uint32_t Data);
-    void          wrCmdBufData(const uint8_t *Data, uint16_t Count);
+    void          wrCmdBufData(const uint8_t *Data, uint32_t Count);
 
     void          wrCmdBufAlign(void);
     void          wrCmdBufClear(void);

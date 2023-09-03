@@ -23,9 +23,10 @@ class EvImage : public EvObj
   public:
     ~EvImage(void);
 
-    void          ModifiedCoeff(void);
-    bool          Load(const EvBmp *Bmp);
     bool          Unload(void);
+    const EvBmp   *Load(const EvBmp *Bmp);
+    const EvBmp   *Load(const char *filename, SDClass &Dev = SD);
+    void          ModifiedCoeff(void);
     void          Scale(float ScaleXY);
     void          ScaleX(float Scale);
     void          ScaleY(float Scale);
@@ -70,6 +71,11 @@ class EvImage : public EvObj
   public:
     static EvImage  *Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag = NULL, uint16_t State = VISIBLE_OBJ);
 };
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+bool        IsValidJPEG(const uint8_t *Data, uint32_t DataSize, EvBmp *Bmp = NULL, const char *Tag = NULL);
+bool        IsValidPNG(const uint8_t *Data, uint32_t DataSize, EvBmp *Bmp = NULL, const char *Tag = NULL);
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 

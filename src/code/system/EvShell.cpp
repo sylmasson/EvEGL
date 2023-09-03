@@ -19,6 +19,7 @@ static EvCmd    sCmdList[] =
   {INFO,     0,    "", "info",     "info                  Show display information"},
   {FONT,     0,    "", "font",     "font                  List font metrix block"},
   {ROMFONT,  0,    "", "romfont",  "romfont               List display romfont"},
+  {LISTSD,   1,  "ls", "dir",      "ls, dir               List SD card directory"},
   {CLRCACHE, 0,  "cc", "clrcache", "cc, clrcache          Clear display list cache"},
   {HELP,     0,   "h", "help",     "h, help               Show shell commands"}
 };
@@ -243,6 +244,22 @@ void        EvShell::Input(const char C)
 
         case ROMFONT:
           DisplayRomFont(Disp);
+          msg = NULL;
+          break;
+
+        case LISTSD:
+          static bool  sdBegin = false;
+
+          if ((!sdBegin && !SD.begin(BUILTIN_SDCARD)) || !SD.mediaPresent())
+          {
+            Serial.println("SD card reading failed");
+            sdBegin = true;
+          }
+          else
+          {
+            File root = SD.open("/");
+            ListDirectory(root, 0);
+          }
           msg = NULL;
           break;
 
@@ -712,9 +729,8 @@ void        EvShell::DisplayRomFont(EvDisplay *Disp)
 
   for (romFont = FIRST_ROM_FONT; romFont <= LAST_ROM_FONT; romFont++, addr += 148)
   {
-    Serial.print("\nstatic const EvFont    sEvRomFont");
-    Serial.print(romFont);
-    Serial.println(" =\n{");
+    snprintf(str, sizeof(str), "\nstatic const EvFont    sEvRomFont%u =\n{", romFont);
+    Serial.println(str);
 
     for (i = 0, begChar = -1; i < 128; )
     {
@@ -729,22 +745,22 @@ void        EvShell::DisplayRomFont(EvDisplay *Disp)
         if ((byte = data & 0xFF) != 0 && begChar == -1)
           begChar = i + j;
 
-        snprintf(str, sizeof(str) - 1, (i + j) == 0 ? "  {%2u," : " %3u%c", byte, (i + j) == 127 ? '}' : ',');
+        snprintf(str, sizeof(str) - 1, (i + j) == 0 ? "  {%2u," : "%4u%c", byte, (i + j) == 127 ? '}' : ',');
         Serial.print(str);
         data >>= 8;
       }
 
       if (((i += 4) & 0x0F) == 0)
-        Serial.print(i == 128 ? ",\n " : "\n ");
+        Serial.print(i == 128 ? ",\n" : "\n ");
     }
 
     for (i = 128; i < 144; i += 4)
     {
-      snprintf(str, sizeof(str) - 1, "%4lu,", Disp->rd32(addr + i));
+      snprintf(str, sizeof(str) - 1, (i == 128) ? "%5lu," : "%4lu,", Disp->rd32(addr + i));
       Serial.print(str);
     }
 
-    snprintf(str, sizeof(str) - 1, " %p,%4u,%4u,%4u,%4u", (void *)Disp->rd32(addr + 144), romFont, curWidth, begChar, 128 - begChar);
+    snprintf(str, sizeof(str) - 1, "%9p,%4u,%4u,%4u,%4u", (void *)Disp->rd32(addr + 144), romFont, curWidth, begChar, 128 - begChar);
     Serial.print(str);
     snprintf(str, sizeof(str) - 1, ",   0,   0,   0, \"RomFont%u\"\n};", romFont);
     Serial.println(str);
@@ -818,3 +834,45 @@ bool        EvShell::SetRadix(char *Str)
   return true;
 }
 
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+void        EvShell::ListDirectory(File Dir, int16_t SpacesCnt)
+{
+  const char months[13][4] = {"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec","???"};
+
+  while (1)
+  {
+    File    entry = Dir.openNextFile();
+
+    if (!entry)
+      return;
+
+    if (entry.name()[0] != '.')   // skip hidden file
+    {
+      char   info[80];
+      DateTimeFields tm;
+
+      if (entry.getModifyTime(tm))
+        snprintf(info, sizeof(info), "%s %2u %4u %02u:%02u", months[tm.mon < 12 ? tm.mon : 12], tm.mday, tm.year + 1900, tm.hour, tm.min);
+
+      Serial.print(info);
+      snprintf(info, sizeof(info), "%12llu  ", entry.size());
+      Serial.print(info);
+
+      for (int i = 0; i < SpacesCnt; i++)
+        Serial.print(' ');
+
+      Serial.print(entry.name());
+
+      if (!entry.isDirectory())
+        Serial.println();
+      else
+      {
+        Serial.println("/");
+        ListDirectory(entry, SpacesCnt + 2);
+      }
+    }
+
+    entry.close();
+  }
+}

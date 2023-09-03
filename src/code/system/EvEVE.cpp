@@ -164,11 +164,14 @@ const EvMem *EvEVE::LoadBmp(const EvBmp *Bmp)
 
     if (Bmp->DataSize)
     {
-      switch (Bmp->Format)
+      CmdMemzero(ptr->addr, Bmp->PalSize + Bmp->BmpSize);
+
+      switch (Bmp->Format & ~BMP_MALLOC)
       {
-        case RAW_DATA:  CmdMemwrite(ptr->addr, Bmp->DataSize); break;
-        case JPEG_DATA: CmdLoadImage(ptr->addr, 0); break;
-        case ZIP_DATA:  CmdInflate(ptr->addr); break;
+        case RAW_DATA: CmdMemwrite(ptr->addr, Bmp->DataSize); break;
+        case JPEG_DATA:
+        case PNG_DATA: CmdLoadImage(ptr->addr, OPT_RGB565 | OPT_NODL); break;
+        case ZIP_DATA: CmdInflate(ptr->addr); break;
       }
 
       wrCmdBufData(Bmp->Data, Bmp->DataSize);
@@ -191,7 +194,7 @@ bool        EvEVE::UnloadBmp(const EvBmp *Bmp)
 
 bool        EvEVE::UnloadBmp(const EvMem *ptr)
 {
-  if (ptr == NULL)
+  if (ptr == NULL || ptr->typeId != EV_BMP)
     return false;
 
   if (--(((EvMem *)ptr)->count) == 0)

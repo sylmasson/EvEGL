@@ -8,7 +8,7 @@
 
 enum CmdId : uint8_t
 {
-  CD, DUMP, LIST, EDITOR, RADIX, TRACE, ROTATE, CALIB, INFO, FONT, ROMFONT, CLRCACHE, HELP
+  CD, DUMP, LIST, EDITOR, RADIX, TRACE, ROTATE, CALIB, INFO, FONT, ROMFONT, LISTSD, CLRCACHE, HELP
 };
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -49,6 +49,7 @@ class EvShell
     bool          ChangeDisplay(char *Str);
     bool          SetTrace(char *Str, uint16_t *Flags);
     bool          SetRadix(char *Str);
+    void          ListDirectory(File Dir, int16_t SpacesCnt);
 
     uint32_t      mAddr;
     uint32_t      mSize;

@@ -21,6 +21,8 @@ EvMalloc::EvMalloc(void)
     mFirst->addr = EV_MALLOC_ADDR;
     mFirst->next = mFirst->prev = NULL;
   }
+
+  BufferPNG = Malloc(42 * 1024, "PNG decoding process buffer"); // Allocate at 0xF5800
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

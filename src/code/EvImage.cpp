@@ -1,6 +1,8 @@
 
 #include    <EvGUI.h>
 
+// #define     VERBOSE
+
 #define     SCALE_LIMIT(x)      ((x < 0.01) ? 0.01 : x)
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -37,10 +39,14 @@ EvImage::EvImage(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvD
   mOffsetY = 0;
   mResizeLock = false;
   mStyle.align = LEFT_CENTER | ALIGNMENT_LOCK;
+  mPivotX = mPivotY = 0;
+  mScaleX = mScaleY = 1.0;
+  mAngle = -1;
+  Rotate(0);
   SetMode(RESIZE_PROPORTIONAL, NEAREST);
-  RotateAround(0, 0, 0.0, 1.0);
   SetOnTouch(NULL);
   ModifiedCoeff();
+  Modified();
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -52,17 +58,29 @@ EvImage::~EvImage(void)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvImage::ModifiedCoeff(void)
+bool        EvImage::Unload(void)
 {
-  mRefreshCoeff = true;
+  bool      result = false;
+
+  if (mBmp != NULL && mLoad != NULL)
+  {
+    if (mLoad->count == 1 && (mBmp->Format & BMP_MALLOC) != 0)
+      free((void *)mBmp);
+
+    result = Disp->UnloadBmp(mLoad);
+    mLoad = NULL;
+    mBmp = NULL;
+    Modified();
+  }
+
+  return result;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-bool        EvImage::Load(const EvBmp *Bmp)
+const EvBmp *EvImage::Load(const EvBmp *Bmp)
 {
-  if (mBmp != NULL)
-    Unload();
+  Unload();
 
   if (Bmp != NULL && Bmp->Layout != PALETTED8 && (mLoad = Disp->LoadBmp(Bmp)) != NULL)
   {
@@ -71,24 +89,80 @@ bool        EvImage::Load(const EvBmp *Bmp)
     RotateAround(mBmp->Width >> 1, mBmp->Height >> 1, 0.0, 1.0);
     SetMode(RESIZE_PROPORTIONAL, NEAREST);
     Modified();
-    return true;
+    return mBmp;
   }
 
-  return false;
+  return NULL;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-bool        EvImage::Unload(void)
+const EvBmp *EvImage::Load(const char *filename, SDClass &Dev)
 {
-  bool      retValue;
+  File      file;
+  EvBmp     *bmp;
+  uint8_t   *data;
+  uint32_t  fileSize;
 
-  retValue = Disp->UnloadBmp(mLoad);
-  mLoad = NULL;
-  mBmp = NULL;
-  Modified();
+  #ifdef  VERBOSE
+  uint32_t  msec = millis();
+  #endif
 
-  return retValue;
+  if (!Dev.mediaPresent() || !(file = Dev.open(filename)))
+  {
+    #ifdef  VERBOSE
+      Serial.printf("\nSD Card or file %s not found\n", filename);
+    #endif
+    return NULL;
+  }
+
+  if ((fileSize = file.size()) > 0 && (bmp = (EvBmp *)malloc(sizeof(EvBmp) + fileSize)) != NULL)
+  {
+    data = (uint8_t *)bmp + sizeof(EvBmp);
+
+    if (file.read(data, fileSize) == fileSize)
+    {
+      file.close();
+
+      #ifdef  VERBOSE
+        Serial.printf("\nReading file %s in %lu msec\n", filename, millis() - msec);
+      #endif
+
+      if (IsValidJPEG(data, fileSize, bmp, filename) || IsValidPNG(data, fileSize, bmp, filename))
+      {
+        #ifdef  VERBOSE
+          Serial.printf("Width = %u Height = %u\n", bmp->Width, bmp->Height);
+          Serial.printf("Layout = %u PalSize = %u\n", bmp->Layout, bmp->PalSize);
+          Serial.printf("DataSize = %u BmpSize = %u\n", bmp->DataSize, bmp->BmpSize);
+          Serial.printf("%s is valid image format\n", bmp->Tag);
+        #endif
+
+        bmp->Format |= BMP_MALLOC;
+
+        if (Load(bmp))
+          return bmp;
+      }
+      else
+      {
+        #ifdef  VERBOSE
+          Serial.printf("%s is not valid image format\n", filename);
+        #endif
+      }
+
+      free(bmp);
+      return NULL;
+    }
+  }
+
+  file.close();
+  return NULL;
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+void        EvImage::ModifiedCoeff(void)
+{
+  mRefreshCoeff = true;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -355,5 +429,183 @@ void        EvImage::touchEvent(EvTouchEvent *Touch)
 {
   if (mOnTouch != NULL)
     (*mOnTouch)(this, Touch);
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+bool        IsValidJPEG(const uint8_t *Data, uint32_t DataSize, EvBmp *Bmp, const char *Tag)
+{
+  uint32_t  width = 0;
+  uint32_t  height = 0;
+  uint8_t   layout = 0;
+  uint32_t  i, marker, length, total = 0;
+
+  if (Data[0] == 0xFF && Data[1] == 0xD8) // Check SOI
+  {
+    #ifdef  VERBOSE
+      Serial.print("JPEG file signature found");
+    #endif
+
+    for (i = total = 2; Data[i++] == 0xFF && i < DataSize; i += length)
+    {
+      total += 2;
+      marker = Data[i++];
+
+      #ifdef  VERBOSE
+        Serial.printf("\nMarker FF %02X", marker);
+      #endif
+
+      while (marker == 0xDA && i < DataSize)  // can have several SOS
+      {
+        for (length = i; i < DataSize; )  // skip byte stuffing and restart marker
+          if (Data[i++] == 0xFF && (marker = Data[i++]) != 0x00 && (marker & ~7) != 0xD0)
+            break;
+
+        length = i - length;
+        total += length;
+
+        #ifdef  VERBOSE
+          Serial.printf(" %u bytes\nMarker FF %02X", length, marker);
+        #endif
+      }
+
+      if (marker == 0xD9)  // EOI
+      {
+        if (i != DataSize || layout == 0)
+          break;
+
+        if (Bmp != NULL)
+        {
+          Bmp->Format = JPEG_DATA;
+          Bmp->Layout = layout;
+          Bmp->Width = width;
+          Bmp->Height = height;
+          Bmp->PalSize = 0;
+          Bmp->BmpSize = width * height * sizeof(uint16_t);
+          Bmp->DataSize = DataSize;
+          Bmp->Data = Data;
+          Bmp->Tag = Tag;
+        }
+
+        #ifdef  VERBOSE
+          Serial.printf("\nTotal length = %u bytes\n", total);
+        #endif
+
+        return true;
+      }
+      
+      if (marker == 0xC0)   // SOF for baseline image
+      {
+        height = (Data[i+3] << 8) + Data[i+4];
+        width = (Data[i+5] << 8) + Data[i+6];
+        layout = RGB565;
+      }
+
+      length = (Data[i] << 8) + Data[i+1];  // add length of marker
+      total += length;
+
+      #ifdef  VERBOSE
+        Serial.printf(" %u bytes", length + 2);
+      #endif
+    }
+  }
+
+  return false;
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+bool        IsValidPNG(const uint8_t *Data, uint32_t DataSize, EvBmp *Bmp, const char *Tag)
+{
+  uint32_t  width = 0;
+  uint32_t  height = 0;
+  uint8_t   layout = 0;
+  uint16_t  palSize = 0;
+  char      chunk[] = "????";
+  uint32_t  i, length, total = 0;
+  static const char  signature[8] = {0x89, 'P', 'N', 'G', 0x0D, 0x0A, 0x1A, 0x0A};
+
+  if (DataSize >= sizeof(signature) && memcmp(Data, signature, sizeof(signature)) == 0) // Check signature
+  {
+    #ifdef  VERBOSE
+      Serial.print("PNG file signature found\n");
+    #endif
+
+    for (i = total = sizeof(signature); i + 12 <= DataSize; i += length + 4)
+    {
+      length = (((((Data[i+0] << 8) + Data[i+1]) << 8) + Data[i+2]) << 8) + Data[i+3];
+      memcpy(chunk, &Data[i+4], 4);
+      total += length + 12;
+      i += 8;
+
+      #ifdef  VERBOSE
+        Serial.printf("Chunk %s %u bytes\n", chunk, length + 12);
+      #endif
+
+      if (strcmp(chunk, "IHDR") == 0)
+      {
+        if (i != 16 || length != 13 || Data[i+8] != 8) // IHDR must be after signature with 8 BitDepth
+          break;
+
+        if (Data[i+10] != 0 || Data[i+11] != 0 || Data[i+12] != 0) // Compression, Filter and Interlace should be zero
+          break;
+
+        switch (Data[i+9])  // ColorType
+        {
+          case 0:
+          case 2: layout = RGB565; break;
+          case 3: layout = PALETTED565; break;
+          case 4: layout = ARGB4; break;
+          default: return false;
+        }
+
+        width  = (((((Data[i+0] << 8) + Data[i+1]) << 8) + Data[i+2]) << 8) + Data[i+3];
+        height = (((((Data[i+4] << 8) + Data[i+5]) << 8) + Data[i+6]) << 8) + Data[i+7];
+      }
+      else if (strcmp(chunk, "PLTE") == 0)
+      {
+        if (layout != PALETTED565 && layout != PALETTED4444)
+          break;
+
+        palSize = (length * 2) / 3;
+      }
+      else if (strcmp(chunk, "tRNS") == 0)
+      {
+        if (layout != PALETTED565)
+          break;
+
+        layout = PALETTED4444;
+      }
+      else if (strcmp(chunk, "IEND") == 0)
+      {
+        if (i + 4 != DataSize || layout == 0)
+          break;
+
+        if (palSize == 0 && (layout == PALETTED565 || layout == PALETTED4444))
+          break;
+
+        if (Bmp != NULL)
+        {
+          Bmp->Format = PNG_DATA;
+          Bmp->Layout = layout;
+          Bmp->Width = width;
+          Bmp->Height = height;
+          Bmp->PalSize = palSize;
+          Bmp->BmpSize = width * height * sizeof(uint16_t);
+          Bmp->DataSize = DataSize;
+          Bmp->Data = Data;
+          Bmp->Tag = Tag;
+        }
+
+        #ifdef  VERBOSE
+          Serial.printf("Total length = %u bytes\n", total);
+        #endif
+
+        return true;
+      }
+    }
+  }
+
+  return false;
 }
 

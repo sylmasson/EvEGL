@@ -36,7 +36,7 @@ void        EvBitmap::Unload(void)
 
 bool        EvBitmap::Load(EvDisplay *Disp)
 {
-  if (Disp == NULL || EvBitmap::Disp != NULL || mBmp->Format >= FMT_DATA_MAX || (mDest = Disp->LoadBmp(mBmp)) == NULL)
+  if (Disp == NULL || EvBitmap::Disp != NULL || mBmp->Format > ZIP_DATA || (mDest = Disp->LoadBmp(mBmp)) == NULL)
     return false;
 
   EvBitmap::Disp = Disp;

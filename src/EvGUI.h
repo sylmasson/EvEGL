@@ -155,6 +155,7 @@ class       EvVuBar;
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+#include    <SD.h>
 #include    <Arduino.h>
 #include    <include/system/EvEVE.h>
 

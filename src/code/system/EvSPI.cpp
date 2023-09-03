@@ -96,7 +96,7 @@ uint32_t    EvSPI::rd32(uint32_t Addr)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvSPI::rdData(uint32_t Addr, uint8_t *Data, uint16_t Count)
+void        EvSPI::rdData(uint32_t Addr, uint8_t *Data, uint32_t Count)
 {
   hostRead(Addr);
   memset(Data, 0, Count);
@@ -133,7 +133,7 @@ void        EvSPI::wr32(uint32_t Addr, uint32_t Data)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvSPI::wrData(uint32_t Addr, const uint8_t *Data, uint16_t Count)
+void        EvSPI::wrData(uint32_t Addr, const uint8_t *Data, uint32_t Count)
 {
   uint16_t  cnt;
   uint8_t   buffer[128];
@@ -199,7 +199,7 @@ void        EvSPI::wrCmdBuf32(uint32_t Data)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvSPI::wrCmdBufData(const uint8_t *Data, uint16_t Count)
+void        EvSPI::wrCmdBufData(const uint8_t *Data, uint32_t Count)
 {
   while (Count > 0)
   {

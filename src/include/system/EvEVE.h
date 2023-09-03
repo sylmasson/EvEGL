@@ -115,6 +115,19 @@
 #define     BLUE                    4
 #define     ALPHA                   5
 
+// CmdLoadImage and CmdPlayVideo options
+
+#define     OPT_RGB565              0
+#define     OPT_MONO                1
+#define     OPT_NODL                2
+#define     OPT_NOTEAR              4
+#define     OPT_FULLSCREEN          8
+#define     OPT_MEDIAFIFO           16
+#define     OPT_SOUND               32
+#define     OPT_FLASH               64
+#define     OPT_OVERLAY             128
+#define     OPT_DITHER              256
+
 // Memory Register Mapping Address
 
 #define     DLSWAP_FRAME            2

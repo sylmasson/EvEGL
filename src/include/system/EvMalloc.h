@@ -7,7 +7,8 @@
 #define     RAW_DATA        0
 #define     JPEG_DATA       1
 #define     ZIP_DATA        2
-#define     FMT_DATA_MAX    (ZIP_DATA + 1)
+#define     PNG_DATA        3
+#define     BMP_MALLOC      (1 << 3)
 
 // EvMalloc constant
 
@@ -31,7 +32,7 @@ class       EvObj;
 
 struct EvBmp
 {
-  uint8_t         Format;     // 0 = RAW, 1 = JPEG, 2 = ZIP
+  uint8_t         Format;     // 0 = RAW, 1 = JPEG, 2 = ZIP, 3 = PNG
   uint8_t         Layout;     // Layout of Bitmap
   uint16_t        Width;      // Width of Bitmap
   uint16_t        Height;     // Height of Bitmap
@@ -73,6 +74,10 @@ struct EvMem
  * 
  * @note      However, that Realloc only resizes or relocates a memory block.
  * The new block must be considered as uninitialized unlike the standard C function.
+ * 
+ * @note      A memory block of 42K is automatically allocated by default at 0xF5800.
+ * This buffer is necessary for the PNG decoding process. The BufferPNG public variable
+ * can be used to free this buffer if the PNG decoding process is never used.
  *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
@@ -93,6 +98,8 @@ class EvMalloc
     const EvMem   *FindByAddr(uint32_t Addr);
     const EvMem   *FindById(uint16_t Id);
     const EvMem   *FindFirst(void);
+
+    const EvMem   *BufferPNG; // Can be freed if no PNG decoding process is used
 
   private:
     EvMem         *mFirst;
