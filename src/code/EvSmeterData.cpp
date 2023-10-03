@@ -4319,6 +4319,6 @@ static const uint8_t sSmeter_data[39945] =
   0x00, 0x11, 0xFF, 0x00, 0x75, 0x08, 0x3F, 0xFF, 0xD9
 };
 
-const EvBmp   sSmeter = {JPEG_DATA, RGB565, 396, 267, 0, 211464, 39945, sSmeter_data, "Smeter"};
+const EvBmp   sSmeter = {JPEG_DATA, RGB565, 396, 267, 0, 211464, 39945, sSmeter_data, "SmeterBG"};
 
 #endif

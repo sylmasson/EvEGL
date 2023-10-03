@@ -169,6 +169,7 @@
 #define     REG_PCLK                0x302070
 #define     REG_PCLK_POL            0x30206c
 #define     REG_PLAY                0x30208c
+#define     REG_PLAY_CONTROL        0x30914E
 #define     REG_PLAYBACK_FORMAT     0x3020c4
 #define     REG_PLAYBACK_FREQ       0x3020c0
 #define     REG_PLAYBACK_LENGTH     0x3020b8
@@ -262,6 +263,7 @@
 #define     CMD_MEMSET              0xFFFFFF1B
 #define     CMD_MEMWRITE            0xFFFFFF1A
 #define     CMD_MEMZERO             0xFFFFFF1C
+#define     CMD_PLAYVIDEO           0xFFFFFF3A
 #define     CMD_ROTATE              0xFFFFFF29
 #define     CMD_ROTATEAROUND        0xFFFFFF51
 #define     CMD_ROMFONT             0xFFFFFF3F
@@ -277,6 +279,12 @@
 
 #define     CMD_HSF                 0xFFFFFF62  // BT817/8
 #define     CMD_APILEVEL            0xFFFFFF63
+#define     CMD_SYNC                0xFFFFFF42
+
+// Ram Command buffer
+
+#define     RAM_CMD_SIZE            4096
+#define     RAM_CMD_EMPTY           (RAM_CMD_SIZE - 4)
 
 // Display List Commands encoding
 
@@ -454,6 +462,7 @@ class EvEVE : public EvSPI
     void          CmdMemset(uint32_t Addr, uint8_t Value, uint32_t Num);
     void          CmdMemwrite(uint32_t Addr, uint32_t Num);
     void          CmdMemzero(uint32_t Addr, uint32_t Num);
+    void          CmdPlayVideo(uint32_t Opts);
     void          CmdRotate(int32_t Angle);
     void          CmdRomFont(uint32_t Font, uint32_t Romslot);
     void          CmdScale(int32_t X, int32_t Y);
@@ -463,6 +472,7 @@ class EvEVE : public EvSPI
     void          CmdSetRotate(uint8_t R);
     void          CmdSetMatrix(void);
     void          CmdSwap(void);
+    void          CmdSync(void);
     void          CmdTranslate(int32_t X, int32_t Y);
 
     EvMalloc      RAM_G;

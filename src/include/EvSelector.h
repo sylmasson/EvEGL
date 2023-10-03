@@ -38,7 +38,7 @@ class EvSelector : public EvObj
     void          SetOnTouch(void (*OnTouch)(EvSelector *Sender, EvTouchEvent *Touch));
     void          SetOnChange(void (*OnChange)(EvSelector *Sender, int32_t Value));
 
-    virtual void  SetDisp(EvDisplay *Disp);
+    virtual void  SetDisplay(EvDisplay *Disp);
 
   protected:
     EvSelector(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag = NULL, uint16_t State = VISIBLE_OBJ);

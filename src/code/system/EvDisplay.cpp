@@ -175,7 +175,7 @@ bool        EvDisplay::UpdateAll(void)
   for (i = 0; i < sDispCount; i++)
   {
     digitalWrite(5, HIGH);
-    sDispList[i]->update();
+    sDispList[i]->Update();
     digitalWrite(5, LOW);
   }
 
@@ -185,7 +185,7 @@ bool        EvDisplay::UpdateAll(void)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvDisplay::update(void)
+void        EvDisplay::Update(void)
 {
   uint32_t  usec = micros();
 
@@ -205,6 +205,7 @@ void        EvDisplay::update(void)
     (*mOnUpdate)(this);
 
   SwapDL();
+  Preload();
 
   mTimeUsed += micros() - usec;
 }

@@ -1,8 +1,6 @@
 
 #include    <include/system/EvEVE.h>
 
-#define     BUFFER_SIZE     4096
-#define     BUFFER_FREE     (BUFFER_SIZE - 4)
 #define     hostRead(addr)  hostTransaction((addr) & 0x3FFFFF)
 #define     hostWrite(addr) hostTransaction(((addr) & 0x3FFFFF) | 0x800000)
 
@@ -18,7 +16,7 @@ EvSPI       *EvSPI::inUsed = NULL;
 void        EvSPI::hostSetup(uint8_t CS, int16_t RST, SPIClass *Spi, uint32_t Baudrate)
 {
   wrPtr = 0;
-  wrFree = BUFFER_FREE;
+  wrFree = RAM_CMD_EMPTY;
   pinMode(csPin = CS, OUTPUT);
   csDisable();
 
@@ -205,8 +203,8 @@ void        EvSPI::wrCmdBufData(const uint8_t *Data, uint32_t Count)
   {
     uint16_t  cnt = (Count < 256) ? Count : 256;
 
-    if (wrPtr + cnt > BUFFER_SIZE)
-      cnt = BUFFER_SIZE - wrPtr;
+    if (wrPtr + cnt > RAM_CMD_SIZE)
+      cnt = RAM_CMD_SIZE - wrPtr;
 
     wrCmdBufFreeSpace(cnt);
     wrData(RAM_CMD + wrPtr, Data, cnt);
@@ -233,7 +231,7 @@ void        EvSPI::wrCmdBufAlign(void)
 void        EvSPI::wrCmdBufClear(void)
 {
   wrPtr = 0;
-  wrFree = BUFFER_FREE;
+  wrFree = RAM_CMD_EMPTY;
   wr8(REG_CPURESET, 1);
   wr16(REG_CMD_WRITE, 0);
   wr16(REG_CMD_READ, 0);
@@ -244,7 +242,7 @@ void        EvSPI::wrCmdBufClear(void)
 
 void        EvSPI::wrCmdBufFlush(void)
 {
-  wrCmdBufFreeSpace(BUFFER_FREE);
+  wrCmdBufFreeSpace(RAM_CMD_EMPTY);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -253,21 +251,21 @@ bool        EvSPI::wrCmdBufEmpty(void)
 {
   wrCmdBufUpdate();
 
-  return (wrCmdBufFreeSpace() == BUFFER_FREE);
+  return (wrCmdBufFreeSpace() == RAM_CMD_EMPTY);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 void        EvSPI::wrCmdBufUpdate(void)
 {
-  wr16(REG_CMD_WRITE, wrPtr & 0xFFC);
+  wr16(REG_CMD_WRITE, wrPtr & RAM_CMD_EMPTY);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 uint16_t    EvSPI::wrCmdBufFreeSpace(void)
 {
-  return (wrFree = BUFFER_FREE - ((wrPtr - rd16(REG_CMD_READ)) & 0xFFF));
+  return (wrFree = RAM_CMD_EMPTY - ((wrPtr - rd16(REG_CMD_READ)) & 0xFFF));
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

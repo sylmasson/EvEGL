@@ -1,92 +1,45 @@
 
 #include    <EvGUI.h>
 
-EvBitmap    Smeter(&sSmeter);
-EvBitmap    SmeterNeedle(&sSmeterNeedle);
-
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-EvSmeter    *EvSmeter::Create(int16_t Left, int16_t Top, float Scale, EvPanel *Dest, const char *Tag, uint16_t State)
+EvSmeter    *EvSmeter::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag, uint16_t State)
 {
-  return !Dest ? NULL : (EvSmeter *)EvObj::TryCreate(new EvSmeter(Left, Top, Scale, Dest->Disp, !Tag ? "EvSmeter" : Tag, State), Dest);
+  return !Dest ? NULL : (EvSmeter *)EvObj::TryCreate(new EvSmeter(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvSmeter" : Tag, State), Dest);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-EvSmeter::EvSmeter(int16_t Left, int16_t Top, float Scale, EvDisplay *Disp, const char *Tag, uint16_t State) : EvPanel(Left, Top, sSmeter.Width * Scale, sSmeter.Height * Scale, Disp, Tag, State)
+EvSmeter::EvSmeter(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) : EvPanel(Left, Top, Width == 0 ? sSmeter.Width : Width, Height == 0 ? sSmeter.Height : Height, Disp, Tag, State)
 {
-  mValue = 0;
-  mDegree = 0;
-  mScale = 65536.0 * Scale;
-  mCoeff = (uint16_t)(65536.0 * 0.90);
-  mNeedle = (EvSmeterNeedle *)TryCreate(new EvSmeterNeedle(0, 0, Scale, Disp, "Smeter Needle"), this);
+  mBG = (EvImage *)EvImage::Create(0, 0, mWidth, mHeight, this, "SmeterBG");
+  mNeedle = (EvNeedle *)TryCreate(new EvNeedle(0, 0, 0, 0, Disp, "SmeterNeedle"), this);
 
-  if (mNeedle == NULL || !Smeter.Load(Disp) || !SmeterNeedle.Load(Disp))
+  if (!mBG || !mNeedle || !mBG->Load(&sSmeter) || !mNeedle->Load(&sSmeterNeedle))
     Abort();
   else
   {
-    mNeedle->Disable();
-    SmeterNeedle.Align(CENTER_BOTTOM);
-    SetValue(0);
+    mValue = 0;
+    mAngle = 0;
+    mLock = false;
+    mBG->SetMode(RESIZE_PROPORTIONAL, BILINEAR);
+    mNeedle->SetMode(RESIZE_PROPORTIONAL, BILINEAR);
+    mNeedle->RotateAround(sSmeterNeedle.Width / 2, sSmeterNeedle.Height - 6);
+    BgColor(RGB555(0, 0, 0));
+    resizeEvent();
     SetOnTouch(NULL);
+    SetValue(-1000);
   }
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-EvSmeter::~EvSmeter(void)
+bool        EvSmeter::SetValue(int32_t Value)
 {
-  Smeter.Unload();
-  SmeterNeedle.Unload();
-}
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-void        EvSmeter::Show(void)
-{
-  if (!IsVisible() && Smeter.Load(Disp))
-  {
-    if (!SmeterNeedle.Load(Disp))
-      Smeter.Unload();
-    else
-    {
-      SmeterNeedle.Align(CENTER_BOTTOM);
-      EvPanel::Show();
-      Modified();
-    }
-  }
-}
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-void        EvSmeter::Hide(void)
-{
-  if (IsVisible())
-  {
-    EvPanel::Hide();
-    Smeter.Unload();
-    SmeterNeedle.Unload();
-  }
-}
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-bool        EvSmeter::SetValue(int16_t Value)
-{
-  int32_t   degree;
-
-  mValue = (Value > 1000) ? 1000 : ((Value < 0) ? 0 : Value);
-  degree = (((int32_t)mValue * 16384) / 1000) - 8192;
-  mDegree = (mCoeff == 0) ? degree : ((mDegree * mCoeff) + (degree * (65536L - mCoeff))) >> 16;
-
-  return (mNeedle != NULL) ? mNeedle->SetDegree(mDegree) : false;
-}
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-void        EvSmeter::SetFilterCoeff(uint16_t Coeff)
-{
-  mCoeff = Coeff;
+  mValue = (Value > 1000) ? 1000 : ((Value < -1000) ? -1000 : Value);
+  mAngle = mValue * (45.0 / 1000.0);
+  mNeedle->Rotate(mAngle);
+  return true;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -98,10 +51,20 @@ void        EvSmeter::SetOnTouch(void (*OnTouch)(EvSmeter *Sender, EvTouchEvent 
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvSmeter::drawEvent(void)
+void        EvSmeter::resizeEvent(void)
 {
-  Disp->ColorRGB(RGB555(255, 255, 255));
-  Smeter.Draw(0, 0, 0, mScale);
+  if (!mLock)
+  {
+    mLock = true;
+    mBG->ReSize(mWidth, mHeight);
+    ReSize(mBG->Width(), mBG->Height());
+    mNeedle->Rotate(0);
+    mNeedle->Refresh();
+    mNeedle->Scale(mScale = mWidth / (float)sSmeter.Width);
+    mNeedle->MoveTo((1 + sSmeter.Width - sSmeterNeedle.Width) * mScale * 0.5, 60 * mScale);
+    mNeedle->Rotate(mAngle);
+    mLock = false;
+  }
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -114,38 +77,19 @@ void        EvSmeter::touchEvent(EvTouchEvent *Touch)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-EvSmeterNeedle::EvSmeterNeedle(int16_t Left, int16_t Top, float Scale, EvDisplay *Disp, const char *Tag) : EvObj(Left, Top, sSmeter.Width * Scale, (sSmeter.Height - 10) * Scale, Disp, Tag)
+EvNeedle::EvNeedle(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag) : EvImage(Left, Top, Width, Height, Disp, Tag)
 {
-  mDegree = 0;
-  mScale = 65536.0 * Scale;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-bool        EvSmeterNeedle::SetDegree(int32_t Degree)
+void        EvNeedle::drawEvent(void)
 {
-  if (mDegree == Degree)
-    return false;
-
-  mDegree = Degree;
-  Modified();
-  return true;
-}
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-void        EvSmeterNeedle::drawEvent(void)
-{
-  int16_t   x, y;
-  uint16_t  height = 257;
-
-  x = (mWidth << 4) / 2;
-  y = (height << 4) + ((((26 + 12) << 4) * mScale) >> 16);
-  SmeterNeedle.Setup(x, y, mDegree, mScale);
+  Disp->ScissorSize(mView.w, mView.h - (17 * mScaleY));
+  drawSetup();
   Disp->ColorRGB(RGB555(255, 255, 255));
-//  Disp->ColorA(0x40);
-//  SmeterNeedle.Vertex2f(x, y);
-  y -= ((6 << 4) * mScale) >> 16;
-  Disp->ColorA(0xFF);
-  SmeterNeedle.Vertex2f(x, y);
+  Disp->ColorA(64);
+  Disp->Vertex2ii(0, 20 * mScaleY);
+  Disp->ColorA(255);
+  Disp->Vertex2f(0, 0);
 }

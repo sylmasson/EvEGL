@@ -246,43 +246,14 @@ EvObj       *EvPanel::Touching(EvTouchEvent *Touch)
   return touchObj;
 }
 
-// EvObj       *EvPanel::Touching(int16_t X, int16_t Y)
-// {
-//   EvObj     *obj, *touchObj;
-
-//   if (!IsVisible())
-//     return NULL;
-
-//   touchObj = EvObj::Touching(X, Y);
-
-//   for (Node *node = mFirst; node != NULL; node = node->next)
-//     if ((obj = node->obj->Touching(X, Y)) != NULL)
-//       touchObj = obj;
-
-//   return touchObj;
-// }
-
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-bool        EvPanel::MustBeDraw(void)
+void        EvPanel::SetDisplay(EvDisplay *Disp)
 {
-  bool      retValue = ((mStatus & VISIBLE_OBJ) != 0 && mView.w > 0);
-
-  for (Node *node = mFirst; node != NULL && retValue != true; node = node->next)
-    if (node->obj->MustBeDraw())
-      retValue = true;
-
-  return retValue;
-}
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-void        EvPanel::SetDisp(EvDisplay *Disp)
-{
-  EvObj::SetDisp(Disp);
+  EvObj::SetDisplay(Disp);
 
   for (Node *node = mFirst; node != NULL; node = node->next)
-    node->obj->SetDisp(Disp);
+    node->obj->SetDisplay(Disp);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -303,6 +274,16 @@ void        EvPanel::Refresh(void)
 
   for (Node *node = mFirst; node != NULL; node = node->next)
     node->obj->Refresh();
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+void        EvPanel::Preload(void)
+{
+  EvObj::Preload();
+
+  for (Node *node = mFirst; node != NULL; node = node->next)
+    node->obj->Preload();
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

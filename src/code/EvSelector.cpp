@@ -284,14 +284,14 @@ void        EvSelector::SetOnChange(void (*OnChange)(EvSelector *Sender, int32_t
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvSelector::SetDisp(EvDisplay *Disp)
+void        EvSelector::SetDisplay(EvDisplay *Disp)
 {
   if (EvObj::Disp != Disp)
   {
     if (mBmp != NULL)
       EvObj::Disp->UnloadBmp(mDest);
 
-    EvObj::SetDisp(Disp);
+    EvObj::SetDisplay(Disp);
 
     if (mBmp != NULL)
       mDest = EvObj::Disp->LoadBmp(mBmp);

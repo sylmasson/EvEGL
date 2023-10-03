@@ -48,6 +48,8 @@
 #define     ABORT_OBJ       (1 << 14)
 #define     SYSTEM_OBJ      (1 << 15) // reserved for GUI System
 
+#define  		VISIBLE_DIS_OBJ	(VISIBLE_OBJ | DISABLED_OBJ)
+
 // Shape constant
 
 #define     ROUND_CORNERS   0
@@ -160,7 +162,6 @@ class       EvVuBar;
 #include    <include/system/EvEVE.h>
 
 #include    <include/system/EvSysFont.h>
-#include    <include/system/EvBitmap.h>
 #include    <include/system/EvKinetic.h>
 #include    <include/system/EvStringList.h>
 #include    <include/system/EvObj.h>
@@ -185,9 +186,10 @@ class       EvVuBar;
 #include    <include/EvTextBox.h>
 #include    <include/EvTextCursor.h>
 #include    <include/EvTerminal.h>
+#include    <include/EvSmeter.h>
 #include    <include/EvSpectrum.h>
 #include    <include/EvPixelBox.h>
-#include    <include/EvSmeter.h>
+#include    <include/EvVideo.h>
 #include    <include/EvVuBar.h>
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

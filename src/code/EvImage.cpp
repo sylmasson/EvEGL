@@ -18,7 +18,7 @@
  * @param[in]  Height  The height of Image.
  * @param[out] *Dest   The address pointer of the EvPanel destination. Cannot be NULL.
  * @param[in]  Tag     The tag name of the Image. If NULL, the default tag name is "EvImage".
- * @param[in]  State   The initial state of the Image. Default is set to VISIBLE_OBJ.
+ * @param[in]  State   The initial state of the Image. Default is set to VISIBLE_DIS_OBJ.
  *
  * @return     EvImage address pointer on success, otherwise returns NULL.
  * 
@@ -97,7 +97,7 @@ const EvBmp *EvImage::Load(const EvBmp *Bmp)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-const EvBmp *EvImage::Load(const char *filename, SDClass &Dev)
+const EvBmp *EvImage::Load(const char *Filename, SDClass &Dev)
 {
   File      file;
   EvBmp     *bmp;
@@ -108,10 +108,10 @@ const EvBmp *EvImage::Load(const char *filename, SDClass &Dev)
   uint32_t  msec = millis();
   #endif
 
-  if (!Dev.mediaPresent() || !(file = Dev.open(filename)))
+  if (!Dev.mediaPresent() || !(file = Dev.open(Filename)))
   {
     #ifdef  VERBOSE
-      Serial.printf("\nSD Card or file %s not found\n", filename);
+      Serial.printf("\nDevice or file %s not found\n", Filename);
     #endif
     return NULL;
   }
@@ -125,10 +125,10 @@ const EvBmp *EvImage::Load(const char *filename, SDClass &Dev)
       file.close();
 
       #ifdef  VERBOSE
-        Serial.printf("\nReading file %s in %lu msec\n", filename, millis() - msec);
+        Serial.printf("\nReading file %s in %lu msec\n", Filename, millis() - msec);
       #endif
 
-      if (IsValidJPEG(data, fileSize, bmp, filename) || IsValidPNG(data, fileSize, bmp, filename))
+      if (IsValidJPEG(data, fileSize, bmp, Filename) || IsValidPNG(data, fileSize, bmp, Filename))
       {
         #ifdef  VERBOSE
           Serial.printf("Width = %u Height = %u\n", bmp->Width, bmp->Height);
@@ -145,7 +145,7 @@ const EvBmp *EvImage::Load(const char *filename, SDClass &Dev)
       else
       {
         #ifdef  VERBOSE
-          Serial.printf("%s is not valid image format\n", filename);
+          Serial.printf("%s is not valid image format\n", Filename);
         #endif
       }
 

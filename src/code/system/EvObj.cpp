@@ -516,7 +516,7 @@ void        EvObj::MoveTo(EvPanel *Dest)
       mOwner->RemoveObj(this);
 
     mOwner = NULL;
-    SetDisp(Dest->Disp);
+    SetDisplay(Dest->Disp);
     Dest->AddObj(this, Tag);
   }
 }
@@ -1339,14 +1339,7 @@ EvObj       *EvObj::Touching(EvTouchEvent *Touch)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-bool        EvObj::MustBeDraw(void)
-{
-  return ((mStatus & VISIBLE_OBJ) && (mView.w > 0));
-}
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-void        EvObj::SetDisp(EvDisplay *Disp)
+void        EvObj::SetDisplay(EvDisplay *Disp)
 {
   if (EvObj::Disp != Disp)
   {
@@ -1423,6 +1416,13 @@ void        EvObj::Refresh(void)
 {
   refreshEvent();
   mStatus &= ~MODIF_TEXT_OBJ;
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+void        EvObj::Preload(void)
+{
+  preloadEvent();
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

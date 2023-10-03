@@ -423,7 +423,7 @@ void        EvDot::touchEvent(EvTouchEvent *Touch)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-EvEditor::EvEditor(EvDisplay *Disp, const char *Tag) : EvPanel(0, 0, Disp->Width(), Disp->Height(), Disp, Tag, VISIBLE_OBJ | DISABLED_OBJ | SYSTEM_OBJ)
+EvEditor::EvEditor(EvDisplay *Disp, const char *Tag) : EvPanel(0, 0, Disp->Width(), Disp->Height(), Disp, Tag, VISIBLE_DIS_OBJ | SYSTEM_OBJ)
 {
   if (!(DotMove = (EvDot *)TryCreate(new EvDot(50, OnTouchDotMove, Disp, "DotMove"), this)) ||
       !(DotReSize = (EvDot *)TryCreate(new EvDot(50, OnTouchDotReSize, Disp, "DotReSize"), this)))
@@ -496,25 +496,25 @@ void        EvEditor::refreshEvent(void)
 
 EvProperty::EvProperty(EvDisplay *Disp, const char *Tag) : EvPanel(0, 0, 150, 310, Disp, Tag, VISIBLE_OBJ | SYSTEM_OBJ)
 {
-  if (property || !(LabTitle = EvLabel::Create(40, 0, 65, 36, this, NULL, VISIBLE_OBJ | DISABLED_OBJ | SYSTEM_OBJ)) ||
+  if (property || !(LabTitle = EvLabel::Create(40, 0, 65, 36, this, NULL, VISIBLE_DIS_OBJ | SYSTEM_OBJ)) ||
       !(BtnMinimize = EvButton::Create(6, 6, 25, 25, this, NULL, VISIBLE_OBJ | SYSTEM_OBJ)) ||
       !(TglEdit = EvToggle::Create(105, 6, 40, 25, this, NULL, VISIBLE_OBJ | SYSTEM_OBJ)) ||
       !(TabPanel = EvTab::Create(1, 35, mWidth - 2, 31, this, NULL, VISIBLE_OBJ | SYSTEM_OBJ)) ||
-      !(PanObj = EvPanel::Create(1, 65, mWidth - 2, 213, this, NULL, VISIBLE_OBJ | DISABLED_OBJ | SYSTEM_OBJ)) ||
-      !(PanText = EvPanel::Create(1, 65, mWidth - 2, 213, this, NULL, VISIBLE_OBJ | DISABLED_OBJ | SYSTEM_OBJ)) ||
-      !(LabTag = EvLabel::Create(7, 283, mWidth - 11, 20, this, NULL, VISIBLE_OBJ | DISABLED_OBJ | SYSTEM_OBJ)) ||
-      !(LabLeft = EvLabel::Create(5, 10, 63, 32, PanObj, NULL, VISIBLE_OBJ | DISABLED_OBJ | SYSTEM_OBJ)) ||
-      !(LabTop = EvLabel::Create(5, 50, 63, 32, PanObj, NULL, VISIBLE_OBJ | DISABLED_OBJ | SYSTEM_OBJ)) ||
-      !(LabWidth = EvLabel::Create(5, 90, 63, 32, PanObj, NULL, VISIBLE_OBJ | DISABLED_OBJ | SYSTEM_OBJ)) ||
-      !(LabHeight = EvLabel::Create(5, 130, 63, 32, PanObj, NULL, VISIBLE_OBJ | DISABLED_OBJ | SYSTEM_OBJ)) ||
+      !(PanObj = EvPanel::Create(1, 65, mWidth - 2, 213, this, NULL, VISIBLE_DIS_OBJ | SYSTEM_OBJ)) ||
+      !(PanText = EvPanel::Create(1, 65, mWidth - 2, 213, this, NULL, VISIBLE_DIS_OBJ | SYSTEM_OBJ)) ||
+      !(LabTag = EvLabel::Create(7, 283, mWidth - 11, 20, this, NULL, VISIBLE_DIS_OBJ | SYSTEM_OBJ)) ||
+      !(LabLeft = EvLabel::Create(5, 10, 63, 32, PanObj, NULL, VISIBLE_DIS_OBJ | SYSTEM_OBJ)) ||
+      !(LabTop = EvLabel::Create(5, 50, 63, 32, PanObj, NULL, VISIBLE_DIS_OBJ | SYSTEM_OBJ)) ||
+      !(LabWidth = EvLabel::Create(5, 90, 63, 32, PanObj, NULL, VISIBLE_DIS_OBJ | SYSTEM_OBJ)) ||
+      !(LabHeight = EvLabel::Create(5, 130, 63, 32, PanObj, NULL, VISIBLE_DIS_OBJ | SYSTEM_OBJ)) ||
       !(NumLeft = EvNumInt::Create(73, 10, 65, 32, PanObj, NULL, VISIBLE_OBJ | SYSTEM_OBJ | FILTER_DIS_OBJ)) ||
       !(NumTop = EvNumInt::Create(73, 50, 65, 32, PanObj, NULL, VISIBLE_OBJ | SYSTEM_OBJ | FILTER_DIS_OBJ)) ||
       !(NumWidth = EvNumInt::Create(73, 90, 65, 32, PanObj, NULL, VISIBLE_OBJ | SYSTEM_OBJ | FILTER_DIS_OBJ)) ||
       !(NumHeight = EvNumInt::Create(73, 130, 65, 32, PanObj, NULL, VISIBLE_OBJ | SYSTEM_OBJ | FILTER_DIS_OBJ)) ||
       !(SelShape = EvSelector::Create(10, 172, 128, 32, PanObj, NULL, VISIBLE_OBJ | SYSTEM_OBJ | FILTER_DIS_OBJ)) ||
-      !(LabFont = EvLabel::Create(5, 10, 63, 32, PanText, NULL, VISIBLE_OBJ | DISABLED_OBJ | SYSTEM_OBJ)) ||
-      !(LabPadX = EvLabel::Create(5, 50, 63, 32, PanText, NULL, VISIBLE_OBJ | DISABLED_OBJ | SYSTEM_OBJ)) ||
-      !(LabPadY = EvLabel::Create(5, 90, 63, 32, PanText, NULL, VISIBLE_OBJ | DISABLED_OBJ | SYSTEM_OBJ)) ||
+      !(LabFont = EvLabel::Create(5, 10, 63, 32, PanText, NULL, VISIBLE_DIS_OBJ | SYSTEM_OBJ)) ||
+      !(LabPadX = EvLabel::Create(5, 50, 63, 32, PanText, NULL, VISIBLE_DIS_OBJ | SYSTEM_OBJ)) ||
+      !(LabPadY = EvLabel::Create(5, 90, 63, 32, PanText, NULL, VISIBLE_DIS_OBJ | SYSTEM_OBJ)) ||
       !(NumFont = EvNumInt::Create(73, 10, 65, 32, PanText, NULL, VISIBLE_OBJ | SYSTEM_OBJ | FILTER_DIS_OBJ)) ||
       !(NumPadX = EvNumInt::Create(73, 50, 65, 32, PanText, NULL, VISIBLE_OBJ | SYSTEM_OBJ | FILTER_DIS_OBJ)) ||
       !(NumPadY = EvNumInt::Create(73, 90, 65, 32, PanText, NULL, VISIBLE_OBJ | SYSTEM_OBJ | FILTER_DIS_OBJ)) ||

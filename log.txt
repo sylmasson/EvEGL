@@ -1,0 +1,81 @@
+commit 9d9dab387896190711cc9c72290e10c0c4b24426
+Author: Sylvain Masson <sylvainmasson@Sylvains-Mac-mini.local>
+Date:   Tue Oct 3 16:47:22 2023 -0400
+
+    EvSmeter: rewrite all code using EvImage class while supporting resizing
+    
+    EvVideo: new class and preliminary test to play a video at 30 fps
+    
+    EvBitmap: class removed and replace with EvImage
+    
+    Global: cleaning and minor change
+
+commit 92916a2c1c5df281803433dbec83d66137e70f67
+Author: Sylvain Masson <sylvainmasson@Sylvains-Mac-mini.local>
+Date:   Sun Sep 3 07:35:52 2023 -0400
+
+    EvImage: added load function for JPEG and PNG file formats from SD card
+    
+    EvMalloc: automatically allocated data buffer for PNG decoding process
+    
+    EvShell: added ls (or dir) command to list SD card directory
+    
+    EvSPI: change type of Count variables to uint32_t
+
+commit 0126d51613dde66866acafa0fa6ea6b469aa171e
+Author: Sylvain Masson <sylvainmasson@Sylvains-Mac-mini.local>
+Date:   Sat Aug 19 08:55:03 2023 -0400
+
+    EvMalloc: change block allocation to top rather than bottom of RAM_G memory (needed for CmdPlayVideo)
+    
+    EvObj, EvPanel and EvShell: add ClearCache() function
+    
+    EvEVE: add SetPlayVideoBuffer() function
+
+commit 9edd760a8572603499bcdbd89531ba03b32afb97
+Author: Sylvain Masson <sylvainmasson@Sylvains-Mac-mini.local>
+Date:   Mon Aug 7 06:58:48 2023 -0400
+
+    EvObj: select object with double touch now
+    
+    EvShell: BitmapTransform interpretation bug
+    
+    Global: standardization SetValue input parameter to int32_t
+    
+    EvEve: BitmapLayout input parameters changed, BitmapTransform Coeff changed to s15f16 format and, optimized Vertex2f
+    
+    EvImage: first release, RotateAround support on all EVE versions but ScaleX and ScaleY should be equal at this time
+
+commit 10ceff8b3aab97e48ff6ffbcc661ba85c793da43
+Author: Sylvain Masson <sylmasson@gmail.com>
+Date:   Thu Jun 15 19:58:23 2023 -0400
+
+    EvEVE and EvShell: add BitmapExtFormat(), BitmapSwizzle(), CmdGradient() and CmdGradientA()
+    
+    EvEVE and EvShell: support precision 1.15 on BitmapTransformA, B, D and E
+    
+    EvEVE and EvShell: support 24 bit vs 22 on BitmapSource()
+
+commit 79402779e245061b3c4e10e69f483d7cd9bdc35a
+Author: Sylvain Masson <sylmasson@gmail.com>
+Date:   Sat Jun 10 21:25:35 2023 -0400
+
+    EvEve: add ConvertToGray process option
+    
+    Global: add darken filter on disabled object
+
+commit 30ad090924b8dcedfef5e817a81413880fc0036b
+Author: Sylvain Masson <sylmasson@gmail.com>
+Date:   Tue Jun 6 11:35:18 2023 -0400
+
+    EvTextBox: add left/right text scrolling
+    
+    EvToggle: add millis_nz()
+    
+    Global: change ...Focus by ...KbdFocus
+
+commit 051cdce89ed43a59c752fd686b24c05cc16a791b
+Author: Sylvain Masson <sylmasson@gmail.com>
+Date:   Mon May 29 08:16:41 2023 -0400
+
+    EvGUI: First commit

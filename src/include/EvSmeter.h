@@ -4,16 +4,10 @@
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-class EvSmeterNeedle : public EvObj
+class EvNeedle : public EvImage
 {
   public:
-    EvSmeterNeedle(int16_t Left, int16_t Top, float Scale, EvDisplay *Disp, const char *Tag);
-
-    bool          SetDegree(int32_t Degree);
-
-  protected:
-    int32_t       mDegree;
-    int32_t       mScale;
+    EvNeedle(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag);
 
     virtual void  drawEvent(void);
 };
@@ -23,25 +17,21 @@ class EvSmeterNeedle : public EvObj
 class EvSmeter : public EvPanel
 {
   public:
-    ~EvSmeter(void);
-
-    void          Show(void);
-    void          Hide(void);
-    bool          SetValue(int16_t Value);
-    void          SetFilterCoeff(uint16_t Coeff);
+    bool          SetValue(int32_t Value);
     void          SetOnTouch(void (*OnTouch)(EvSmeter *Sender, EvTouchEvent *Touch));
 
   protected:
-    EvSmeter(int16_t Left, int16_t Top, float Scale, EvDisplay *Disp, const char *Tag = NULL, uint16_t State = VISIBLE_OBJ);
+    EvSmeter(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag = NULL, uint16_t State = VISIBLE_OBJ);
 
+    bool          mLock;
     int16_t       mValue;
-    int32_t       mDegree;
-    int32_t       mScale;
-    uint16_t      mCoeff;
+    float         mAngle;
+    float         mScale;
 
-    EvSmeterNeedle  *mNeedle;
+    EvImage       *mBG;
+    EvNeedle      *mNeedle;
 
-    virtual void  drawEvent(void);
+    virtual void  resizeEvent(void);
     virtual void  touchEvent(EvTouchEvent *Touch);
 
   private:
@@ -50,7 +40,7 @@ class EvSmeter : public EvPanel
   public:
     const int16_t &Value = mValue;
 
-    static EvSmeter *Create(int16_t Left, int16_t Top, float Scale, EvPanel *Dest, const char *Tag = NULL, uint16_t State = VISIBLE_OBJ);
+    static EvSmeter *Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag = NULL, uint16_t State = VISIBLE_OBJ);
 };
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

@@ -26,10 +26,7 @@ class EvTextBox : public EvPanel
     virtual size_t  WriteKey(uint8_t Key, uint8_t Layout, uint8_t ShiftKey, bool DoubleTouch);
     virtual size_t  write(uint8_t C);
     virtual size_t  write(const uint8_t *Buffer, size_t Count);
-//    virtual int     availableForWrite(void) { return 1; };
-
-    virtual void  setKbdFocusEvent(void);
-    virtual void  lostKbdFocusEvent(void);
+//     virtual int     availableForWrite(void) { return 1; };
 
   protected:
     EvTextBox(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag = NULL, uint16_t State = VISIBLE_OBJ);
@@ -45,6 +42,8 @@ class EvTextBox : public EvPanel
     virtual void  drawEvent(void);
     virtual void  resizeEvent(void);
     virtual void  refreshEvent(void);
+    virtual void  setKbdFocusEvent(void);
+    virtual void  lostKbdFocusEvent(void);
     virtual void  touchEvent(EvTouchEvent *Touch);
 
     uint8_t       mFlags;

@@ -55,7 +55,7 @@ EvEVE::EvEVE(const uint32_t *Config, uint8_t CS, int16_t RST, SPIClass *Spi, uin
   while ((reg = *Config++) != 0)
     wr32(reg, *Config++);
 
-  while (rd16(REG_CMDB_SPACE) != 0xFFC)
+  while (rd16(REG_CMDB_SPACE) != RAM_CMD_EMPTY)
     delay(10);
 
   wrCmdBufClear();
@@ -164,8 +164,6 @@ const EvMem *EvEVE::LoadBmp(const EvBmp *Bmp)
 
     if (Bmp->DataSize)
     {
-      CmdMemzero(ptr->addr, Bmp->PalSize + Bmp->BmpSize);
-
       switch (Bmp->Format & ~BMP_MALLOC)
       {
         case RAW_DATA: CmdMemwrite(ptr->addr, Bmp->DataSize); break;
@@ -884,6 +882,14 @@ void        EvEVE::CmdMemzero(uint32_t Addr, uint32_t Num)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+void        EvEVE::CmdPlayVideo(uint32_t Opts)
+{
+  wrCmdBuf32(CMD_PLAYVIDEO);
+  wrCmdBuf32(Opts);
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
 void        EvEVE::CmdRotate(int32_t Angle)
 {
   wrCmdBuf32(CMD_ROTATE);
@@ -958,6 +964,14 @@ void        EvEVE::CmdSetMatrix(void)
 void        EvEVE::CmdSwap(void)
 {
   wrCmdBuf32(CMD_SWAP);
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+void        EvEVE::CmdSync(void)
+{
+  if (ChipID >= 0x817) 
+    wrCmdBuf32(CMD_SYNC);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

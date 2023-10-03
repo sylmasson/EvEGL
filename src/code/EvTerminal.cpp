@@ -41,7 +41,7 @@ EvTerminal::EvTerminal(int16_t Left, int16_t Top, uint16_t Width, uint16_t Heigh
   TextColor(TEXT_COLOR);
   BgColor(BG_COLOR);
 
-  if ((Cursor = EvTextCursor::Create(0, 0, 0, 0, this, NULL, VISIBLE_OBJ | DISABLED_OBJ)) == NULL)
+  if ((Cursor = EvTextCursor::Create(0, 0, 0, 0, this, NULL, VISIBLE_DIS_OBJ)) == NULL)
     Abort();
   else
     Cursor->Style(CURSOR_SMOOTH);

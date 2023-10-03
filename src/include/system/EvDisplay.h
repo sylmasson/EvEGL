@@ -17,10 +17,10 @@ class EvDisplay : public EvEVE, public EvPanel, public EvSysFont
     void          SetOnUpdate(void (*OnUpdate)(EvDisplay *Disp));
     void          SetOnTouch(void (*OnTouch)(EvObj *Obj, EvTouchEvent *Touch));
 
+    void          Update(void);
     static bool   UpdateAll(void);
 
   protected:
-    void          update(void);
     void          displayUpdate(void);
     void          touchUpdate(void);
     void          touchUpdatePtr(EvTouchEvent *Touch, EvTouchPos TouchPos, uint32_t msec);

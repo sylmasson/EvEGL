@@ -187,19 +187,20 @@ class EvObj : public Print
     void          TouchMax(uint8_t Max);
     void          TouchUpdate(EvTouchEvent *Touch);
     virtual EvObj *Touching(EvTouchEvent *Touch);
-    virtual bool  MustBeDraw(void);
-    virtual void  SetDisp(EvDisplay *Disp);
+//    virtual bool  MustBeDraw(void);
+    virtual void  SetDisplay(EvDisplay *Disp);
     virtual void  SetView(void);
     virtual void  Refresh(void);
+    virtual void  Preload(void);
     virtual void  Draw(void);
-
-    virtual void  setKbdFocusEvent(void) {};
-    virtual void  lostKbdFocusEvent(void) {};
 
   protected:
     virtual void  drawEvent(void) {};
     virtual void  resizeEvent(void) {};
     virtual void  refreshEvent(void) {};
+    virtual void  preloadEvent(void) {};
+    virtual void  setKbdFocusEvent(void) {};
+    virtual void  lostKbdFocusEvent(void) {};
     virtual void  touchEvent(EvTouchEvent *Touch) {};
 
     uint16_t      mStatus;
