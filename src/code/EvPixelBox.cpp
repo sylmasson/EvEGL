@@ -49,17 +49,17 @@ const uint16_t  RegularHSV[] =
  * @param[in]  Top     The top position of PixelBox.
  * @param[in]  Width   The width of PixelBox.
  * @param[in]  Height  The height of PixelBox.
- * @param[out] *Dest   The address pointer of the EvPanel destination. Cannot be NULL.
- * @param[in]  Tag     The tag name of the PixelBox. If NULL, the default tag name is "EvPixelBox".
+ * @param[out] *Dest   The address pointer of the EvPanel destination. Cannot be nullptr.
+ * @param[in]  Tag     The tag name of the PixelBox. If nullptr, the default tag name is "EvPixelBox".
  * @param[in]  State   The initial state of the PixelBox. Default is set to VISIBLE_OBJ.
  *
- * @return     EvPixelBox address pointer on success, otherwise returns NULL.
+ * @return     EvPixelBox address pointer on success, otherwise returns nullptr.
  * 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 EvPixelBox     *EvPixelBox::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag, uint16_t State)
 {
-  return !Dest ? NULL : (EvPixelBox *)EvObj::TryCreate(new EvPixelBox(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvPixelBox" : Tag, State), Dest);
+  return !Dest ? nullptr : (EvPixelBox *)EvObj::TryCreate(new EvPixelBox(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvPixelBox" : Tag, State), Dest);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -77,14 +77,14 @@ EvPixelBox::EvPixelBox(int16_t Left, int16_t Top, uint16_t Width, uint16_t Heigh
   mBmp.Tag = Tag;
   mBufInd = 0;
 
-  if ((mDest = Disp->LoadBmp(&mBmp)) == NULL)
+  if ((mDest = Disp->LoadBmp(&mBmp)) == nullptr)
     Abort();
   else
   {
     Disp->CmdMemset(mDest->addr + mBmp.PalSize, 0, mBmp.BmpSize);
     BdShape(SQUARE_CORNERS);
     mBmp.BmpSize /= 2;
-    SetOnTouch(NULL);
+    SetOnTouch(nullptr);
   }
 }
 
@@ -197,6 +197,6 @@ void        EvPixelBox::drawEvent(void)
 
 void        EvPixelBox::touchEvent(EvTouchEvent *Touch)
 {
-  if (mOnTouch != NULL)
+  if (mOnTouch != nullptr)
     (*mOnTouch)(this, Touch);
 }

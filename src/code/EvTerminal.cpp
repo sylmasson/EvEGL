@@ -15,17 +15,17 @@
  * @param[in]  Top     The top position of the Terminal.
  * @param[in]  Width   The width of the Terminal.
  * @param[in]  Height  The height of the Terminal.
- * @param[out] *Dest   The address pointer of the EvPanel destination. Cannot be NULL.
- * @param[in]  Tag     The tag name of the Terminal. If NULL, the default tag name is "EvTerminal".
+ * @param[out] *Dest   The address pointer of the EvPanel destination. Cannot be nullptr.
+ * @param[in]  Tag     The tag name of the Terminal. If nullptr, the default tag name is "EvTerminal".
  * @param[in]  State   The initial state of the Terminal. Default is set to VISIBLE_OBJ.
  *
- * @return     EvTerminal address pointer on success, otherwise returns NULL.
+ * @return     EvTerminal address pointer on success, otherwise returns nullptr.
  * 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 EvTerminal  *EvTerminal::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag, uint16_t State)
 {
-  return !Dest ? NULL : (EvTerminal *)EvObj::TryCreate(new EvTerminal(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvTerminal" : Tag, State), Dest);
+  return !Dest ? nullptr : (EvTerminal *)EvObj::TryCreate(new EvTerminal(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvTerminal" : Tag, State), Dest);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -41,7 +41,7 @@ EvTerminal::EvTerminal(int16_t Left, int16_t Top, uint16_t Width, uint16_t Heigh
   TextColor(TEXT_COLOR);
   BgColor(BG_COLOR);
 
-  if ((Cursor = EvTextCursor::Create(0, 0, 0, 0, this, NULL, VISIBLE_DIS_OBJ)) == NULL)
+  if ((Cursor = EvTextCursor::Create(0, 0, 0, 0, this, nullptr, VISIBLE_DIS_OBJ)) == nullptr)
     Abort();
   else
     Cursor->Style(CURSOR_SMOOTH);

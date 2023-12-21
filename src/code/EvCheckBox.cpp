@@ -18,17 +18,17 @@
  * @param[in]  Top     The top position of the CheckBox.
  * @param[in]  Width   The width of the CheckBox.
  * @param[in]  Height  The height of the CheckBox.
- * @param[out] *Dest   The address pointer of the EvPanel destination. Cannot be NULL.
- * @param[in]  Tag     The tag name of the CheckBox. If NULL, the default tag name is "EvCheckBox".
+ * @param[out] *Dest   The address pointer of the EvPanel destination. Cannot be nullptr.
+ * @param[in]  Tag     The tag name of the CheckBox. If nullptr, the default tag name is "EvCheckBox".
  * @param[in]  State   The initial state of the CheckBox. Default is set to VISIBLE_OBJ.
  *
- * @return     EvCheckBox address pointer on success, otherwise returns NULL.
+ * @return     EvCheckBox address pointer on success, otherwise returns nullptr.
  * 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 EvCheckBox  *EvCheckBox::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag, uint16_t State)
 {
-  return !Dest ? NULL : (EvCheckBox *)EvObj::TryCreate(new EvCheckBox(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvCheckBox" : Tag, State), Dest);
+  return !Dest ? nullptr : (EvCheckBox *)EvObj::TryCreate(new EvCheckBox(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvCheckBox" : Tag, State), Dest);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -42,8 +42,8 @@ EvCheckBox::EvCheckBox(int16_t Left, int16_t Top, uint16_t Width, uint16_t Heigh
   TextColor(COLOR_TEXT, COLOR_TEXT_2);
   SetColor(COLOR_CHECK, COLOR_UNCHECK, COLOR_BORDER);
   BdShape(RATIO_CORNERS);
-  SetOnTouch(NULL);
-  SetOnChange(NULL);
+  SetOnTouch(nullptr);
+  SetOnChange(nullptr);
   SetValue(true);
 }
 
@@ -84,7 +84,7 @@ bool        EvCheckBox::SetValue(int16_t Value)
   mValue = Value;
   Modified();
 
-  if (mOnChange != NULL)
+  if (mOnChange != nullptr)
     (*mOnChange)(this, mValue);
 
   return true;
@@ -169,7 +169,7 @@ void        EvCheckBox::drawEvent(void)
 
 void        EvCheckBox::touchEvent(EvTouchEvent *Touch)
 {
-  if (mOnTouch != NULL)
+  if (mOnTouch != nullptr)
     (*mOnTouch)(this, Touch);
 
   switch (Touch->event)

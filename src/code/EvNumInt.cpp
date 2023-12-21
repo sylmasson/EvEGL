@@ -17,17 +17,17 @@
  * @param[in]  Top     The top position of the EvNumInt.
  * @param[in]  Width   The width of the EvNumInt.
  * @param[in]  Height  The height of the EvNumInt.
- * @param[out] *Dest   The address pointer of the EvPanel destination. Cannot be NULL.
- * @param[in]  Tag     The tag name of the EvNumInt. If NULL, the default tag name is "EvNumInt".
+ * @param[out] *Dest   The address pointer of the EvPanel destination. Cannot be nullptr.
+ * @param[in]  Tag     The tag name of the EvNumInt. If nullptr, the default tag name is "EvNumInt".
  * @param[in]  State   The initial state of the EvNumInt. Default is set to VISIBLE_OBJ | FILTER_DIS_OBJ.
  *
- * @return     EvNumInt address pointer on success, otherwise returns NULL.
+ * @return     EvNumInt address pointer on success, otherwise returns nullptr.
  * 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 EvNumInt  *EvNumInt::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag, uint16_t State)
 {
-  return !Dest ? NULL : (EvNumInt *)EvObj::TryCreate(new EvNumInt(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvNumInt" : Tag, State), Dest);
+  return !Dest ? nullptr : (EvNumInt *)EvObj::TryCreate(new EvNumInt(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvNumInt" : Tag, State), Dest);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -43,8 +43,8 @@ EvNumInt::EvNumInt(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, E
   SetFormat("%ld");
   SetRange(0, 1000);
   BdShape(FIXED_CORNERS);
-  SetOnTouch(NULL);
-  SetOnChange(NULL);
+  SetOnTouch(nullptr);
+  SetOnChange(nullptr);
   SetValue(0);
 }
 
@@ -86,13 +86,13 @@ bool        EvNumInt::SetValue(int32_t Value)
   else if (Value > mMax)
     Value = mMax;
 
-  if (mValue == Value || mFormat == NULL)
+  if (mValue == Value || mFormat == nullptr)
     return false;
 
   snprintf(str, sizeof(str) - 1, mFormat, mValue = Value);
   TextLabel(str);
 
-  if (mOnChange != NULL)
+  if (mOnChange != nullptr)
     (*mOnChange)(this, Value);
 
   return true;
@@ -160,7 +160,7 @@ void        EvNumInt::touchEvent(EvTouchEvent *Touch)
   int16_t   relX = Touch->x;
   int16_t   relY = Touch->y;
 
-  if (mOnTouch != NULL)
+  if (mOnTouch != nullptr)
     (*mOnTouch)(this, Touch);
 
   switch (Touch->event)

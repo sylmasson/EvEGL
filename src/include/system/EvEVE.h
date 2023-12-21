@@ -165,6 +165,8 @@
 #define     REG_MACRO_1             0x3020dc
 #define     REG_MEDIAFIFO_READ      0x309014
 #define     REG_MEDIAFIFO_WRITE     0x309018
+#define     REG_MEDIAFIFO_BASE      0x30901C
+#define     REG_MEDIAFIFO_SIZE      0x309020
 #define     REG_OUTBITS             0x30205c
 #define     REG_PCLK                0x302070
 #define     REG_PCLK_POL            0x30206c
@@ -255,17 +257,16 @@
 #define     CMD_CALIBRATE           0xFFFFFF15
 #define     CMD_DLSTART             0xFFFFFF00
 #define     CMD_GRADIENT            0xFFFFFF0B
-#define     CMD_GRADIENTA           0xFFFFFF57
 #define     CMD_INFLATE             0xFFFFFF22
 #define     CMD_LOADIDENTITY        0xFFFFFF26
 #define     CMD_LOADIMAGE           0xFFFFFF24
+#define     CMD_MEDIAFIFO           0xFFFFFF39
 #define     CMD_MEMCPY              0xFFFFFF1D
 #define     CMD_MEMSET              0xFFFFFF1B
 #define     CMD_MEMWRITE            0xFFFFFF1A
 #define     CMD_MEMZERO             0xFFFFFF1C
 #define     CMD_PLAYVIDEO           0xFFFFFF3A
 #define     CMD_ROTATE              0xFFFFFF29
-#define     CMD_ROTATEAROUND        0xFFFFFF51
 #define     CMD_ROMFONT             0xFFFFFF3F
 #define     CMD_SCALE               0xFFFFFF28
 #define     CMD_SETBITMAP           0xFFFFFF43
@@ -277,8 +278,12 @@
 #define     CMD_SWAP                0xFFFFFF01
 #define     CMD_TRANSLATE           0xFFFFFF27
 
-#define     CMD_HSF                 0xFFFFFF62  // BT817/8
-#define     CMD_APILEVEL            0xFFFFFF63
+#define     CMD_GRADIENTA           0xFFFFFF57  // BT815/6
+#define     CMD_INFLATE2            0xFFFFFF50
+#define     CMD_ROTATEAROUND        0xFFFFFF51
+
+#define     CMD_APILEVEL            0xFFFFFF63  // BT817/8
+#define     CMD_HSF                 0xFFFFFF62
 #define     CMD_SYNC                0xFFFFFF42
 
 // Ram Command buffer
@@ -373,7 +378,7 @@ class EvEVE : public EvSPI
   };
 
   public:
-    EvEVE(const uint32_t *Config, uint8_t CS, int16_t RST = -1, SPIClass *Spi = NULL, uint32_t Baudrate = 16000000);
+    EvEVE(const uint32_t *Config, uint8_t CS, int16_t RST = -1, SPIClass *Spi = nullptr, uint32_t Baudrate = 16000000);
 
     void          ClearContext(void);
     void          ClearPrimitive(void);
@@ -382,7 +387,7 @@ class EvEVE : public EvSPI
     void          ColorCalibration(int8_t R, int8_t G, int8_t B);
     void          Brightness(uint8_t Level);
     uint16_t      Opacity(uint16_t Opacity);
-    const EvMem   *LoadBmp(const EvBmp *Bmp);
+    const EvMem   *LoadBmp(const EvBmp *Bmp, uint32_t Options = 0);
     bool          UnloadBmp(const EvBmp *Bmp);
     bool          UnloadBmp(const EvMem *ptr);
     uint32_t      SetPlayVideoBuffer(uint32_t Size);
@@ -456,8 +461,10 @@ class EvEVE : public EvSPI
     void          CmdGradient(int16_t X0, int16_t Y0, uint32_t Color0, int16_t X1, int16_t Y1, uint32_t Color1);
     void          CmdGradientA(int16_t X0, int16_t Y0, uint32_t Color0, int16_t X1, int16_t Y1, uint32_t Color1);
     void          CmdInflate(uint32_t Addr);
+    void          CmdInflate2(uint32_t Addr, uint32_t Options);
     void          CmdLoadIdentity(void);
     void          CmdLoadImage(uint32_t Addr, uint32_t Options);
+    void          CmdMediaFifo(uint32_t Addr, uint32_t BufSize);
     void          CmdMemcpy(uint32_t Dest, uint32_t Src, uint32_t Num);
     void          CmdMemset(uint32_t Addr, uint8_t Value, uint32_t Num);
     void          CmdMemwrite(uint32_t Addr, uint32_t Num);

@@ -66,7 +66,7 @@ class EvKbd : public EvPanel
     void          SetOnTouch(void (*OnTouch)(EvKbd *Sender, EvTouchEvent *Touch));
 
   protected:
-    EvKbd(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag = NULL, uint16_t State = VISIBLE_OBJ);
+    EvKbd(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ);
 
     uint8_t       mKey;
     uint8_t       mLayout;
@@ -89,7 +89,7 @@ class EvKbd : public EvPanel
   public:
     EvObj         *FocusObj;
 
-    static EvKbd  *Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag = NULL, uint16_t State = VISIBLE_OBJ);
+    static EvKbd  *Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ);
 };
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

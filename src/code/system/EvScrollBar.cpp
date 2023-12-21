@@ -19,17 +19,17 @@
  * @param[in]  Top     The top position of the ScrollBar.
  * @param[in]  Width   The width of the ScrollBar.
  * @param[in]  Height  The height of the ScrollBar.
- * @param[out] *Dest   The address pointer of the EvPanel destination. Cannot be NULL.
- * @param[in]  Tag     The tag name of the ScrollBar. If NULL, the default tag name is "EvScrollBar".
+ * @param[out] *Dest   The address pointer of the EvPanel destination. Cannot be nullptr.
+ * @param[in]  Tag     The tag name of the ScrollBar. If nullptr, the default tag name is "EvScrollBar".
  * @param[in]  State   The initial state of the ScrollBar. Default is set to VISIBLE_OBJ.
  *
- * @return     EvScrollBar address pointer on success, otherwise returns NULL.
+ * @return     EvScrollBar address pointer on success, otherwise returns nullptr.
  * 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 EvScrollBar *EvScrollBar::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag, uint16_t State)
 {
-  return !Dest ? NULL : (EvScrollBar *)EvObj::TryCreate(new EvScrollBar(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvScrollBar" : Tag, State), Dest);
+  return !Dest ? nullptr : (EvScrollBar *)EvObj::TryCreate(new EvScrollBar(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvScrollBar" : Tag, State), Dest);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -42,12 +42,12 @@ EvScrollBar::EvScrollBar(int16_t Left, int16_t Top, uint16_t Width, uint16_t Hei
   mViewSize = 0;
   mScrolling = 0;
   mTouchBar = false;
-  mScrollBarSync = NULL;
+  mScrollBarSync = nullptr;
   mKinScroll.Setup(48);
   BdShape(ROUND_CORNERS);
   SetBarStyle(SCROLL_BAR_AUTO);
   SetBarColor(COLOR_BAR, COLOR_TOUCH);
-  SetOnChange(NULL);
+  SetOnChange(nullptr);
 }
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -78,7 +78,7 @@ void        EvScrollBar::WakeUp(void)
 {
   wakeup();
 
-  if (mScrollBarSync != NULL)
+  if (mScrollBarSync != nullptr)
     mScrollBarSync->wakeup();
 }
 
@@ -181,7 +181,7 @@ bool        EvScrollBar::SetValue(int16_t Value, bool Wakeup)
   if (Wakeup)
     WakeUp();
 
-  if (mOnChange != NULL)
+  if (mOnChange != nullptr)
     (*mOnChange)(this, mValue);
 
   return true;

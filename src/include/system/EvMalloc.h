@@ -88,7 +88,7 @@ class EvMalloc
     ~EvMalloc(void);
 
     void          Free(const EvMem *Ptr);
-    const EvMem   *Malloc(size_t Size, const void *Owner = NULL, uint8_t TypeId = EV_UNDEFINED);
+    const EvMem   *Malloc(size_t Size, const void *Owner = nullptr, uint8_t TypeId = EV_UNDEFINED);
     const EvMem   *Malloc(size_t Size, const EvFont *Owner);
     const EvMem   *Malloc(size_t Size, const EvBmp *Owner);
     const EvMem   *Malloc(size_t Size, const EvObj *Owner);

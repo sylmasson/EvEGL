@@ -24,17 +24,17 @@
  * @param[in]  Top     The top position of the Tab selector.
  * @param[in]  Width   The width of the Tab selector.
  * @param[in]  Height  The height of the Tab selector.
- * @param[out] *Dest   The address pointer of the EvPanel destination. Cannot be NULL.
- * @param[in]  Tag     The tag name of the Tab selector. If NULL, the default tag name is "EvTab".
+ * @param[out] *Dest   The address pointer of the EvPanel destination. Cannot be nullptr.
+ * @param[in]  Tag     The tag name of the Tab selector. If nullptr, the default tag name is "EvTab".
  * @param[in]  State   The initial state of the Tab selector. Default is set to VISIBLE_OBJ | FILTER_DIS_OBJ.
  *
- * @return     EvTab address pointer on success, otherwise returns NULL.
+ * @return     EvTab address pointer on success, otherwise returns nullptr.
  * 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 EvTab       *EvTab::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag, uint16_t State)
 {
-  return !Dest ? NULL : (EvTab *)EvObj::TryCreate(new EvTab(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvTab" : Tag, State), Dest);
+  return !Dest ? nullptr : (EvTab *)EvObj::TryCreate(new EvTab(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvTab" : Tag, State), Dest);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -103,17 +103,17 @@ void        EvTab::SetOnChange(void (*OnChange)(EvTab *Sender, int32_t Value))
  * @param[in]  Top     The top position of the Selector.
  * @param[in]  Width   The width of the Selector.
  * @param[in]  Height  The height of the Selector.
- * @param[out] *Dest   The address pointer of the EvPanel destination. Cannot be NULL.
- * @param[in]  Tag     The tag name of the Selector. If NULL, the default tag name is "EvSelector".
+ * @param[out] *Dest   The address pointer of the EvPanel destination. Cannot be nullptr.
+ * @param[in]  Tag     The tag name of the Selector. If nullptr, the default tag name is "EvSelector".
  * @param[in]  State   The initial state of the Selector. Default is set to VISIBLE_OBJ | FILTER_DIS_OBJ.
  *
- * @return     EvSelector address pointer on success, otherwise returns NULL.
+ * @return     EvSelector address pointer on success, otherwise returns nullptr.
  * 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 EvSelector  *EvSelector::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag, uint16_t State)
 {
-  return !Dest ? NULL : (EvSelector *)EvObj::TryCreate(new EvSelector(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvSelector" : Tag, State), Dest);
+  return !Dest ? nullptr : (EvSelector *)EvObj::TryCreate(new EvSelector(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvSelector" : Tag, State), Dest);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -123,14 +123,14 @@ EvSelector::EvSelector(int16_t Left, int16_t Top, uint16_t Width, uint16_t Heigh
   mValue = 0;
   mCount = 0;
   mOption = 0;
-  mBmp = NULL;
-  mDest = NULL;
+  mBmp = nullptr;
+  mDest = nullptr;
   setNewVal(-2);
   TextColor(TEXT_SELNONE, TEXT_SELECT);
   SetColor(COLOR_SELNONE, COLOR_SELECT, COLOR_SELNEW);
   BdShape(FIXED_CORNERS);
-  SetOnTouch(NULL);
-  SetOnChange(NULL);
+  SetOnTouch(nullptr);
+  SetOnChange(nullptr);
   Items.SetOnChange(sOnStringListChange, this);
 }
 
@@ -179,7 +179,7 @@ bool        EvSelector::SetValue(int16_t Value)
   mValue = Value;
   setNewVal(-1);
 
-  if (mOnChange != NULL)
+  if (mOnChange != nullptr)
     (*mOnChange)(this, mValue);
 
   return true;
@@ -229,15 +229,15 @@ void        EvSelector::HideDelimiter(void)
 
 bool        EvSelector::SetBmp(const EvBmp *Bmp, uint16_t Count)
 {
-  if (mBmp != NULL)
+  if (mBmp != nullptr)
   {
     Disp->UnloadBmp(mDest);
-    mDest = NULL;
-    mBmp = NULL;
+    mDest = nullptr;
+    mBmp = nullptr;
     Modified();
   }
 
-  if (Bmp != NULL && Bmp->Layout != PALETTED8 && (mDest = Disp->LoadBmp(Bmp)) != NULL)
+  if (Bmp != nullptr && Bmp->Layout != PALETTED8 && (mDest = Disp->LoadBmp(Bmp)) != nullptr)
   {
     mCount = Count;
     mBmp = Bmp;
@@ -288,12 +288,12 @@ void        EvSelector::SetDisplay(EvDisplay *Disp)
 {
   if (EvObj::Disp != Disp)
   {
-    if (mBmp != NULL)
+    if (mBmp != nullptr)
       EvObj::Disp->UnloadBmp(mDest);
 
     EvObj::SetDisplay(Disp);
 
-    if (mBmp != NULL)
+    if (mBmp != nullptr)
       mDest = EvObj::Disp->LoadBmp(mBmp);
   }
 }
@@ -396,7 +396,7 @@ void        EvSelector::touchEvent(EvTouchEvent *Touch)
 {
   int16_t   value;
 
-  if (mOnTouch != NULL)
+  if (mOnTouch != nullptr)
     (*mOnTouch)(this, Touch);
 
   if (mWidth >= mHeight)
@@ -452,7 +452,7 @@ void        EvSelector::touchEvent(EvTouchEvent *Touch)
 
 bool        EvSelector::drawBmp(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height)
 {
-  if (mBmp != NULL)
+  if (mBmp != nullptr)
   {
     Disp->Begin(BITMAPS);
     Disp->BitmapHandle(0);
@@ -472,7 +472,7 @@ bool        EvSelector::drawBmp(int16_t Left, int16_t Top, uint16_t Width, uint1
   if (Left >= 0 && Top >= 0)
     FillRectangle2f(Left, Top, Width, Height, mColorSelect, mBdRadius);
 
-  if (mBmp == NULL)
+  if (mBmp == nullptr)
     return false;
 
   Disp->RestoreContext();

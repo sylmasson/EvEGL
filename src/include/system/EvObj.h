@@ -102,7 +102,7 @@ struct EvTextStyle
 class EvObj : public Print
 {
   public:
-    EvObj(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag = NULL, uint16_t State = VISIBLE_OBJ);
+    EvObj(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ);
     virtual       ~EvObj(void);
 
     int16_t       Left(void);

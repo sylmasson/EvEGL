@@ -5,6 +5,7 @@
 #define     RESIZE_NONE             0
 #define     RESIZE_PROPORTIONAL     1
 #define     RESIZE_STRETCH          2
+#define     RESIZE_ON_LOAD          4
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
@@ -38,7 +39,7 @@ class EvImage : public EvObj
     void          SetOnTouch(void (*OnTouch)(EvImage *Sender, EvTouchEvent *Touch));
 
   protected:
-    EvImage(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag = NULL, uint16_t State = VISIBLE_DIS_OBJ);
+    EvImage(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag = nullptr, uint16_t State = VISIBLE_DIS_OBJ);
 
     void          resize(void);
     void          drawSetup(void);
@@ -69,13 +70,13 @@ class EvImage : public EvObj
     void          (*mOnTouch)(EvImage *Sender, EvTouchEvent *Touch);
 
   public:
-    static EvImage  *Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag = NULL, uint16_t State = VISIBLE_DIS_OBJ);
+    static EvImage  *Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag = nullptr, uint16_t State = VISIBLE_DIS_OBJ);
 };
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-bool        IsValidJPEG(const uint8_t *Data, uint32_t DataSize, EvBmp *Bmp = NULL, const char *Tag = NULL);
-bool        IsValidPNG(const uint8_t *Data, uint32_t DataSize, EvBmp *Bmp = NULL, const char *Tag = NULL);
+bool        IsValidJPEG(const uint8_t *Data, uint32_t DataSize, EvBmp *Bmp = nullptr, const char *Tag = nullptr);
+bool        IsValidPNG(const uint8_t *Data, uint32_t DataSize, EvBmp *Bmp = nullptr, const char *Tag = nullptr);
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 

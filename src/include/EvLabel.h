@@ -24,7 +24,7 @@ class EvLabel : public EvObj
     void          SetOnTouch(void (*OnTouch)(EvLabel *Sender, EvTouchEvent *Touch));
 
   protected:
-    EvLabel(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag = NULL, uint16_t State = VISIBLE_OBJ);
+    EvLabel(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ);
 
     virtual void  drawEvent(void);
     virtual void  touchEvent(EvTouchEvent *Touch);
@@ -33,7 +33,7 @@ class EvLabel : public EvObj
     void          (*mOnTouch)(EvLabel *Sender, EvTouchEvent *Touch);
 
   public:
-    static EvLabel  *Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag = NULL, uint16_t State = VISIBLE_OBJ);
+    static EvLabel  *Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ);
 };
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

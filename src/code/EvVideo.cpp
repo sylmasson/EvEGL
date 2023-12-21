@@ -14,24 +14,24 @@
  * @param[in]  Top     The top position of Video object.
  * @param[in]  Width   The width of Video object.
  * @param[in]  Height  The height of Video object.
- * @param[out] *Dest   The address pointer of the EvPanel destination. Cannot be NULL.
- * @param[in]  Tag     The tag name of the Video object. If NULL, the default tag name is "EvVideo".
+ * @param[out] *Dest   The address pointer of the EvPanel destination. Cannot be nullptr.
+ * @param[in]  Tag     The tag name of the Video object. If nullptr, the default tag name is "EvVideo".
  * @param[in]  State   The initial state of the Video object. Default is set to VISIBLE_OBJ.
  *
- * @return     EvVideo address pointer on success, otherwise returns NULL.
+ * @return     EvVideo address pointer on success, otherwise returns nullptr.
  * 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 EvVideo     *EvVideo::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag, uint16_t State)
 {
-  return !Dest ? NULL : (EvVideo *)EvObj::TryCreate(new EvVideo(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvVideo" : Tag, State), Dest);
+  return !Dest ? nullptr : (EvVideo *)EvObj::TryCreate(new EvVideo(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvVideo" : Tag, State), Dest);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 EvVideo::EvVideo(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) : EvImage(Left, Top, Width, Height, Disp, Tag, State)
 {
-  mFrame = NULL;
+  mFrame = nullptr;
   mNextLoad = false;
   mRun = false;
 }
@@ -58,7 +58,7 @@ bool        EvVideo::Open(const char *Filename, SDClass &Dev)
 
   Unload();
   free(mFrame);
-  mFrame = NULL;
+  mFrame = nullptr;
 
   if (!Dev.mediaPresent() || !(mFile = Dev.open(Filename)))
   {
@@ -98,7 +98,7 @@ bool        EvVideo::NextFrame(void)
   uint32_t  size, data[3];
   char      str[] = "????";
 
-  if (!mFile || mFrame != NULL)
+  if (!mFile || mFrame != nullptr)
     return false;
 
   for (; mIndex < mFileSize; mIndex += size)
@@ -130,7 +130,7 @@ bool        EvVideo::NextFrame(void)
         Serial.printf("%s %u @%lX\n", str, size, index);
       #endif
 
-      if (strcmp(&str[2], "dc") == 0 && (mFrame = (EvBmp *)malloc(sizeof(EvBmp) + size)) != NULL)
+      if (strcmp(&str[2], "dc") == 0 && (mFrame = (EvBmp *)malloc(sizeof(EvBmp) + size)) != nullptr)
       {
         jpeg = ((uint8_t *)mFrame) + sizeof(EvBmp);
 
@@ -178,7 +178,7 @@ bool        EvVideo::Play(void)
 
   Unload();
   free(mFrame);
-  mFrame = NULL;
+  mFrame = nullptr;
   mFrameCount = 0;
   mIndex = 12;
   mRun = true;
@@ -208,11 +208,11 @@ bool        EvVideo::load(void)
 {
   bool      result = false;
 
-  if (mFrame != NULL)
+  if (mFrame != nullptr)
   {
     mFrame->Format |= BMP_MALLOC;
 
-    if (Load(mFrame) == NULL)
+    if (Load(mFrame) == nullptr)
       free(mFrame);
     else
     {
@@ -221,7 +221,7 @@ bool        EvVideo::load(void)
       result = true;
     }
 
-    mFrame = NULL;
+    mFrame = nullptr;
   }
 
   return result;

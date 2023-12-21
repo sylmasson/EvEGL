@@ -15,29 +15,29 @@
  * @param[in]  Top     The top position of Spectrum.
  * @param[in]  Width   The width of Spectrum.
  * @param[in]  Height  The height of Spectrum.
- * @param[out] *Dest   The address pointer of the EvPanel destination. Cannot be NULL.
- * @param[in]  Tag     The tag name of the Spectrum. If NULL, the default tag name is "EvSpectrum".
+ * @param[out] *Dest   The address pointer of the EvPanel destination. Cannot be nullptr.
+ * @param[in]  Tag     The tag name of the Spectrum. If nullptr, the default tag name is "EvSpectrum".
  * @param[in]  State   The initial state of the Spectrum. Default is set to VISIBLE_OBJ.
  *
- * @return     EvSpectrum address pointer on success, otherwise returns NULL.
+ * @return     EvSpectrum address pointer on success, otherwise returns nullptr.
  * 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 EvSpectrum     *EvSpectrum::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag, uint16_t State)
 {
-  return !Dest ? NULL : (EvSpectrum *)EvObj::TryCreate(new EvSpectrum(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvSpectrum" : Tag, State), Dest);
+  return !Dest ? nullptr : (EvSpectrum *)EvObj::TryCreate(new EvSpectrum(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvSpectrum" : Tag, State), Dest);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 EvSpectrum::EvSpectrum(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) : EvObj(Left, Top, Width, Height, Disp, Tag, State)
 {
-  if ((mData = (uint8_t *)calloc(mDataSize = Width / 2, sizeof(*mData))) == NULL)
+  if ((mData = (uint8_t *)calloc(mDataSize = Width / 2, sizeof(*mData))) == nullptr)
     Abort();
   else
   {
     SetColor(LINE_COLOR, FILL_COLOR);
-    SetOnTouch(NULL);
+    SetOnTouch(nullptr);
   }
 }
 
@@ -172,7 +172,7 @@ void        EvSpectrum::drawEvent(void)
 
 void        EvSpectrum::touchEvent(EvTouchEvent *Touch)
 {
-  if (mOnTouch != NULL)
+  if (mOnTouch != nullptr)
     (*mOnTouch)(this, Touch);
 }
 

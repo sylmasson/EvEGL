@@ -24,7 +24,7 @@
  * he adds to a Panel. Removing a panel will remove all of these objects.
  * 
  * @warning   However, pointers that store the address of objects that have been
- * deleted by an owner Panel will not be set to NULL. They should therefore never
+ * deleted by an owner Panel will not be set to nullptr. They should therefore never
  * be reused after deleting a Panel.
  * 
  * @par Example
@@ -49,7 +49,7 @@ class EvPanel : public EvObj
   public:
     ~EvPanel(void);
 
-    EvObj         *AddObj(EvObj *Obj, const char *Tag = NULL);
+    EvObj         *AddObj(EvObj *Obj, const char *Tag = nullptr);
     EvObj         *RemoveObj(EvObj *Obj);
     EvObj         *FirstObj(void);
     virtual void  ClearCache(void);
@@ -69,7 +69,7 @@ class EvPanel : public EvObj
     int16_t       OffsetY();
 
   protected:
-    EvPanel(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag = NULL, uint16_t State = VISIBLE_OBJ);
+    EvPanel(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ);
 
     int16_t       mOffsetX;
     int16_t       mOffsetY;
@@ -77,7 +77,7 @@ class EvPanel : public EvObj
     Node          *mLast;
 
   public:
-    static EvPanel  *Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag = NULL, uint16_t State = VISIBLE_OBJ);
+    static EvPanel  *Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ);
 };
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

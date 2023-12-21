@@ -7,7 +7,7 @@
 class EvDisplay : public EvEVE, public EvPanel, public EvSysFont
 {
   public:
-    EvDisplay(uint16_t Width, uint16_t Height, const char *Tag, const uint32_t *Config, uint8_t CS, int16_t RTS = -1, SPIClass *Spi = NULL, uint32_t Baudrate = 16000000);
+    EvDisplay(uint16_t Width, uint16_t Height, const char *Tag, const uint32_t *Config, uint8_t CS, int16_t RTS = -1, SPIClass *Spi = nullptr, uint32_t Baudrate = 16000000);
 
     bool          Lock(void);
     bool          Unlock(void);

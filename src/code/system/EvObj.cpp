@@ -23,8 +23,8 @@ EvObj::EvObj(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDispl
   mBdColor = 0;
   mBgColor = 0;
   mOpacity = 256;
-  mOwner = NULL;
-  mCache = NULL;
+  mOwner = nullptr;
+  mCache = nullptr;
   mStyle.font = 25;
   mStyle.align = CENTER;
   mStyle.padX = 0;
@@ -51,7 +51,7 @@ EvObj::~EvObj(void)
 
   SetEditObjDestroyed(this);
 
-  if (mCache != NULL)
+  if (mCache != nullptr)
     Disp->RAM_G.Free(mCache);
 }
 
@@ -205,7 +205,7 @@ void        EvObj::Disable(void)
 
 void        EvObj::Delete(void)
 {
-  if (mOwner != NULL)
+  if (mOwner != nullptr)
     mOwner->RemoveObj(this);
 
   delete this;
@@ -510,12 +510,12 @@ void        EvObj::MoveTo(int16_t Left, int16_t Top)
 
 void        EvObj::MoveTo(EvPanel *Dest)
 {
-  if (Dest != mOwner && Dest != NULL)
+  if (Dest != mOwner && Dest != nullptr)
   {
-    if (mOwner != NULL)
+    if (mOwner != nullptr)
       mOwner->RemoveObj(this);
 
-    mOwner = NULL;
+    mOwner = nullptr;
     SetDisplay(Dest->Disp);
     Dest->AddObj(this, Tag);
   }
@@ -547,7 +547,7 @@ void        EvObj::ReSize(uint16_t Width, uint16_t Height)
  *
  * @brief      Get the EvPanel owner of the Object.
  * 
- * @return     Owner's EvPanel address pointer if one exists, otherwise returns NULL.
+ * @return     Owner's EvPanel address pointer if one exists, otherwise returns nullptr.
  * 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
@@ -584,7 +584,7 @@ void        EvObj::SetOwner(EvPanel *Owner)
 
 void        EvObj::ToFront(bool AllOwner)
 {
-  if (mOwner != NULL)
+  if (mOwner != nullptr)
     mOwner->SetToFront(this, AllOwner);
 }
 
@@ -604,13 +604,13 @@ void        EvObj::ToFront(bool AllOwner)
 
 void        EvObj::SetKbdFocus(uint8_t LayoutStart)
 {
-  if (Disp->Kbd != NULL || (Disp->Kbd = EvKbd::Create(0, 0, 0, 0, Disp, "KbdSystem", SYSTEM_OBJ)) != NULL)
+  if (Disp->Kbd != nullptr || (Disp->Kbd = EvKbd::Create(0, 0, 0, 0, Disp, "KbdSystem", SYSTEM_OBJ)) != nullptr)
   {
     EvKbd   *kbd = Disp->Kbd;
 
     if (kbd->FocusObj != this)
     {
-      if (kbd->FocusObj != NULL)
+      if (kbd->FocusObj != nullptr)
         kbd->FocusObj->lostKbdFocusEvent();
 
       kbd->FocusObj = this;
@@ -633,10 +633,10 @@ void        EvObj::LostKbdFocus(void)
 {
   EvKbd     *kbd = Disp->Kbd;
 
-  if (kbd != NULL && kbd->FocusObj != NULL)
+  if (kbd != nullptr && kbd->FocusObj != nullptr)
   {
     kbd->FocusObj->lostKbdFocusEvent();
-    kbd->FocusObj = NULL;
+    kbd->FocusObj = nullptr;
     kbd->Close();
   }
 }
@@ -653,7 +653,7 @@ void        EvObj::LostKbdFocus(void)
 
 EvObj       *EvObj::GetKbdFocus(void)
 {
-  return (Disp->Kbd == NULL) ? NULL : Disp->Kbd->FocusObj;
+  return (Disp->Kbd == nullptr) ? nullptr : Disp->Kbd->FocusObj;
 }
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -680,7 +680,7 @@ bool        EvObj::IsOnKbdFocus(void)
 void        EvObj::ClearCache(void)
 {
   Disp->RAM_G.Free(mCache);
-  mCache = NULL;
+  mCache = nullptr;
 }
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -865,7 +865,7 @@ int16_t     EvObj::TextHeight(uint8_t Font)
   if (Font == 0)
     Font = mStyle.font;
 
-  if (Font <= LAST_FONT && (fnt = Disp->SystemFont[Font]) != NULL)
+  if (Font <= LAST_FONT && (fnt = Disp->SystemFont[Font]) != nullptr)
     return fnt->Height;
 
   return 0;
@@ -890,7 +890,7 @@ int16_t     EvObj::TextWidth(const char C, uint8_t Font)
   if (Font == 0)
     Font = mStyle.font;
 
-  if (Font <= LAST_FONT && (fnt = Disp->SystemFont[Font]) != NULL && c >= fnt->CharBeg && c < (fnt->CharBeg + fnt->CharCnt))
+  if (Font <= LAST_FONT && (fnt = Disp->SystemFont[Font]) != nullptr && c >= fnt->CharBeg && c < (fnt->CharBeg + fnt->CharCnt))
     return fnt->Width[c];
 
   return 0;
@@ -933,7 +933,7 @@ int16_t     EvObj::TextWidth(const char *Str, uint8_t Font, int16_t Count)
   if (Font == 0)
     Font = mStyle.font;
 
-  if (Font <= LAST_FONT && (fnt = Disp->SystemFont[Font]) != NULL)
+  if (Font <= LAST_FONT && (fnt = Disp->SystemFont[Font]) != nullptr)
     for (; (c = *Str) != 0 && Count != 0; Str++, Count--)
       if (c >= fnt->CharBeg && c < (fnt->CharBeg + fnt->CharCnt))
         width += fnt->Width[c];
@@ -958,7 +958,7 @@ int16_t     EvObj::TextCursorWidth(uint8_t Font)
   if (Font == 0)
     Font = mStyle.font;
 
-  if (Font <= LAST_FONT && (fnt = Disp->SystemFont[Font]) != NULL)
+  if (Font <= LAST_FONT && (fnt = Disp->SystemFont[Font]) != nullptr)
     return fnt->CurWidth;
 
   return 1;
@@ -1248,22 +1248,22 @@ void        EvObj::DisplayTagList(void)
   int16_t     tagCount;
   EvObj       *obj = this;
 
-  if ((obj->Tag) != NULL)
+  if ((obj->Tag) != nullptr)
   {
     snprintf(str, sizeof(str) - 1, "\"%s\"", obj->Tag);
     Serial.print(str);
 
-    for (tagCount = 0;  tagCount < 8 && (obj = obj->mOwner) != NULL; tagCount++)
+    for (tagCount = 0;  tagCount < 8 && (obj = obj->mOwner) != nullptr; tagCount++)
       tag[tagCount] = obj->Tag;
 
     if (tagCount-- > 0)
     {
-      snprintf(str, sizeof(str) - 1, " from [%s]", tag[tagCount] == NULL ? "NULL" : tag[tagCount]);
+      snprintf(str, sizeof(str) - 1, " from [%s]", tag[tagCount] == nullptr ? "nullptr" : tag[tagCount]);
       Serial.print(str);
 
       while (tagCount-- > 0)
       {
-        snprintf(str, sizeof(str) - 1, "->[%s]", tag[tagCount] == NULL ? "NULL" : tag[tagCount]);
+        snprintf(str, sizeof(str) - 1, "->[%s]", tag[tagCount] == nullptr ? "nullptr" : tag[tagCount]);
         Serial.print(str);
       }
     }
@@ -1306,7 +1306,7 @@ void        EvObj::TouchUpdate(EvTouchEvent *Touch)
 
   if (Touch->event)
   {
-    if ((Disp->sTraceFlags & TRACE_TOUCH) != 0 && Touch->event != TOUCH_REPEAT && (!(mStatus & CONTROL_OBJ) || Touch->obj == NULL))
+    if ((Disp->sTraceFlags & TRACE_TOUCH) != 0 && Touch->event != TOUCH_REPEAT && (!(mStatus & CONTROL_OBJ) || Touch->obj == nullptr))
     {
       char    str[80];
 
@@ -1334,7 +1334,7 @@ EvObj       *EvObj::Touching(EvTouchEvent *Touch)
   x = Touch->abs.x;
   y = Touch->abs.y;
 
-  return ((mStatus & (VISIBLE_OBJ | DISABLED_OBJ)) == VISIBLE_OBJ && x >= mView.x1-pad && x <= mView.x2+pad && y >= mView.y1-pad && y <= mView.y2+pad) ? this : NULL;
+  return ((mStatus & (VISIBLE_OBJ | DISABLED_OBJ)) == VISIBLE_OBJ && x >= mView.x1-pad && x <= mView.x2+pad && y >= mView.y1-pad && y <= mView.y2+pad) ? this : nullptr;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -1343,10 +1343,10 @@ void        EvObj::SetDisplay(EvDisplay *Disp)
 {
   if (EvObj::Disp != Disp)
   {
-    if (mCache != NULL)
+    if (mCache != nullptr)
     {
       EvObj::Disp->RAM_G.Free(mCache);
-      mCache = NULL;
+      mCache = nullptr;
     }
 
     EvObj::Disp = Disp;
@@ -1362,7 +1362,7 @@ void        EvObj::SetView(void)
   EvView    p = mView;
   EvView    &v = mView;
 
-  if (mOwner != NULL && !(mStatus & ABS_OBJ))
+  if (mOwner != nullptr && !(mStatus & ABS_OBJ))
   {
     v = mOwner->mView;
 
@@ -1431,15 +1431,15 @@ void        EvObj::Draw(void)
 {
   if (!(mStatus & VISIBLE_OBJ) || mView.w <= 0)
   {
-    if (mCache != NULL)
+    if (mCache != nullptr)
     {
       Disp->RAM_G.Free(mCache);
-      mCache = NULL;
+      mCache = nullptr;
     }
   }
   else
   {
-    if (mCache != NULL && !(mStatus & (MODIFIED_OBJ | FUNCT_USED_OBJ)))
+    if (mCache != nullptr && !(mStatus & (MODIFIED_OBJ | FUNCT_USED_OBJ)))
     {
       if (mStatus & MOVED_OBJ)
       {  // if only moved, overwrite commands VertexTranslate and Scissor
@@ -1487,9 +1487,9 @@ void        EvObj::Draw(void)
 
       Disp->RestoreContext();
       sizeDL = Disp->ReadDL() - startDL;
-      mCache = (mCache == NULL) ? Disp->RAM_G.Malloc(sizeDL, this) : Disp->RAM_G.Realloc(mCache, sizeDL);
+      mCache = (mCache == nullptr) ? Disp->RAM_G.Malloc(sizeDL, this) : Disp->RAM_G.Realloc(mCache, sizeDL);
 
-      if (mCache != NULL)
+      if (mCache != nullptr)
         Disp->CmdMemcpy(mCache->addr, (((EvMem *)mCache)->startDL = startDL) + RAM_DL, sizeDL);
 
       if (Disp->sTraceFlags & TRACE_MODIFIED)
@@ -1508,9 +1508,9 @@ void        EvObj::Draw(void)
 
 EvObj       *EvObj::TryCreate(EvObj *Obj, EvPanel *Dest)
 {
-  if (!Dest)
-    Serial.println("TryCreate: Dest is NULL");
-  else if (Obj != NULL)
+  if (Dest == nullptr)
+    Serial.println("TryCreate: Dest is nullptr");
+  else if (Obj != nullptr)
   {
     #ifdef VERBOS
       char    str[80];
@@ -1519,7 +1519,7 @@ EvObj       *EvObj::TryCreate(EvObj *Obj, EvPanel *Dest)
       Serial.print(str);
     #endif
 
-    if (!(Obj->mStatus & ABORT_OBJ) && Dest->AddObj(Obj) != NULL)
+    if (!(Obj->mStatus & ABORT_OBJ) && Dest->AddObj(Obj) != nullptr)
     {
       #ifdef VERBOS
         Serial.println(" Ok");
@@ -1534,5 +1534,5 @@ EvObj       *EvObj::TryCreate(EvObj *Obj, EvPanel *Dest)
     delete Obj;
   }
 
-  return NULL;
+  return nullptr;
 }

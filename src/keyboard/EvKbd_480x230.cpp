@@ -10,7 +10,7 @@ static const char   sKeyExtra[] = "1234567890~|@[]{}\'\"^_&\\<>?, .\n\b\4\2\6";
 
 static const char   *sKeyLabel[16] =
 {
-  "CAPS", "shift", "ABC", "123", "close", "@\\^", "#+=", NULL, "del", NULL, "return", NULL, NULL, NULL, NULL, NULL
+  "CAPS", "shift", "ABC", "123", "close", "@\\^", "#+=", nullptr, "del", nullptr, "return", nullptr, nullptr, nullptr, nullptr, nullptr
 };
 
 static const EvKeyStyle     sKeyStyle480x230[4] =

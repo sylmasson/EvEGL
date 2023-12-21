@@ -7,7 +7,7 @@
 class EvTouchCal : public EvObj
 {
   public:
-    EvTouchCal(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag = NULL, uint16_t State = VISIBLE_OBJ | SYSTEM_OBJ);
+    EvTouchCal(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ | SYSTEM_OBJ);
     ~EvTouchCal(void);
 
     void          SetOnExit(void (*mOnExit)(EvTouchCal *Sender, bool Save));
@@ -36,7 +36,7 @@ class EvTouchCal : public EvObj
   public:
     int32_t       Matrix[6];
 
-    static EvTouchCal *Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag = NULL, uint16_t State = VISIBLE_OBJ | SYSTEM_OBJ);
+    static EvTouchCal *Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ | SYSTEM_OBJ);
 };
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

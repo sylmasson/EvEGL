@@ -14,17 +14,17 @@
  * @param[in]  Top     The top position of the Text Cursor.
  * @param[in]  Width   The width of the Text Cursor.
  * @param[in]  Height  The height of the Text Cursor.
- * @param[out] *Dest   The address pointer of the EvPanel destination. Cannot be NULL.
- * @param[in]  Tag     The tag name of the Text Cursor. If NULL, the default tag name is "EvTextCursor".
+ * @param[out] *Dest   The address pointer of the EvPanel destination. Cannot be nullptr.
+ * @param[in]  Tag     The tag name of the Text Cursor. If nullptr, the default tag name is "EvTextCursor".
  * @param[in]  State   The initial state of the Text Cursor. Default is set to VISIBLE_OBJ.
  *
- * @return     EvTextCursor address pointer on success, otherwise returns NULL.
+ * @return     EvTextCursor address pointer on success, otherwise returns nullptr.
  * 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 EvTextCursor    *EvTextCursor::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag, uint16_t State)
 {
-  return !Dest ? NULL : (EvTextCursor *)EvObj::TryCreate(new EvTextCursor(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvTextCursor" : Tag, State), Dest);
+  return !Dest ? nullptr : (EvTextCursor *)EvObj::TryCreate(new EvTextCursor(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvTextCursor" : Tag, State), Dest);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

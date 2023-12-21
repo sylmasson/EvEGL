@@ -5,7 +5,7 @@
 
 EvSmeter    *EvSmeter::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag, uint16_t State)
 {
-  return !Dest ? NULL : (EvSmeter *)EvObj::TryCreate(new EvSmeter(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvSmeter" : Tag, State), Dest);
+  return !Dest ? nullptr : (EvSmeter *)EvObj::TryCreate(new EvSmeter(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvSmeter" : Tag, State), Dest);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -27,7 +27,7 @@ EvSmeter::EvSmeter(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, E
     mNeedle->RotateAround(sSmeterNeedle.Width / 2, sSmeterNeedle.Height - 6);
     BgColor(RGB555(0, 0, 0));
     resizeEvent();
-    SetOnTouch(NULL);
+    SetOnTouch(nullptr);
     SetValue(-1000);
   }
 }
@@ -71,7 +71,7 @@ void        EvSmeter::resizeEvent(void)
 
 void        EvSmeter::touchEvent(EvTouchEvent *Touch)
 {
-  if (mOnTouch != NULL)
+  if (mOnTouch != nullptr)
     (*mOnTouch)(this, Touch);
 }
 

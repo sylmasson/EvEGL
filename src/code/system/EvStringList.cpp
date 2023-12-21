@@ -21,8 +21,8 @@ EvStringList::EvStringList(void)
 {
   mCount = 0;
   mMaxItems = 0;
-  mOnChange = NULL;
-  mStringList = NULL;
+  mOnChange = nullptr;
+  mStringList = nullptr;
   AutoSort = false;
   ReverseSort = false;
   CaseSensitive = false;
@@ -32,7 +32,7 @@ EvStringList::EvStringList(void)
 
 EvStringList::~EvStringList(void)
 {
-  mOnChange = NULL;
+  mOnChange = nullptr;
   Clear();
 }
 
@@ -44,7 +44,7 @@ int         EvStringList::Clear(void)
     delete mStringList[i];
 
   free(mStringList);
-  mStringList = NULL;
+  mStringList = nullptr;
   mMaxItems = 0;
   mCount = 0;
   modified(false);
@@ -206,7 +206,7 @@ int         EvStringList::Insert(int Index, int Count, const char *Str)
 
 int         EvStringList::IndexOf(const char *Str)
 {
-  if (Str != NULL)
+  if (Str != nullptr)
     for (int i = 0; i < mCount; i++)
       if ((!CaseSensitive ? stricmp(Str, c_str(*mStringList[i])) : strcmp(Str, c_str(*mStringList[i]))) == 0)
         return i;
@@ -252,7 +252,7 @@ int         EvStringList::Move(int Index, int NewIndex)
 
 int         EvStringList::Set(int Index, const char *Str)
 {
-  if (!Str || !VALID_BOUNDARY(Index))
+  if (Str == nullptr || !VALID_BOUNDARY(Index))
     return -1;
 
   *mStringList[Index] = Str;
@@ -313,7 +313,7 @@ void        EvStringList::SetOnChange(void (*OnChange)(EvObj *Sender, int32_t Co
 
 void        EvStringList::Modified(void)
 {
-  if (mOnChange != NULL)
+  if (mOnChange != nullptr)
     (*mOnChange)(mSender, mCount);
 }
 
@@ -336,7 +336,7 @@ int         EvStringList::addStr(const char *Str)
   if (mCount >= mMaxItems)
     resizeStringList(mMaxItems + MAX_ITEMS_BLOCK_SIZE);
 
-  if (mCount >= mMaxItems || (newStr = new String(Str)) == NULL)
+  if (mCount >= mMaxItems || (newStr = new String(Str)) == nullptr)
     return -1;
 
   mStringList[mCount] = newStr;
@@ -355,7 +355,7 @@ int         EvStringList::insertStr(int Index, const char *Str)
   if (mCount >= mMaxItems)
     resizeStringList(mMaxItems + MAX_ITEMS_BLOCK_SIZE);
 
-  if (mCount >= mMaxItems || !VALID_BOUNDARY(Index) || (newStr = new String(Str)) == NULL)
+  if (mCount >= mMaxItems || !VALID_BOUNDARY(Index) || (newStr = new String(Str)) == nullptr)
     return -1;
 
   for (int i = mCount; i > Index; i--)
@@ -371,7 +371,7 @@ void        EvStringList::resizeStringList(int NewMaxItems)
 {
   void      *ptr;
 
-  if ((ptr = realloc(mStringList, NewMaxItems * sizeof(mStringList[0]))) != NULL)
+  if ((ptr = realloc(mStringList, NewMaxItems * sizeof(mStringList[0]))) != nullptr)
   {
     mStringList = (String **)ptr;
     mMaxItems = NewMaxItems;

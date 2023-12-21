@@ -1,10 +1,10 @@
-commit 9d9dab387896190711cc9c72290e10c0c4b24426
+commit b9878642ba2b88a09ddd9b338ce18c5ab7dcc5dd
 Author: Sylvain Masson <sylvainmasson@Sylvains-Mac-mini.local>
 Date:   Tue Oct 3 16:47:22 2023 -0400
 
     EvSmeter: rewrite all code using EvImage class while supporting resizing
     
-    EvVideo: new class and preliminary test to play a video at 30 fps
+    EvVideo: neww class and preliminary test to play a video at 30 fps
     
     EvBitmap: class removed and replace with EvImage
     

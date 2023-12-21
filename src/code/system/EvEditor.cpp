@@ -70,9 +70,9 @@ const EvBmp       *AlignIconsY = &sAlignIconsY;
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-static EvEditor   *editor = NULL;
-static EvObj      *editObj = NULL;
-static EvProperty *property = NULL;
+static EvEditor   *editor = nullptr;
+static EvObj      *editObj = nullptr;
+static EvProperty *property = nullptr;
 
 static int16_t    propLeft = 0;
 static int16_t    propTop = 0;
@@ -81,13 +81,13 @@ static int16_t    propTop = 0;
 
 const char  *OpenEditor(EvDisplay *Disp)
 {
-  if (editor)
+  if (editor != nullptr)
     return "Editor already open";
 
-  if ((editor = (EvEditor *)EvObj::TryCreate(new EvEditor(Disp, "Editor"), Disp)) == NULL ||
-      (property = (EvProperty *)EvObj::TryCreate(new EvProperty(Disp, "Property"), Disp)) == NULL)
+  if ((editor = (EvEditor *)EvObj::TryCreate(new EvEditor(Disp, "Editor"), Disp)) == nullptr ||
+      (property = (EvProperty *)EvObj::TryCreate(new EvProperty(Disp, "Property"), Disp)) == nullptr)
     {
-      if (editor)
+      if (editor != nullptr)
         editor->Delete();
 
       return "Cannot open editor";
@@ -101,7 +101,7 @@ const char  *OpenEditor(EvDisplay *Disp)
 
 const char  *CloseEditor(void)
 {
-  if (!editor)
+  if (editor == nullptr)
     return "Editor already closed";
 
   editor->Delete();
@@ -111,9 +111,9 @@ const char  *CloseEditor(void)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EditorToFront(EvDisplay *Disp)
+void        EditorToFront(void)
 {
-  if (editor && editor->Disp == Disp)
+  if (editor != nullptr)
   {
     editor->ToFront();
     property->ToFront();
@@ -126,10 +126,10 @@ void        SetEditObj(EvObj *Obj)
 {
   editObj = Obj;
 
-  if (!editor)
+  if (editor == nullptr)
     return;
 
-  if (!Obj)
+  if (Obj == nullptr)
   {
     property->NumLeft->Disable();
     property->NumTop->Disable();
@@ -211,9 +211,9 @@ void        SetEditObjDestroyed(EvObj *Obj)
 {
   if (editObj == Obj)
   {
-    editObj = NULL;
+    editObj = nullptr;
 
-    if (editor)
+    if (editor != nullptr)
       SetEditObj(editObj);
   }
 }
@@ -268,7 +268,7 @@ static void OnChangeTab(EvTab *Sender, int32_t Value)
 
 static void OnChangeLeft(EvNumInt *Sender, int32_t Value)
 {
-  if (editObj)
+  if (editObj != nullptr)
     editObj->MoveTo(Value, editObj->Top());
 }
 
@@ -276,7 +276,7 @@ static void OnChangeLeft(EvNumInt *Sender, int32_t Value)
 
 static void OnChangeTop(EvNumInt *Sender, int32_t Value)
 {
-  if (editObj)
+  if (editObj != nullptr)
     editObj->MoveTo(editObj->Left(), Value);
 }
 
@@ -284,7 +284,7 @@ static void OnChangeTop(EvNumInt *Sender, int32_t Value)
 
 static void OnChangeWidth(EvNumInt *Sender, int32_t Value)
 {
-  if (editObj)
+  if (editObj != nullptr)
     editObj->ReSize(Value, editObj->Height());
 }
 
@@ -292,7 +292,7 @@ static void OnChangeWidth(EvNumInt *Sender, int32_t Value)
 
 static void OnChangeHeight(EvNumInt *Sender, int32_t Value)
 {
-  if (editObj)
+  if (editObj != nullptr)
     editObj->ReSize(editObj->Width(), Value);
 }
 
@@ -300,7 +300,7 @@ static void OnChangeHeight(EvNumInt *Sender, int32_t Value)
 
 static void OnChangeShape(EvSelector *Sender, int32_t Value)
 {
-  if (editObj)
+  if (editObj != nullptr)
     editObj->BdShape((editObj->Shape() & ~7) | Value);
 }
 
@@ -308,7 +308,7 @@ static void OnChangeShape(EvSelector *Sender, int32_t Value)
 
 static void OnChangeFont(EvNumInt *Sender, int32_t Value)
 {
-  if (editObj)
+  if (editObj != nullptr)
   {
     Sender->TextColor(editObj->Disp->SystemFont[Value] == 0 ? TEXT_ERROR : TEXT_COLOR);
     editObj->TextFont(Value);
@@ -319,7 +319,7 @@ static void OnChangeFont(EvNumInt *Sender, int32_t Value)
 
 static void OnChangePadX(EvNumInt *Sender, int32_t Value)
 {
-  if (editObj)
+  if (editObj != nullptr)
     editObj->TextPadding(Value, editObj->Style.padY);
 }
 
@@ -327,7 +327,7 @@ static void OnChangePadX(EvNumInt *Sender, int32_t Value)
 
 static void OnChangePadY(EvNumInt *Sender, int32_t Value)
 {
-  if (editObj)
+  if (editObj != nullptr)
     editObj->TextPadding(editObj->Style.padX, Value);
 }
 
@@ -335,7 +335,7 @@ static void OnChangePadY(EvNumInt *Sender, int32_t Value)
 
 static void OnChangeAlignX(EvSelector *Sender, int32_t Value)
 {
-  if (editObj)
+  if (editObj != nullptr)
     editObj->TextAlign((editObj->Style.align & ~3) | Value);
 }
 
@@ -343,7 +343,7 @@ static void OnChangeAlignX(EvSelector *Sender, int32_t Value)
 
 static void OnChangeAlignY(EvSelector *Sender, int32_t Value)
 {
-  if (editObj)
+  if (editObj != nullptr)
     editObj->TextAlign((editObj->Style.align & ~0x0C) | (Value << 2));
 }
 
@@ -434,14 +434,14 @@ EvEditor::EvEditor(EvDisplay *Disp, const char *Tag) : EvPanel(0, 0, Disp->Width
 
 EvEditor::~EvEditor(void)
 {
-  editor = NULL;
+  editor = nullptr;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 void        EvEditor::drawEvent(void)
 {
-  if (editObj)
+  if (editObj != nullptr)
   {
     int16_t x1, x2, y1, y2;
 
@@ -469,7 +469,7 @@ void        EvEditor::drawEvent(void)
 
 void        EvEditor::refreshEvent(void)
 {
-  if (editObj)
+  if (editObj != nullptr)
   {
     int16_t x = editObj->View.ox - (DotMove->Width() / 2);
     int16_t y = editObj->View.oy - (DotMove->Height() / 2);
@@ -496,30 +496,30 @@ void        EvEditor::refreshEvent(void)
 
 EvProperty::EvProperty(EvDisplay *Disp, const char *Tag) : EvPanel(0, 0, 150, 310, Disp, Tag, VISIBLE_OBJ | SYSTEM_OBJ)
 {
-  if (property || !(LabTitle = EvLabel::Create(40, 0, 65, 36, this, NULL, VISIBLE_DIS_OBJ | SYSTEM_OBJ)) ||
-      !(BtnMinimize = EvButton::Create(6, 6, 25, 25, this, NULL, VISIBLE_OBJ | SYSTEM_OBJ)) ||
-      !(TglEdit = EvToggle::Create(105, 6, 40, 25, this, NULL, VISIBLE_OBJ | SYSTEM_OBJ)) ||
-      !(TabPanel = EvTab::Create(1, 35, mWidth - 2, 31, this, NULL, VISIBLE_OBJ | SYSTEM_OBJ)) ||
-      !(PanObj = EvPanel::Create(1, 65, mWidth - 2, 213, this, NULL, VISIBLE_DIS_OBJ | SYSTEM_OBJ)) ||
-      !(PanText = EvPanel::Create(1, 65, mWidth - 2, 213, this, NULL, VISIBLE_DIS_OBJ | SYSTEM_OBJ)) ||
-      !(LabTag = EvLabel::Create(7, 283, mWidth - 11, 20, this, NULL, VISIBLE_DIS_OBJ | SYSTEM_OBJ)) ||
-      !(LabLeft = EvLabel::Create(5, 10, 63, 32, PanObj, NULL, VISIBLE_DIS_OBJ | SYSTEM_OBJ)) ||
-      !(LabTop = EvLabel::Create(5, 50, 63, 32, PanObj, NULL, VISIBLE_DIS_OBJ | SYSTEM_OBJ)) ||
-      !(LabWidth = EvLabel::Create(5, 90, 63, 32, PanObj, NULL, VISIBLE_DIS_OBJ | SYSTEM_OBJ)) ||
-      !(LabHeight = EvLabel::Create(5, 130, 63, 32, PanObj, NULL, VISIBLE_DIS_OBJ | SYSTEM_OBJ)) ||
-      !(NumLeft = EvNumInt::Create(73, 10, 65, 32, PanObj, NULL, VISIBLE_OBJ | SYSTEM_OBJ | FILTER_DIS_OBJ)) ||
-      !(NumTop = EvNumInt::Create(73, 50, 65, 32, PanObj, NULL, VISIBLE_OBJ | SYSTEM_OBJ | FILTER_DIS_OBJ)) ||
-      !(NumWidth = EvNumInt::Create(73, 90, 65, 32, PanObj, NULL, VISIBLE_OBJ | SYSTEM_OBJ | FILTER_DIS_OBJ)) ||
-      !(NumHeight = EvNumInt::Create(73, 130, 65, 32, PanObj, NULL, VISIBLE_OBJ | SYSTEM_OBJ | FILTER_DIS_OBJ)) ||
-      !(SelShape = EvSelector::Create(10, 172, 128, 32, PanObj, NULL, VISIBLE_OBJ | SYSTEM_OBJ | FILTER_DIS_OBJ)) ||
-      !(LabFont = EvLabel::Create(5, 10, 63, 32, PanText, NULL, VISIBLE_DIS_OBJ | SYSTEM_OBJ)) ||
-      !(LabPadX = EvLabel::Create(5, 50, 63, 32, PanText, NULL, VISIBLE_DIS_OBJ | SYSTEM_OBJ)) ||
-      !(LabPadY = EvLabel::Create(5, 90, 63, 32, PanText, NULL, VISIBLE_DIS_OBJ | SYSTEM_OBJ)) ||
-      !(NumFont = EvNumInt::Create(73, 10, 65, 32, PanText, NULL, VISIBLE_OBJ | SYSTEM_OBJ | FILTER_DIS_OBJ)) ||
-      !(NumPadX = EvNumInt::Create(73, 50, 65, 32, PanText, NULL, VISIBLE_OBJ | SYSTEM_OBJ | FILTER_DIS_OBJ)) ||
-      !(NumPadY = EvNumInt::Create(73, 90, 65, 32, PanText, NULL, VISIBLE_OBJ | SYSTEM_OBJ | FILTER_DIS_OBJ)) ||
-      !(SelAlignX = EvSelector::Create(10, 132, 128, 32, PanText, NULL, VISIBLE_OBJ | SYSTEM_OBJ | FILTER_DIS_OBJ)) ||
-      !(SelAlignY = EvSelector::Create(10, 172, 128, 32, PanText, NULL, VISIBLE_OBJ | SYSTEM_OBJ | FILTER_DIS_OBJ)) ||
+  if (property || !(LabTitle = EvLabel::Create(40, 0, 65, 36, this, nullptr, VISIBLE_DIS_OBJ | SYSTEM_OBJ)) ||
+      !(BtnMinimize = EvButton::Create(6, 6, 25, 25, this, nullptr, VISIBLE_OBJ | SYSTEM_OBJ)) ||
+      !(TglEdit = EvToggle::Create(105, 6, 40, 25, this, nullptr, VISIBLE_OBJ | SYSTEM_OBJ)) ||
+      !(TabPanel = EvTab::Create(1, 35, mWidth - 2, 31, this, nullptr, VISIBLE_OBJ | SYSTEM_OBJ)) ||
+      !(PanObj = EvPanel::Create(1, 65, mWidth - 2, 213, this, nullptr, VISIBLE_DIS_OBJ | SYSTEM_OBJ)) ||
+      !(PanText = EvPanel::Create(1, 65, mWidth - 2, 213, this, nullptr, VISIBLE_DIS_OBJ | SYSTEM_OBJ)) ||
+      !(LabTag = EvLabel::Create(7, 283, mWidth - 11, 20, this, nullptr, VISIBLE_DIS_OBJ | SYSTEM_OBJ)) ||
+      !(LabLeft = EvLabel::Create(5, 10, 63, 32, PanObj, nullptr, VISIBLE_DIS_OBJ | SYSTEM_OBJ)) ||
+      !(LabTop = EvLabel::Create(5, 50, 63, 32, PanObj, nullptr, VISIBLE_DIS_OBJ | SYSTEM_OBJ)) ||
+      !(LabWidth = EvLabel::Create(5, 90, 63, 32, PanObj, nullptr, VISIBLE_DIS_OBJ | SYSTEM_OBJ)) ||
+      !(LabHeight = EvLabel::Create(5, 130, 63, 32, PanObj, nullptr, VISIBLE_DIS_OBJ | SYSTEM_OBJ)) ||
+      !(NumLeft = EvNumInt::Create(73, 10, 65, 32, PanObj, nullptr, VISIBLE_OBJ | SYSTEM_OBJ | FILTER_DIS_OBJ)) ||
+      !(NumTop = EvNumInt::Create(73, 50, 65, 32, PanObj, nullptr, VISIBLE_OBJ | SYSTEM_OBJ | FILTER_DIS_OBJ)) ||
+      !(NumWidth = EvNumInt::Create(73, 90, 65, 32, PanObj, nullptr, VISIBLE_OBJ | SYSTEM_OBJ | FILTER_DIS_OBJ)) ||
+      !(NumHeight = EvNumInt::Create(73, 130, 65, 32, PanObj, nullptr, VISIBLE_OBJ | SYSTEM_OBJ | FILTER_DIS_OBJ)) ||
+      !(SelShape = EvSelector::Create(10, 172, 128, 32, PanObj, nullptr, VISIBLE_OBJ | SYSTEM_OBJ | FILTER_DIS_OBJ)) ||
+      !(LabFont = EvLabel::Create(5, 10, 63, 32, PanText, nullptr, VISIBLE_DIS_OBJ | SYSTEM_OBJ)) ||
+      !(LabPadX = EvLabel::Create(5, 50, 63, 32, PanText, nullptr, VISIBLE_DIS_OBJ | SYSTEM_OBJ)) ||
+      !(LabPadY = EvLabel::Create(5, 90, 63, 32, PanText, nullptr, VISIBLE_DIS_OBJ | SYSTEM_OBJ)) ||
+      !(NumFont = EvNumInt::Create(73, 10, 65, 32, PanText, nullptr, VISIBLE_OBJ | SYSTEM_OBJ | FILTER_DIS_OBJ)) ||
+      !(NumPadX = EvNumInt::Create(73, 50, 65, 32, PanText, nullptr, VISIBLE_OBJ | SYSTEM_OBJ | FILTER_DIS_OBJ)) ||
+      !(NumPadY = EvNumInt::Create(73, 90, 65, 32, PanText, nullptr, VISIBLE_OBJ | SYSTEM_OBJ | FILTER_DIS_OBJ)) ||
+      !(SelAlignX = EvSelector::Create(10, 132, 128, 32, PanText, nullptr, VISIBLE_OBJ | SYSTEM_OBJ | FILTER_DIS_OBJ)) ||
+      !(SelAlignY = EvSelector::Create(10, 172, 128, 32, PanText, nullptr, VISIBLE_OBJ | SYSTEM_OBJ | FILTER_DIS_OBJ)) ||
       !SelShape->SetBmp(ShapeIcons, 4) || !SelAlignX->SetBmp(AlignIconsX, 4) || !SelAlignY->SetBmp(AlignIconsY, 3))
     {
       Abort();
@@ -649,14 +649,14 @@ EvProperty::EvProperty(EvDisplay *Disp, const char *Tag) : EvPanel(0, 0, 150, 31
 
 EvProperty::~EvProperty(void)
 {
-  property = NULL;
+  property = nullptr;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 void        EvProperty::refreshEvent(void)
 {
-  if (editObj)
+  if (editObj != nullptr)
   {
     int16_t shape = editObj->Shape() & 7;
 
@@ -666,7 +666,7 @@ void        EvProperty::refreshEvent(void)
     NumHeight->SetValue(editObj->Height());
     SelShape->SetValue((shape == USER_CORNERS ? -1 : shape));
     NumFont->SetValue(editObj->Style.font);
-    NumFont->TextColor(editObj->Disp->SystemFont[editObj->Style.font] == NULL ? TEXT_ERROR : TEXT_COLOR);
+    NumFont->TextColor(editObj->Disp->SystemFont[editObj->Style.font] == nullptr ? TEXT_ERROR : TEXT_COLOR);
     NumPadX->SetValue(editObj->Style.padX);
     NumPadY->SetValue(editObj->Style.padY);
     SelAlignX->SetValue(editObj->Style.align & 3);

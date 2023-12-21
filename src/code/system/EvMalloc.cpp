@@ -9,17 +9,17 @@ EvMalloc::EvMalloc(void)
 {
   mId = 1;
 
-  if ((mFirst = new EvMem) != NULL)
+  if ((mFirst = new EvMem) != nullptr)
   {
     mFirst->id = 0;
     mFirst->used = 0;
-    mFirst->owner = NULL;
+    mFirst->owner = nullptr;
     mFirst->typeId = 0;
     mFirst->count = 0;
     mFirst->startDL = -1;
     mFirst->size = EV_MALLOC_SIZE;
     mFirst->addr = EV_MALLOC_ADDR;
-    mFirst->next = mFirst->prev = NULL;
+    mFirst->next = mFirst->prev = nullptr;
   }
 
   BufferPNG = Malloc(42 * 1024, "PNG decoding process buffer"); // Allocate at 0xF5800
@@ -29,7 +29,7 @@ EvMalloc::EvMalloc(void)
 
 EvMalloc::~EvMalloc(void)
 {
-  for (EvMem *ptr = mFirst; ptr != NULL; )
+  for (EvMem *ptr = mFirst; ptr != nullptr; )
   {
     EvMem *tmp = ptr->next;
     delete ptr;
@@ -47,7 +47,7 @@ EvMalloc::~EvMalloc(void)
 
 void        EvMalloc::Free(const EvMem *Ptr)
 {
-  if (Ptr != NULL)
+  if (Ptr != nullptr)
     memFree((EvMem *)Ptr);
 }
 
@@ -56,16 +56,16 @@ void        EvMalloc::Free(const EvMem *Ptr)
  * @brief      Allocate an uninitialized RAM_G memory block.
  *
  * @param[in]  Size    Size of the memory block, in bytes.
- * @param[in]  Owner   Owner pointer of the allocated block. Default is NULL.
+ * @param[in]  Owner   Owner pointer of the allocated block. Default is nullptr.
  * @param[in]  TypeId  Type Id of the Owner pointer. Default is EV_UNDEFINED;
  * 
- * @return     EvMem struct pointer of the block on success, otherwise returns NULL.
+ * @return     EvMem struct pointer of the block on success, otherwise returns nullptr.
 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 const EvMem *EvMalloc::Malloc(size_t Size, const void *Owner, uint8_t TypeId)
 {
-  EvMem     *ptr = NULL;
+  EvMem     *ptr = nullptr;
 
   if (Size > 0)
   {
@@ -79,7 +79,7 @@ const EvMem *EvMalloc::Malloc(size_t Size, const void *Owner, uint8_t TypeId)
     else if (mFirst->used == 0 && mFirst->size >= size)
       ptr = memSplit(mFirst, size, true);
 
-    if (ptr != NULL)
+    if (ptr != nullptr)
     {
       ptr->used = used;
       ptr->owner = Owner;
@@ -102,7 +102,7 @@ const EvMem *EvMalloc::Malloc(size_t Size, const void *Owner, uint8_t TypeId)
  * @param[in]  Size    Size of the memory block, in bytes.
  * @param[in]  Owner   Owner pointer of the allocated EV_FONT block.
  * 
- * @return     EvMem struct pointer of the block on success, otherwise returns NULL.
+ * @return     EvMem struct pointer of the block on success, otherwise returns nullptr.
 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
@@ -118,7 +118,7 @@ const EvMem *EvMalloc::Malloc(size_t Size, const EvFont *Owner)
  * @param[in]  Size    Size of the memory block, in bytes.
  * @param[in]  Owner   Owner pointer of the allocated EV_BMP block.
  * 
- * @return     EvMem struct pointer of the block on success, otherwise returns NULL.
+ * @return     EvMem struct pointer of the block on success, otherwise returns nullptr.
 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
@@ -134,7 +134,7 @@ const EvMem *EvMalloc::Malloc(size_t Size, const EvBmp *Owner)
  * @param[in]  Size    Size of the memory block, in bytes.
  * @param[in]  Owner   Owner pointer of the allocated EV_OBJ block.
  * 
- * @return     EvMem struct pointer of the block on success, otherwise returns NULL.
+ * @return     EvMem struct pointer of the block on success, otherwise returns nullptr.
 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
@@ -149,10 +149,10 @@ const EvMem *EvMalloc::Malloc(size_t Size, const EvObj *Owner)
  * 
  * @note       The new block must be considered as uninitialized
  *
- * @param[in]  Ptr     EvMem pointer of the block to reallocate. If NULL, the function does nothing.
+ * @param[in]  Ptr     EvMem pointer of the block to reallocate. If nullptr, the function does nothing.
  * @param[in]  Size    New size of the memory block, in bytes. If size is zero, the block is deallocated.
  * 
- * @return     The same EvMem struct pointer of the block on success, otherwise returns NULL.
+ * @return     The same EvMem struct pointer of the block on success, otherwise returns nullptr.
 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
@@ -163,10 +163,10 @@ const EvMem *EvMalloc::Realloc(const EvMem *Ptr, size_t Size)
   if (Size == 0)
   {
     Free(ptr);
-    return NULL;
+    return nullptr;
   }
 
-  if (ptr != NULL && ptr->used > 0)
+  if (ptr != nullptr && ptr->used > 0)
   {
     uint32_t  used, size;
 
@@ -175,7 +175,7 @@ const EvMem *EvMalloc::Realloc(const EvMem *Ptr, size_t Size)
 
     if (size <= ptr->size)
     { // decrease the size of the block
-      if ((ptr = memSplit(ptr, size)) != NULL)
+      if ((ptr = memSplit(ptr, size)) != nullptr)
         ptr->used = used;
     }
     else
@@ -183,14 +183,14 @@ const EvMem *EvMalloc::Realloc(const EvMem *Ptr, size_t Size)
       EvMem     *next = ptr->next;
       uint32_t  missing = size - ptr->size;
 
-      if (next != NULL && next->used == 0 && next->size >= missing)
+      if (next != nullptr && next->used == 0 && next->size >= missing)
       { // next block is free and big enough to increase
         if ((next->size - missing) < EV_MALLOC_MIN)
         { // add all next free block
           ptr->size += next->size;
           ptr->used = used;
 
-          if ((ptr->next = next->next) != NULL)
+          if ((ptr->next = next->next) != nullptr)
             ptr->next->prev = ptr;
 
           delete next;
@@ -212,7 +212,7 @@ const EvMem *EvMalloc::Realloc(const EvMem *Ptr, size_t Size)
 
         memFree(ptr);
 
-        if ((ptr = memAlloc(size)) != NULL)
+        if ((ptr = memAlloc(size)) != nullptr)
         { // set same typeId, owner, count and id
           ptr->typeId = typeId;
           ptr->owner = owner;
@@ -234,7 +234,7 @@ const EvMem *EvMalloc::Realloc(const EvMem *Ptr, size_t Size)
  * @param[in]  Tag     Valid Owner->Tag pointer of an already allocated RAM_G memory block.
  * @param[in]  TypeId  Type Id of the Owner pointer. Default is EV_UNDEFINED;
  * 
- * @return     EvMem struct pointer associated with the Owner->Tag pointer on success, otherwise returns NULL.
+ * @return     EvMem struct pointer associated with the Owner->Tag pointer on success, otherwise returns nullptr.
 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
@@ -242,10 +242,10 @@ const EvMem *EvMalloc::FindByTag(const char *Tag, uint8_t TypeId)
 {
   EvMem     *ptr;
 
-  for (ptr = mFirst; ptr != NULL; ptr = ptr->next)
-    if (ptr->used != 0 && ptr->owner != NULL && (TypeId == EV_UNDEFINED || TypeId == ptr->typeId))
+  for (ptr = mFirst; ptr != nullptr; ptr = ptr->next)
+    if (ptr->used != 0 && ptr->owner != nullptr && (TypeId == EV_UNDEFINED || TypeId == ptr->typeId))
     {
-      const char  *tag = NULL;
+      const char  *tag = nullptr;
 
       switch (ptr->typeId)
       {
@@ -268,7 +268,7 @@ const EvMem *EvMalloc::FindByTag(const char *Tag, uint8_t TypeId)
  *
  * @param[in]  Owner   Valid Owner pointer of an already allocated RAM_G memory block.
  * 
- * @return     EvMem struct pointer associated with the Owner pointer on success, otherwise returns NULL.
+ * @return     EvMem struct pointer associated with the Owner pointer on success, otherwise returns nullptr.
 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
@@ -276,7 +276,7 @@ const EvMem *EvMalloc::FindByOwner(const void *Owner)
 {
   EvMem     *ptr;
 
-  for (ptr = mFirst; ptr != NULL; ptr = ptr->next)
+  for (ptr = mFirst; ptr != nullptr; ptr = ptr->next)
     if (ptr->used != 0 && ptr->owner == Owner)
       break;
 
@@ -289,7 +289,7 @@ const EvMem *EvMalloc::FindByOwner(const void *Owner)
  *
  * @param[in]  Addr    Valid address in RAM_G memory already allocated.
  * 
- * @return     EvMem struct pointer associated with the Addr address on success, otherwise returns NULL.
+ * @return     EvMem struct pointer associated with the Addr address on success, otherwise returns nullptr.
 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
@@ -297,7 +297,7 @@ const EvMem *EvMalloc::FindByAddr(uint32_t Addr)
 {
   EvMem     *ptr;
 
-  for (ptr = mFirst; ptr != NULL; ptr = ptr->next)
+  for (ptr = mFirst; ptr != nullptr; ptr = ptr->next)
     if (Addr >= ptr->addr && Addr < (ptr->addr + ptr->used))
       break;
 
@@ -310,7 +310,7 @@ const EvMem *EvMalloc::FindByAddr(uint32_t Addr)
  *
  * @param[in]  Id      Valid Id of an already allocated RAM_G memory block.
  * 
- * @return     EvMem struct pointer associated with the parameter Id on success, otherwise returns NULL.
+ * @return     EvMem struct pointer associated with the parameter Id on success, otherwise returns nullptr.
 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
@@ -318,7 +318,7 @@ const EvMem *EvMalloc::FindById(uint16_t Id)
 {
   EvMem     *ptr;
 
-  for (ptr = mFirst; ptr != NULL; ptr = ptr->next)
+  for (ptr = mFirst; ptr != nullptr; ptr = ptr->next)
     if (ptr->used != 0 && ptr->id == Id)
       break;
 
@@ -329,7 +329,7 @@ const EvMem *EvMalloc::FindById(uint16_t Id)
  *
  * @brief      Find the first EvMem struct.
  *
- * @return     First EvMem struct pointer on success, otherwise returns NULL.
+ * @return     First EvMem struct pointer on success, otherwise returns nullptr.
 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
@@ -356,7 +356,7 @@ void        EvMalloc::renewAllIds()
 {
   EvMem     *ptr;
 
-  for (ptr = mFirst, mId = 1; ptr != NULL; ptr = ptr->next)
+  for (ptr = mFirst, mId = 1; ptr != nullptr; ptr = ptr->next)
     if (ptr->used != 0)
       ptr->id = mId++;
 }
@@ -369,26 +369,26 @@ void        EvMalloc::memFree(EvMem *Ptr)
 
   ptr->id = 0;
   ptr->used = 0;
-  ptr->owner = NULL;
+  ptr->owner = nullptr;
   ptr->typeId = 0;
   ptr->count = 0;
   ptr->startDL = -1;
 
-  if ((next = ptr->next) != NULL && next->used == 0)
+  if ((next = ptr->next) != nullptr && next->used == 0)
   {
     ptr->size += next->size;
 
-    if ((ptr->next = next->next) != NULL)
+    if ((ptr->next = next->next) != nullptr)
       ptr->next->prev = ptr;
 
     delete next;
   }
 
-  if ((prev = ptr->prev) != NULL && prev->used == 0)
+  if ((prev = ptr->prev) != nullptr && prev->used == 0)
   {
     prev->size += ptr->size;
 
-    if ((prev->next = ptr->next) != NULL)
+    if ((prev->next = ptr->next) != nullptr)
       prev->next->prev = prev;
 
     delete ptr;
@@ -399,13 +399,13 @@ void        EvMalloc::memFree(EvMem *Ptr)
 
 EvMem       *EvMalloc::memAlloc(size_t Size)
 {
-  EvMem     *ptr = NULL;
+  EvMem     *ptr = nullptr;
 
-  for (EvMem *p = mFirst; p != NULL; p = p->next)
-    if (p->used == 0 && Size <= p->size && (ptr == NULL || p->size < ptr->size))
+  for (EvMem *p = mFirst; p != nullptr; p = p->next)
+    if (p->used == 0 && Size <= p->size && (ptr == nullptr || p->size < ptr->size))
       ptr = p;
 
-  if (ptr != NULL && (ptr = memSplit(ptr, Size)) != NULL)
+  if (ptr != nullptr && (ptr = memSplit(ptr, Size)) != nullptr)
     ptr->used = ptr->size;
 
   return ptr;
@@ -420,22 +420,22 @@ EvMem       *EvMalloc::memSplit(EvMem *Ptr, size_t Size, bool Bottom)
   EvMem     *prev = ptr->prev;
   uint32_t  free = ptr->size - Size;
 
-  if (prev != NULL && prev->used == 0)
+  if (prev != nullptr && prev->used == 0)
   { // previous block is free
     prev->size += free;
     ptr->addr += free;
     ptr->size -= free;
   }
-  else if (next != NULL && next->used == 0)
+  else if (next != nullptr && next->used == 0)
   { // next block is free
     next->size += free;
     next->addr -= free;
     ptr->size -= free;
   }
   else if (free >= EV_MALLOC_MIN)
-  { // next and/or previous block is NULL or not free
-    if ((next = new EvMem) == NULL)
-      return NULL;
+  { // next and/or previous block is nullptr or not free
+    if ((next = new EvMem) == nullptr)
+      return nullptr;
 
     if (!Bottom)
     { // Allocate memory block at top and free memory block at bottom (Default allocation)
@@ -444,13 +444,13 @@ EvMem       *EvMalloc::memSplit(EvMem *Ptr, size_t Size, bool Bottom)
 
       ptr->id = 0;
       ptr->used = 0;
-      ptr->owner = NULL;
+      ptr->owner = nullptr;
       ptr->typeId = 0;
       ptr->count = 0;
       ptr->startDL = -1;
       ptr->size = free;
 
-      if ((next->next = ptr->next) != NULL)
+      if ((next->next = ptr->next) != nullptr)
         next->next->prev = next;
 
       ptr->next = next;
@@ -463,7 +463,7 @@ EvMem       *EvMalloc::memSplit(EvMem *Ptr, size_t Size, bool Bottom)
     { // Allocate memory block at bottom and free memory block at top (For video memory)
       next->id = 0;
       next->used = 0;
-      next->owner = NULL;
+      next->owner = nullptr;
       next->typeId = 0;
       next->count = 0;
       next->startDL = -1;
@@ -471,7 +471,7 @@ EvMem       *EvMalloc::memSplit(EvMem *Ptr, size_t Size, bool Bottom)
       next->addr = ptr->addr + Size;
       next->prev = ptr;
 
-      if ((next->next = ptr->next) != NULL)
+      if ((next->next = ptr->next) != nullptr)
         next->next->prev = next;
 
       ptr->size -= free;

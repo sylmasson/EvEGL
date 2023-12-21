@@ -41,7 +41,7 @@ class EvSysFont
 
   public:
     EvDisplay     *Disp;
-    const EvFont  *SystemFont[32];  // SysFont[0] is always NULL. Handle 0 is reserved for Bitmap.
+    const EvFont  *SystemFont[32];  // SysFont[0] is always nullptr. Handle 0 is reserved for Bitmap.
 };
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

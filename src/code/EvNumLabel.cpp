@@ -12,17 +12,17 @@
  * @param[in]  Top     The top position of the NumLabel.
  * @param[in]  Width   The width of the NumLabel.
  * @param[in]  Height  The height of the NumLabel.
- * @param[out] *Dest   The address pointer of the EvPanel destination. Cannot be NULL.
- * @param[in]  Tag     The tag name of the NumLabel. If NULL, the default tag name is "EvNumLabel".
+ * @param[out] *Dest   The address pointer of the EvPanel destination. Cannot be nullptr.
+ * @param[in]  Tag     The tag name of the NumLabel. If nullptr, the default tag name is "EvNumLabel".
  * @param[in]  State   The initial state of the NumLabel. Default is set to VISIBLE_OBJ.
  *
- * @return     EvNumLabel address pointer on success, otherwise returns NULL.
+ * @return     EvNumLabel address pointer on success, otherwise returns nullptr.
  * 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 EvNumLabel  *EvNumLabel::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag, uint16_t State)
 {
-  return !Dest ? NULL : (EvNumLabel *)EvObj::TryCreate(new EvNumLabel(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvNumLabel" : Tag, State), Dest);
+  return !Dest ? nullptr : (EvNumLabel *)EvObj::TryCreate(new EvNumLabel(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvNumLabel" : Tag, State), Dest);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -74,7 +74,7 @@ bool        EvNumLabel::SetValue(int32_t Value)
 {
   char      str[80];
 
-  if (mValue.i == Value || mFormat == NULL)
+  if (mValue.i == Value || mFormat == nullptr)
     return false;
 
   snprintf(str, sizeof(str) - 1, mFormat, mValue.i = Value);
@@ -96,7 +96,7 @@ bool        EvNumLabel::SetValueFloat(float Value)
 {
   char      str[80];
 
-  if (mValue.f == Value || mFormat == NULL)
+  if (mValue.f == Value || mFormat == nullptr)
     return false;
 
   snprintf(str, sizeof(str) - 1, mFormat, mValue.f = Value);

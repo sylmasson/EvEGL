@@ -14,17 +14,17 @@
  * @param[in]  Top     The top position of Label.
  * @param[in]  Width   The width of Label.
  * @param[in]  Height  The height of Label.
- * @param[out] *Dest   The address pointer of the EvPanel destination. Cannot be NULL.
- * @param[in]  Tag     The tag name of the Label. If NULL, the default tag name is "EvLabel".
+ * @param[out] *Dest   The address pointer of the EvPanel destination. Cannot be nullptr.
+ * @param[in]  Tag     The tag name of the Label. If nullptr, the default tag name is "EvLabel".
  * @param[in]  State   The initial state of the Label. Default is set to VISIBLE_OBJ.
  *
- * @return     EvLabel address pointer on success, otherwise returns NULL.
+ * @return     EvLabel address pointer on success, otherwise returns nullptr.
  * 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 EvLabel     *EvLabel::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag, uint16_t State)
 {
-  return !Dest ? NULL : (EvLabel *)EvObj::TryCreate(new EvLabel(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvLabel" : Tag, State), Dest);
+  return !Dest ? nullptr : (EvLabel *)EvObj::TryCreate(new EvLabel(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvLabel" : Tag, State), Dest);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -35,7 +35,7 @@ EvLabel::EvLabel(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvD
   TextLabel("Label");
   TextAlign(RIGHT_CENTER);
   TextColor(TEXT_COLOR);
-  SetOnTouch(NULL);
+  SetOnTouch(nullptr);
 }
 
 /// @copydoc EvButton::SetOnTouch()
@@ -56,6 +56,6 @@ void        EvLabel::drawEvent(void)
 
 void        EvLabel::touchEvent(EvTouchEvent *Touch)
 {
-  if (mOnTouch != NULL)
+  if (mOnTouch != nullptr)
     (*mOnTouch)(this, Touch);
 }

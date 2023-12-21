@@ -12,17 +12,17 @@
  * @param[in]  Top     The top position of the Panel.
  * @param[in]  Width   The width of the Panel.
  * @param[in]  Height  The height of the Panel.
- * @param[out] *Dest   The address pointer of the EvPanel destination. Cannot be NULL.
- * @param[in]  Tag     The tag name of the Panel. If NULL, the default tag name is "EvPanel".
+ * @param[out] *Dest   The address pointer of the EvPanel destination. Cannot be nullptr.
+ * @param[in]  Tag     The tag name of the Panel. If nullptr, the default tag name is "EvPanel".
  * @param[in]  State   The initial state of the Panel. Default is set to VISIBLE_OBJ.
  *
- * @return     EvPanel address pointer on success, otherwise returns NULL.
+ * @return     EvPanel address pointer on success, otherwise returns nullptr.
  * 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 EvPanel     *EvPanel::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag, uint16_t State)
 {
-  return !Dest ? NULL : (EvPanel *)EvObj::TryCreate(new EvPanel(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvPanel" : Tag, State), Dest);
+  return !Dest ? nullptr : (EvPanel *)EvObj::TryCreate(new EvPanel(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvPanel" : Tag, State), Dest);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -30,8 +30,8 @@ EvPanel     *EvPanel::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t
 EvPanel::EvPanel(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) : EvObj(Left, Top, Width, Height, Disp, Tag, State)
 {
   BgColor(TRANSPARENT);
-  mFirst = NULL;
-  mLast = NULL;
+  mFirst = nullptr;
+  mLast = nullptr;
   mOffsetX = 0;
   mOffsetY = 0;
 }
@@ -43,12 +43,12 @@ EvPanel::~EvPanel(void)
   EvObj     *obj;
   Node      *node, *next;
 
-  for (node = mFirst; node != NULL; node = next)
+  for (node = mFirst; node != nullptr; node = next)
   {
     obj = node->obj;
     next = node->next;
 
-    if (obj != NULL)
+    if (obj != nullptr)
       delete obj;
 
     delete node;
@@ -64,9 +64,9 @@ EvPanel::~EvPanel(void)
  * function will use this AddObj() function to add objects to a destination Panel.
  *
  * @param[in]  *Obj     The address pointer of the object to add.
- * @param[in]  *Tag     The tag name of the object to add. Default is NULL.
+ * @param[in]  *Tag     The tag name of the object to add. Default is nullptr.
  * 
- * @return     The address pointer of the object on success, otherwise returns NULL.
+ * @return     The address pointer of the object on success, otherwise returns nullptr.
  * 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
@@ -74,19 +74,19 @@ EvObj       *EvPanel::AddObj(EvObj *Obj, const char *Tag)
 {
   Node      *node;
 
-  for (node = mFirst; node != NULL; node = node->next)
+  for (node = mFirst; node != nullptr; node = node->next)
     if (Obj == node->obj)
-      return NULL;
+      return nullptr;
 
-  if (Obj == NULL || (node = new Node) == NULL)
-    return NULL;
+  if (Obj == nullptr || (node = new Node) == nullptr)
+    return nullptr;
 
   node->obj = Obj;
-  node->next = NULL;
-  mLast = (mFirst == NULL) ? mFirst = node : mLast->next = node;
+  node->next = nullptr;
+  mLast = (mFirst == nullptr) ? mFirst = node : mLast->next = node;
   Obj->SetOwner(this);
 
-  if (Tag != NULL)
+  if (Tag != nullptr)
     Obj->Tag = Tag;
 
   Modified();
@@ -103,24 +103,24 @@ EvObj       *EvPanel::AddObj(EvObj *Obj, const char *Tag)
  *
  * @param[in]  *Obj     The address pointer of the object to be removed.
  * 
- * @return     The address pointer of the object on success, otherwise returns NULL.
+ * @return     The address pointer of the object on success, otherwise returns nullptr.
  * 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 EvObj       *EvPanel::RemoveObj(EvObj *Obj)
 {
-  Node      *node, *prev = NULL;
+  Node      *node, *prev = nullptr;
 
-  for (node = mFirst; node != NULL; prev = node, node = node->next)
+  for (node = mFirst; node != nullptr; prev = node, node = node->next)
     if (Obj == node->obj)
     {
       if (node == mFirst)
-        mFirst = (node == mLast) ? mLast = NULL : node->next; 
+        mFirst = (node == mLast) ? mLast = nullptr : node->next; 
       else if (node != mLast)
         prev->next = node->next;
       else
       {
-        prev->next = NULL;
+        prev->next = nullptr;
         mLast = prev;
       }
 
@@ -129,20 +129,20 @@ EvObj       *EvPanel::RemoveObj(EvObj *Obj)
       return Obj;
     }
 
-  return NULL;
+  return nullptr;
 }
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
  * @brief      Get the first visual object from the panel.
  *
- * @return     The address pointer of the first object on success, otherwise returns NULL.
+ * @return     The address pointer of the first object on success, otherwise returns nullptr.
  * 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 EvObj       *EvPanel::FirstObj(void)
 {
-  return (mFirst != NULL) ? mFirst->obj : NULL;
+  return (mFirst != nullptr) ? mFirst->obj : nullptr;
 }
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -155,7 +155,7 @@ void        EvPanel::ClearCache(void)
 {
   EvObj::ClearCache();
 
-  for (Node *node = mFirst; node != NULL; node = node->next)
+  for (Node *node = mFirst; node != nullptr; node = node->next)
     node->obj->ClearCache();
 }
 
@@ -174,7 +174,7 @@ void        EvPanel::SetOpacity(uint16_t Opacity)
 {
   EvObj::SetOpacity(Opacity);
 
-  for (Node *node = mFirst; node != NULL; node = node->next)
+  for (Node *node = mFirst; node != nullptr; node = node->next)
     node->obj->SetOpacity(Opacity);
 }
 
@@ -190,7 +190,7 @@ void        EvPanel::ModifiedAll(void)
 {
   EvObj::ModifiedAll();
 
-  for (Node *node = mFirst; node != NULL; node = node->next)
+  for (Node *node = mFirst; node != nullptr; node = node->next)
     node->obj->ModifiedAll();
 }
 
@@ -198,26 +198,26 @@ void        EvPanel::ModifiedAll(void)
 
 void        EvPanel::SetToFront(EvObj *Obj, bool AllOwner)
 {
-  Node      *node, *prev = NULL;
+  Node      *node, *prev = nullptr;
 
-  if (mLast != NULL && mLast->obj == Obj)
+  if (mLast != nullptr && mLast->obj == Obj)
   {
     if (AllOwner)
       ToFront();
   }
   else
   {
-    for (node = mFirst; node != NULL; prev = node, node = node->next)
+    for (node = mFirst; node != nullptr; prev = node, node = node->next)
       if (Obj == node->obj)
       {
-        if (node->next != NULL)
+        if (node->next != nullptr)
         {
-          if (prev == NULL)
+          if (prev == nullptr)
             mFirst = node->next;
           else
             prev->next = node->next;
 
-          node->next = NULL;
+          node->next = nullptr;
           mLast->next = node;
           mLast = node;
         }
@@ -235,12 +235,12 @@ EvObj       *EvPanel::Touching(EvTouchEvent *Touch)
   EvObj     *obj, *touchObj;
 
   if (!IsVisible())
-    return NULL;
+    return nullptr;
 
   touchObj = EvObj::Touching(Touch);
 
-  for (Node *node = mFirst; node != NULL; node = node->next)
-    if ((obj = node->obj->Touching(Touch)) != NULL)
+  for (Node *node = mFirst; node != nullptr; node = node->next)
+    if ((obj = node->obj->Touching(Touch)) != nullptr)
       touchObj = obj;
 
   return touchObj;
@@ -252,7 +252,7 @@ void        EvPanel::SetDisplay(EvDisplay *Disp)
 {
   EvObj::SetDisplay(Disp);
 
-  for (Node *node = mFirst; node != NULL; node = node->next)
+  for (Node *node = mFirst; node != nullptr; node = node->next)
     node->obj->SetDisplay(Disp);
 }
 
@@ -262,7 +262,7 @@ void        EvPanel::SetView(void)
 {
   EvObj::SetView();
 
-  for (Node *node = mFirst; node != NULL; node = node->next)
+  for (Node *node = mFirst; node != nullptr; node = node->next)
     node->obj->SetView();
 }
 
@@ -272,7 +272,7 @@ void        EvPanel::Refresh(void)
 {
   EvObj::Refresh();
 
-  for (Node *node = mFirst; node != NULL; node = node->next)
+  for (Node *node = mFirst; node != nullptr; node = node->next)
     node->obj->Refresh();
 }
 
@@ -282,7 +282,7 @@ void        EvPanel::Preload(void)
 {
   EvObj::Preload();
 
-  for (Node *node = mFirst; node != NULL; node = node->next)
+  for (Node *node = mFirst; node != nullptr; node = node->next)
     node->obj->Preload();
 }
 
@@ -294,7 +294,7 @@ void        EvPanel::Draw(void)
   {
     EvObj::Draw();
 
-    for (Node *node = mFirst; node != NULL; node = node->next)
+    for (Node *node = mFirst; node != nullptr; node = node->next)
       node->obj->Draw();
   }
 }

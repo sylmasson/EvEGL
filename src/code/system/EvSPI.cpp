@@ -8,8 +8,8 @@
 
 int16_t     EvSPI::rstPin;
 uint32_t    EvSPI::baudrate;
-SPIClass    *EvSPI::hostSPI = NULL;
-EvSPI       *EvSPI::inUsed = NULL;
+SPIClass    *EvSPI::hostSPI = nullptr;
+EvSPI       *EvSPI::inUsed = nullptr;
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
@@ -20,7 +20,7 @@ void        EvSPI::hostSetup(uint8_t CS, int16_t RST, SPIClass *Spi, uint32_t Ba
   pinMode(csPin = CS, OUTPUT);
   csDisable();
 
-  if (hostSPI == NULL)
+  if (hostSPI == nullptr)
   {
     if ((rstPin = RST) >= 0)
     {
@@ -31,7 +31,7 @@ void        EvSPI::hostSetup(uint8_t CS, int16_t RST, SPIClass *Spi, uint32_t Ba
       delay(20);
     }
 
-    hostSPI = (Spi != NULL) ? Spi : &SPI;
+    hostSPI = (Spi != nullptr) ? Spi : &SPI;
     baudrate = Baudrate;
     hostSPI->begin();
   }
@@ -48,11 +48,11 @@ void        EvSPI::hostCommand(uint8_t Cmd, uint8_t Parameter)
 
 void        EvSPI::hostRequestSPI(void)
 {
-  if (inUsed != NULL)
+  if (inUsed != nullptr)
   {
     inUsed->csDisable();
     hostSPI->endTransaction();
-    inUsed = NULL;
+    inUsed = nullptr;
   }
 }
 

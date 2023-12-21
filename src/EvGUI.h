@@ -196,7 +196,7 @@ class       EvVuBar;
 
 extern const char *OpenEditor(EvDisplay *Disp);
 extern const char *CloseEditor(void);
-extern void       EditorToFront(EvDisplay *Disp);
+extern void       EditorToFront(void);
 extern void       SetEditObj(EvObj *Obj);
 extern void       SetEditObjDestroyed(EvObj *Obj);
 extern void       ShellInput(const char byte);

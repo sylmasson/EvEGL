@@ -18,17 +18,17 @@
  * @param[in]  Top     The top position of the Progress Bar.
  * @param[in]  Width   The width of the Progress Bar.
  * @param[in]  Height  The height of the Progress Bar.
- * @param[out] *Dest   The address pointer of the EvPanel destination. Cannot be NULL.
- * @param[in]  Tag     The tag name of the Progress Bar. If NULL, the default tag name is "EvProgress".
+ * @param[out] *Dest   The address pointer of the EvPanel destination. Cannot be nullptr.
+ * @param[in]  Tag     The tag name of the Progress Bar. If nullptr, the default tag name is "EvProgress".
  * @param[in]  State   The initial state of the Progress Bar. Default is set to VISIBLE_OBJ.
  *
- * @return     EvProgress address pointer on success, otherwise returns NULL.
+ * @return     EvProgress address pointer on success, otherwise returns nullptr.
  * 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 EvProgress  *EvProgress::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag, uint16_t State)
 {
-  return !Dest ? NULL : (EvProgress *)EvObj::TryCreate(new EvProgress(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvProgress" : Tag, State), Dest);
+  return !Dest ? nullptr : (EvProgress *)EvObj::TryCreate(new EvProgress(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvProgress" : Tag, State), Dest);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -40,7 +40,7 @@ EvProgress::EvProgress(int16_t Left, int16_t Top, uint16_t Width, uint16_t Heigh
   SetColor(LOWER_COLOR, UPPER_COLOR);
   BdColor(BORDER_COLOR);
   BdShape(ROUND_CORNERS);
-  SetOnTouch(NULL);
+  SetOnTouch(nullptr);
   SetValue(0);
 }
 
@@ -74,7 +74,7 @@ bool        EvProgress::SetValue(int16_t Value)
   if (mValue == Value)
     return false;
 
-  if (mFormat != NULL)
+  if (mFormat != nullptr)
   {
     char    str[80];
 
@@ -126,7 +126,7 @@ void        EvProgress::SetFormat(const char *Format, const float M, const float
   mM = M;
   mB = B;
 
-  if ((mFormat = Format) != NULL)
+  if ((mFormat = Format) != nullptr)
   {
     int16_t   value = mValue;
 
@@ -166,7 +166,7 @@ void        EvProgress::drawEvent(void)
     Disp->RestoreContext();
   }
 
-  if (mFormat != NULL)
+  if (mFormat != nullptr)
     DrawText(0, 0, mWidth, mHeight, c_str(Label));
 }
 
@@ -174,6 +174,6 @@ void        EvProgress::drawEvent(void)
 
 void        EvProgress::touchEvent(EvTouchEvent *Touch)
 {
-  if (mOnTouch != NULL)
+  if (mOnTouch != nullptr)
     (*mOnTouch)(this, Touch);
 }

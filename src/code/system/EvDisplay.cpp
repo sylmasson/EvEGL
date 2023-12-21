@@ -22,7 +22,7 @@ EvEVE(Config, CS, RST, Spi, Baudrate), EvPanel(0, 0, Width, Height, this, Tag, V
   }
 
   #if defined(ESP32)
-    if ((mMutex = xSemaphoreCreateRecursiveMutex()) == NULL)
+    if ((mMutex = xSemaphoreCreateRecursiveMutex()) == nullptr)
     {
       Serial.println("Error: Cannot create mutex");
       exit(0);
@@ -30,15 +30,15 @@ EvEVE(Config, CS, RST, Spi, Baudrate), EvPanel(0, 0, Width, Height, this, Tag, V
   #endif
 
   sDispList[sDispCount++] = this;
-  Kbd = NULL;
+  Kbd = nullptr;
   memset(&mTouch, 0, sizeof(mTouch));
   mTimeUsed = 0;
   MaxDL = 0;
 
   BgColor(RGB555(0, 0, 0));
   Rotate(rd8(REG_ROTATE));
-  SetOnUpdate(NULL);
-  SetOnTouch(NULL);
+  SetOnUpdate(nullptr);
+  SetOnTouch(nullptr);
   InitSystemFont();
   Brightness(64);
 }
@@ -80,13 +80,13 @@ bool        EvDisplay::TryLock(void)
 
 void        EvDisplay::KbdDelete(void)
 {
-  if (Kbd != NULL)
+  if (Kbd != nullptr)
   {
-    if (Kbd->FocusObj != NULL)
+    if (Kbd->FocusObj != nullptr)
       Kbd->FocusObj->LostKbdFocus();
 
     Kbd->Delete();
-    Kbd = NULL;
+    Kbd = nullptr;
   }
 }
 
@@ -106,7 +106,7 @@ void        EvDisplay::Rotate(uint8_t Orientation)
   else
     ReSize(w, h);
 
-  if (Kbd != NULL)
+  if (Kbd != nullptr)
     Kbd->SetKeyboard((mOrientation & 2) ? 1 : 0);
 
 }
@@ -195,7 +195,7 @@ void        EvDisplay::Update(void)
   if (Kbd)
     Kbd->ToFront();
 
-  EditorToFront(this);
+  EditorToFront();
   displayUpdate();
 
   if ((SizeDL = ReadDL()) > MaxDL)
@@ -270,7 +270,7 @@ void        EvDisplay::touchUpdatePtr(EvTouchEvent *Touch, EvTouchPos TouchPos, 
 
   if (!Touch->tag)
   {
-    if ((Touch->status & TOUCHING_FLAG) != 0 && Touch->owner != NULL)
+    if ((Touch->status & TOUCHING_FLAG) != 0 && Touch->owner != nullptr)
     { // end & double event
       if (Touch->timer > DOUBLE_DELAY)
         Touch->status = 0;
@@ -283,7 +283,7 @@ void        EvDisplay::touchUpdatePtr(EvTouchEvent *Touch, EvTouchPos TouchPos, 
         {
           Touch->event = TOUCH_DOUBLE;
 
-          if (mOnTouch != NULL)
+          if (mOnTouch != nullptr)
             (*mOnTouch)(Touch->owner, Touch);
 
           if (Touch->event)
@@ -308,10 +308,10 @@ void        EvDisplay::touchUpdatePtr(EvTouchEvent *Touch, EvTouchPos TouchPos, 
     { // start event
       EvObj   *owner;
 
-      Touch->obj = NULL;
-      Touch->owner = NULL;
+      Touch->obj = nullptr;
+      Touch->owner = nullptr;
 
-      if ((owner = Touching(Touch)) != NULL)
+      if ((owner = Touching(Touch)) != nullptr)
       {
         if (Touch->timer > (DOUBLE_DELAY * 2))
           Touch->status &= ~(DOUBLE_COUNT | DOUBLE_FLAG);
@@ -319,7 +319,7 @@ void        EvDisplay::touchUpdatePtr(EvTouchEvent *Touch, EvTouchPos TouchPos, 
         Touch->status |= TOUCHING_FLAG;
 
         if (!owner->TouchStart())
-          Touch->owner = NULL;
+          Touch->owner = nullptr;
         else
         {
           Touch->owner = owner;
@@ -335,7 +335,7 @@ void        EvDisplay::touchUpdatePtr(EvTouchEvent *Touch, EvTouchPos TouchPos, 
         }
       }
     }
-    else if (Touch->owner != NULL)
+    else if (Touch->owner != nullptr)
     { // hold, repeat and move event
       Touch->x = Touch->abs.x - Touch->owner->View.ox;
       Touch->y = Touch->abs.y - Touch->owner->View.oy;
@@ -370,7 +370,7 @@ void        EvDisplay::touchUpdatePtr(EvTouchEvent *Touch, EvTouchPos TouchPos, 
 
   if (Touch->event)
   {
-    if (mOnTouch != NULL)
+    if (mOnTouch != nullptr)
       (*mOnTouch)(Touch->owner, Touch);
 
     if (Touch->event)

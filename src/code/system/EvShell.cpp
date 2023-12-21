@@ -86,8 +86,8 @@ void        EvShell::Input(const char C)
   int         i, argc;
   char        str[64];
   char        arg[4][sizeof(mBuffer)];
-  const EvMem *ptr = NULL;
-  const char  *msg = NULL;
+  const EvMem *ptr = nullptr;
+  const char  *msg = nullptr;
   const char  *InvalidArg = "Invalid argument";
   const char  *radixName[] = {"byte", "word", "dword"};
 
@@ -98,7 +98,7 @@ void        EvShell::Input(const char C)
     return;
   }
 
-  cmd = NULL;
+  cmd = nullptr;
   mBuffer[mBufCount] = 0;
   Serial.println(mBuffer);
   argc = sscanf(mBuffer, " %s %s %s %s", arg[0], arg[1], arg[2], arg[3]);
@@ -121,7 +121,7 @@ void        EvShell::Input(const char C)
       switch (cmd->id)
       {
         case CD:
-          msg = (argc == 1 && !ChangeDisplay(arg[1])) ? "Invalid display selection" : NULL;
+          msg = (argc == 1 && !ChangeDisplay(arg[1])) ? "Invalid display selection" : nullptr;
           break;
 
         case LIST:
@@ -134,7 +134,7 @@ void        EvShell::Input(const char C)
             snprintf(str, sizeof(str) - 1, "DL Size:%-4lu (%.1f%%)  ", size, (float)(size * 100) / 8192.0);
             Serial.println(str);
           }
-          else if (((ptr = Disp->RAM_G.FindByTag(arg[1], EV_OBJ)) == NULL && (sscanf(arg[1], "#%d%c", &i, &c) != 1 || (ptr = Disp->RAM_G.FindById(i)) == NULL)) || ptr->used == 0 || ptr->typeId != EV_OBJ)
+          else if (((ptr = Disp->RAM_G.FindByTag(arg[1], EV_OBJ)) == nullptr && (sscanf(arg[1], "#%d%c", &i, &c) != 1 || (ptr = Disp->RAM_G.FindById(i)) == nullptr)) || ptr->used == 0 || ptr->typeId != EV_OBJ)
           {
             msg = InvalidArg;
             break;
@@ -147,13 +147,13 @@ void        EvShell::Input(const char C)
             ((EvObj *)(ptr->owner))->DisplayTagList();
             Serial.println();
           }
-          msg = NULL;
+          msg = nullptr;
           break;
 
         case DUMP:
           if (argc)
           {
-            if ((ptr = Disp->RAM_G.FindByTag(arg[1])) != NULL)
+            if ((ptr = Disp->RAM_G.FindByTag(arg[1])) != nullptr)
             {
               mAddr = ptr->addr;
               mSize = ptr->used;
@@ -162,7 +162,7 @@ void        EvShell::Input(const char C)
             {
               if (sscanf(arg[1], "#%i%c", &i, &c) == 1)
               {
-                if ((ptr = Disp->RAM_G.FindById(i)) != NULL && ptr->used != 0)
+                if ((ptr = Disp->RAM_G.FindById(i)) != nullptr && ptr->used != 0)
                 {
                   mAddr = ptr->addr;
                   mSize = ptr->used;
@@ -187,14 +187,14 @@ void        EvShell::Input(const char C)
             }
           }
 
-          if ((size = (mSize > 256 && ptr == NULL) ? 256 : mSize) == 0)
+          if ((size = (mSize > 256 && ptr == nullptr) ? 256 : mSize) == 0)
             msg = "Select new address";
           else
           {
             DumpEveMemory(Disp, mAddr, size, mRadix);
             mSize -= size;
             mAddr += size;
-            msg = NULL;
+            msg = nullptr;
           }
           break;
 
@@ -211,26 +211,26 @@ void        EvShell::Input(const char C)
 
         case TRACE:
           if (argc)
-            msg = !SetTrace(arg[1], &Disp->sTraceFlags) ? InvalidArg : NULL;
+            msg = !SetTrace(arg[1], &Disp->sTraceFlags) ? InvalidArg : nullptr;
           break;
 
         case ROTATE:
           if (argc == 1 && sscanf(arg[1], "%d%c", &i, &c) == 1 && (uint)i <= 3)
           {
             Disp->Rotate(i);
-            msg = NULL;
+            msg = nullptr;
           }
           break;
 
         case CALIB:
-          if ((tCal = EvTouchCal::Create(0, 0, Disp->Width(), Disp->Height(), Disp)) == NULL)
+          if ((tCal = EvTouchCal::Create(0, 0, Disp->Width(), Disp->Height(), Disp)) == nullptr)
             msg = "Open fail";
           else
           {
             msg = "Touchscreen calibration is started";
             tCal->SetOnExit(sOnSaveTouchCalibration);
             tCal->BdWidth(2 << 4);
-            SetEditObj(NULL);
+            SetEditObj(nullptr);
           }
           break;
 
@@ -239,12 +239,12 @@ void        EvShell::Input(const char C)
 
         case FONT:
           DisplayFontMetrixBlock(Disp);
-          msg = NULL;
+          msg = nullptr;
           break;
 
         case ROMFONT:
           DisplayRomFont(Disp);
-          msg = NULL;
+          msg = nullptr;
           break;
 
         case LISTSD:
@@ -260,13 +260,13 @@ void        EvShell::Input(const char C)
             File root = SD.open("/");
             ListDirectory(root, 0);
           }
-          msg = NULL;
+          msg = nullptr;
           break;
 
         case CLRCACHE:
           Disp->ClearCache();
           DisplayMallocBlock(Disp);
-          msg = NULL;
+          msg = nullptr;
           break;
 
         case HELP:
@@ -275,7 +275,7 @@ void        EvShell::Input(const char C)
             Serial.print("  ");
             Serial.println(sCmdList[i].help);
           }
-          msg = NULL;
+          msg = nullptr;
           break;
       }
     }
@@ -569,9 +569,9 @@ void        EvShell::DisplayListCommand(EvDisplay *Disp, uint32_t Addr, uint32_t
     const EvBmp     *bmp;
     const EvMem     *ptr = Disp->RAM_G.FindByAddr(d &= 0x3FFFFF);
 
-    if (ptr != NULL && ptr->typeId == EV_BMP && (bmp = (const EvBmp *)(ptr->owner)) != NULL)
+    if (ptr != nullptr && ptr->typeId == EV_BMP && (bmp = (const EvBmp *)(ptr->owner)) != nullptr)
     {
-      if (d == (ptr->addr + bmp->PalSize) && bmp->Tag != NULL)
+      if (d == (ptr->addr + bmp->PalSize) && bmp->Tag != nullptr)
         sprintf(comment, "  // BMP \"%s\"", bmp->Tag);
       else
         sprintf(comment, "  // BMP Unknown");
@@ -608,18 +608,18 @@ void        EvShell::DisplayMallocBlock(EvDisplay *Disp)
   uint32_t    sumMalloc = 0;
   static char tagNull[] = "nullptr";
 
-  if ((ptr = (EvMem *)Disp->RAM_G.FindFirst()) == NULL)
+  if ((ptr = (EvMem *)Disp->RAM_G.FindFirst()) == nullptr)
     Serial.println("No list avaible");
   else
   {
-    for (cnt = cntFree = 0; ptr != NULL; ptr = ptr->next)
+    for (cnt = cntFree = 0; ptr != nullptr; ptr = ptr->next)
     {
       snprintf(str, sizeof(str) - 1, "0x%05lX:%7lu bytes", ptr->addr, ptr->size);
       Serial.print(str);
       snprintf(str, sizeof(str) - 1, ptr->used == 0 ? "   free" : " %6lu used %5u ", ptr->used, ptr->id);
       Serial.print(str);
 
-      if ((owner = ptr->owner) != NULL)
+      if ((owner = ptr->owner) != nullptr)
       {
         switch (ptr->typeId)
         {
@@ -648,7 +648,7 @@ void        EvShell::DisplayMallocBlock(EvDisplay *Disp)
 
           case EV_OBJ:
             Serial.print(" OBJ ");
-            if (((EvObj *)owner)->Tag != NULL)
+            if (((EvObj *)owner)->Tag != nullptr)
               ((EvObj *)owner)->DisplayTagList();
             break;
         }
@@ -694,7 +694,7 @@ void        EvShell::DisplayFontMetrixBlock(EvDisplay *Disp)
   Serial.println("LOUT LS   W   H  CW BEG CNT    ADDR        TAG");
 
   for (font = 1; font <= LAST_FONT; font++)
-    if ((fnt = Disp->SystemFont[font]) != NULL)
+    if ((fnt = Disp->SystemFont[font]) != nullptr)
     {
       char      str[32];
       uint32_t  addr = (fnt->RomFont == 0) ? Disp->RAM_G.FindByOwner(fnt)->addr + FMB_SIZE : fnt->Addr;

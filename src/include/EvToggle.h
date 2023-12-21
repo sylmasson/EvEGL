@@ -28,7 +28,7 @@ class EvToggle : public EvObj
     void          SetOnChange(void (*OnChange)(EvToggle *Sender, int32_t Value));
 
   protected:
-    EvToggle(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag = NULL, uint16_t State = VISIBLE_OBJ);
+    EvToggle(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ);
 
     int16_t       mValue;
     uint16_t      mColorOn;
@@ -49,7 +49,7 @@ class EvToggle : public EvObj
     void          (*mOnChange)(EvToggle *Sender, int32_t Value);
 
   public:
-    static EvToggle *Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag = NULL, uint16_t State = VISIBLE_OBJ | FILTER_DIS_OBJ);
+    static EvToggle *Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ | FILTER_DIS_OBJ);
 };
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

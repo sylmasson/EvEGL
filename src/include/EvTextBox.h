@@ -29,7 +29,7 @@ class EvTextBox : public EvPanel
 //     virtual int     availableForWrite(void) { return 1; };
 
   protected:
-    EvTextBox(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag = NULL, uint16_t State = VISIBLE_OBJ);
+    EvTextBox(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ);
 
     void          selectWord(EvTouchEvent *Touch);
     void          moveToWord(EvTouchEvent *Touch);
@@ -66,7 +66,7 @@ class EvTextBox : public EvPanel
     const String  &Text = mLabel;
     bool          SelectAllOnSetKbdFocus;
 
-    static EvTextBox  *Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag = NULL, uint16_t State = VISIBLE_OBJ | FILTER_DIS_OBJ);
+    static EvTextBox  *Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ | FILTER_DIS_OBJ);
 };
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

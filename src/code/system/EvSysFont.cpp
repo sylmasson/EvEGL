@@ -296,7 +296,7 @@ uint8_t     EvSysFont::FindFont(const EvFont *Fnt)
 uint8_t     EvSysFont::LoadFont(const EvFont *Fnt)
 {
   for (int font = LAST_FONT; font > 0; font--)
-    if (SystemFont[font] == NULL)
+    if (SystemFont[font] == nullptr)
       return LoadFont(Fnt, font);
 
   return 0;
@@ -309,12 +309,12 @@ uint8_t     EvSysFont::LoadFont(const EvFont *Fnt, uint8_t Font)
   uint32_t  Addr;
   EvMem     *Dest;
 
-  if (Font == 0 || Font > LAST_FONT || SystemFont[Font] != NULL)
+  if (Font == 0 || Font > LAST_FONT || SystemFont[Font] != nullptr)
     return 0;
 
-  if ((Dest = (EvMem *)Disp->RAM_G.FindByOwner(Fnt)) == NULL)
+  if ((Dest = (EvMem *)Disp->RAM_G.FindByOwner(Fnt)) == nullptr)
   {
-    if ((Dest = (EvMem *)Disp->RAM_G.Malloc(FMB_SIZE + Fnt->BmpSize, Fnt)) == NULL)
+    if ((Dest = (EvMem *)Disp->RAM_G.Malloc(FMB_SIZE + Fnt->BmpSize, Fnt)) == nullptr)
       return 0;
 
     Addr = Dest->addr + FMB_SIZE;
@@ -343,7 +343,7 @@ uint8_t     EvSysFont::LoadFont(const EvFont *Fnt, uint8_t Font)
 
 uint8_t     EvSysFont::LoadRomFont(uint8_t Font, uint8_t RomFont)
 {
-  if (RomFont < FIRST_ROM_FONT || RomFont > LAST_ROM_FONT || Font == 0 || Font > LAST_FONT || SystemFont[Font] != NULL)
+  if (RomFont < FIRST_ROM_FONT || RomFont > LAST_ROM_FONT || Font == 0 || Font > LAST_FONT || SystemFont[Font] != nullptr)
     return 0;
 
   SystemFont[Font] = sEvRomFont[RomFont - FIRST_ROM_FONT];
@@ -362,10 +362,10 @@ void        EvSysFont::UnloadFont(const EvFont *Fnt)
   {
     EvMem   *Dest = (EvMem *)Disp->RAM_G.FindByOwner(Fnt);
 
-    if (Dest != NULL && --Dest->count == 0)
+    if (Dest != nullptr && --Dest->count == 0)
       Disp->RAM_G.Free(Dest);
 
-    SystemFont[font] = NULL;
+    SystemFont[font] = nullptr;
   }
 }
 
@@ -375,17 +375,17 @@ void        EvSysFont::UnloadFont(uint8_t Font)
 {
   const EvFont  *fnt;
 
-  if (Font != 0 && Font <= LAST_FONT && (fnt = SystemFont[Font]) != NULL)
+  if (Font != 0 && Font <= LAST_FONT && (fnt = SystemFont[Font]) != nullptr)
   {
     if (fnt->RomFont == 0)
     {
       EvMem     *Dest = (EvMem *)Disp->RAM_G.FindByOwner(fnt);
 
-      if (Dest != NULL && --Dest->count == 0)
+      if (Dest != nullptr && --Dest->count == 0)
         Disp->RAM_G.Free(Dest);
     }
 
-    SystemFont[Font] = NULL;
+    SystemFont[Font] = nullptr;
   }
 }
 
@@ -398,7 +398,7 @@ void        EvSysFont::InitSystemFont(void)
   Disp->CmdSetScratch(0);      // Relocate scratch handle to 0.
 
   for (font = 0; font < FIRST_ROM_FONT; font++)
-    SystemFont[font] = NULL;
+    SystemFont[font] = nullptr;
 
   for (romFont = font; font <= LAST_FONT; font++)
   {

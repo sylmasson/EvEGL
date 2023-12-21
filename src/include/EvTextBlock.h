@@ -30,7 +30,7 @@ class EvTextBlock : public EvScrollBox
 //    virtual int     availableForWrite(void) { return 1; };
 
   protected:
-    EvTextBlock(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag = NULL, uint16_t State = VISIBLE_OBJ);
+    EvTextBlock(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ);
 
     const int8_t  mMinLineHeight = 5;
 
@@ -55,7 +55,7 @@ class EvTextBlock : public EvScrollBox
     const String    &Text = mLabel;
     const uint16_t  &LinesCount = mLinesCount;
 
-    static EvTextBlock  *Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag = NULL, uint16_t State = VISIBLE_OBJ);
+    static EvTextBlock  *Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ);
 };
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

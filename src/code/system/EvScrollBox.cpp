@@ -15,17 +15,17 @@
  * @param[in]  Top     The top position of the ScrollBox.
  * @param[in]  Width   The width of the ScrollBox.
  * @param[in]  Height  The height of the ScrollBox.
- * @param[out] *Dest   The address pointer of the EvPanel destination. Cannot be NULL.
- * @param[in]  Tag     The tag name of the ScrollBox. If NULL, the default tag name is "EvScrollBox".
+ * @param[out] *Dest   The address pointer of the EvPanel destination. Cannot be nullptr.
+ * @param[in]  Tag     The tag name of the ScrollBox. If nullptr, the default tag name is "EvScrollBox".
  * @param[in]  State   The initial state of the ScrollBox. Default is set to VISIBLE_OBJ | CONTROL_OBJ.
  *
- * @return     EvScrollBox address pointer on success, otherwise returns NULL.
+ * @return     EvScrollBox address pointer on success, otherwise returns nullptr.
  * 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 EvScrollBox *EvScrollBox::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag, uint16_t State)
 {
-  return !Dest ? NULL : (EvScrollBox *)EvObj::TryCreate(new EvScrollBox(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvScrollBox" : Tag, State), Dest);
+  return !Dest ? nullptr : (EvScrollBox *)EvObj::TryCreate(new EvScrollBox(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvScrollBox" : Tag, State), Dest);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -35,10 +35,10 @@ EvScrollBox::EvScrollBox(int16_t Left, int16_t Top, uint16_t Width, uint16_t Hei
   mTouchFlag = false;
   mPageWidth = Width;
   mPageHeight = Height;
-  mScrollBarX = EvScrollBar::Create(0, 0, Width, 20, this, NULL, VISIBLE_OBJ | FIXED_OBJ | SYSTEM_OBJ);
-  mScrollBarY = EvScrollBar::Create(0, 0, 20, Height, this, NULL, VISIBLE_OBJ | FIXED_OBJ | SYSTEM_OBJ);
+  mScrollBarX = EvScrollBar::Create(0, 0, Width, 20, this, nullptr, VISIBLE_OBJ | FIXED_OBJ | SYSTEM_OBJ);
+  mScrollBarY = EvScrollBar::Create(0, 0, 20, Height, this, nullptr, VISIBLE_OBJ | FIXED_OBJ | SYSTEM_OBJ);
 
-  if (mScrollBarX == NULL || mScrollBarY == NULL)
+  if (mScrollBarX == nullptr || mScrollBarY == nullptr)
     Abort();
   else
   {
@@ -158,9 +158,9 @@ EvObj       *EvScrollBox::Touching(EvTouchEvent *Touch)
 {
   EvObj     *obj = EvPanel::Touching(Touch);
 
-  if (obj != NULL && Touch->owner == NULL)
+  if (obj != nullptr && Touch->owner == nullptr)
   {
-    Touch->obj = (obj->IsControlObj() || obj == this) ? NULL : obj;
+    Touch->obj = (obj->IsControlObj() || obj == this) ? nullptr : obj;
     Touch->owner = obj = this;
   }
 
@@ -203,7 +203,7 @@ void        EvScrollBox::refreshEvent(void)
 
 void        EvScrollBox::touchEvent(EvTouchEvent *Touch)
 {
-  if (Touch->obj != NULL)
+  if (Touch->obj != nullptr)
   {
     Touch->x = Touch->abs.x - Touch->obj->View.ox;
     Touch->y = Touch->abs.y - Touch->obj->View.oy;
@@ -214,7 +214,7 @@ void        EvScrollBox::touchEvent(EvTouchEvent *Touch)
 
   if (Touch->event != TOUCH_MOVE || (!SCROLLX && !SCROLLY))
   {
-    if (Touch->obj != NULL)
+    if (Touch->obj != nullptr)
       Touch->obj->TouchUpdate(Touch);
     else if (Touch->event == TOUCH_START)
     {
@@ -228,12 +228,12 @@ void        EvScrollBox::touchEvent(EvTouchEvent *Touch)
       mKinScrollX.Start(mSpeedX);
       mKinScrollY.Start(mSpeedY);
       mTouchFlag = false;
-      Touch->obj = NULL;
+      Touch->obj = nullptr;
     }
   }
   else
   {
-    if (Touch->obj == NULL)
+    if (Touch->obj == nullptr)
       mTouchFlag = true;
     else
     {
@@ -244,7 +244,7 @@ void        EvScrollBox::touchEvent(EvTouchEvent *Touch)
 
       Touch->event = TOUCH_CANCEL;
       Touch->obj->TouchUpdate(Touch);
-      Touch->obj = NULL;
+      Touch->obj = nullptr;
     }
 
     mSpeedX = (mSpeedX >> 2) + (Touch->move.x * 3 << 2);

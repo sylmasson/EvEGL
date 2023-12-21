@@ -16,7 +16,7 @@ class EvPixelBox : public EvObj
     void          SetOnTouch(void (*OnTouch)(EvPixelBox *Sender, EvTouchEvent *Touch));
 
   protected:
-    EvPixelBox(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag = NULL, uint16_t State = VISIBLE_OBJ);
+    EvPixelBox(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ);
 
     virtual void  drawEvent(void);
     virtual void  touchEvent(EvTouchEvent *Touch);
@@ -29,7 +29,7 @@ class EvPixelBox : public EvObj
     void          (*mOnTouch)(EvPixelBox *Sender, EvTouchEvent *Touch);
 
   public:
-    static EvPixelBox  *Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag = NULL, uint16_t State = VISIBLE_OBJ);
+    static EvPixelBox  *Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ);
 };
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

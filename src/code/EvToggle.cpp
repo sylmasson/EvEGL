@@ -19,17 +19,17 @@
  * @param[in]  Top     The top position of the Toggle switch.
  * @param[in]  Width   The width of the Toggle switch.
  * @param[in]  Height  The height of the Toggle switch.
- * @param[out] *Dest   The address pointer of the EvPanel destination. Cannot be NULL.
- * @param[in]  Tag     The tag name of the Toggle switch. If NULL, the default tag name is "EvToggle".
+ * @param[out] *Dest   The address pointer of the EvPanel destination. Cannot be nullptr.
+ * @param[in]  Tag     The tag name of the Toggle switch. If nullptr, the default tag name is "EvToggle".
  * @param[in]  State   The initial state of the Toggle switch. Default is set to VISIBLE_OBJ | FILTER_DIS_OBJ.
  *
- * @return     EvToggle address pointer on success, otherwise returns NULL.
+ * @return     EvToggle address pointer on success, otherwise returns nullptr.
  * 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 EvToggle    *EvToggle::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag, uint16_t State)
 {
-  return !Dest ? NULL : (EvToggle *)EvObj::TryCreate(new EvToggle(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvToggle" : Tag, State), Dest);
+  return !Dest ? nullptr : (EvToggle *)EvObj::TryCreate(new EvToggle(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvToggle" : Tag, State), Dest);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -39,8 +39,8 @@ EvToggle::EvToggle(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, E
   mTouchKnob = false;
   SetColor(COLOR_ON, COLOR_OFF, COLOR_KNOB);
   BdShape(ROUND_CORNERS);
-  SetOnTouch(NULL);
-  SetOnChange(NULL);
+  SetOnTouch(nullptr);
+  SetOnChange(nullptr);
   SetValue(mValue = false);
 }
 
@@ -95,7 +95,7 @@ bool        EvToggle::SetValue(int16_t Value)
   mValue = Value;
   Modified();
 
-  if (mOnChange != NULL)
+  if (mOnChange != nullptr)
     (*mOnChange)(this, mValue);
 
   return true;
@@ -192,7 +192,7 @@ void        EvToggle::touchEvent(EvTouchEvent *Touch)
 {
   int16_t   pos, toogleSize;
 
-  if (mOnTouch != NULL)
+  if (mOnTouch != nullptr)
     (*mOnTouch)(this, Touch);
 
   if (mWidth >= mHeight)

@@ -18,7 +18,7 @@ static const char   *DefaultText[5] = {"Touch Screen Calibration", "Calibration 
 
 EvTouchCal  *EvTouchCal::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag, uint16_t State)
 {
-  return !Dest ? NULL : (EvTouchCal *)EvObj::TryCreate(new EvTouchCal(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvTouchCal" : Tag, State), Dest);
+  return !Dest ? nullptr : (EvTouchCal *)EvObj::TryCreate(new EvTouchCal(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvTouchCal" : Tag, State), Dest);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -28,7 +28,7 @@ EvTouchCal::EvTouchCal(int16_t Left, int16_t Top, uint16_t Width, uint16_t Heigh
   mInd = 0;
   mTimer = 0;
   mTouchTag = 0;
-  mOnExit = NULL;
+  mOnExit = nullptr;
   mText = DefaultText;
   mTargetX[0] = mTargetX[3] = mWidth / 10;
   mTargetX[1] = mTargetX[2] = mWidth - mTargetX[0];
@@ -221,7 +221,7 @@ void        EvTouchCal::touchEvent(EvTouchEvent *Touch)
             Disp->wr32(r, Matrix[i]);
 
         case CANCEL_BTN:
-          if (mOnExit != NULL)
+          if (mOnExit != nullptr)
             (*mOnExit)(this, mTouchTag == SAVE_BTN);
 
           Delete();

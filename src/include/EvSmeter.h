@@ -21,7 +21,7 @@ class EvSmeter : public EvPanel
     void          SetOnTouch(void (*OnTouch)(EvSmeter *Sender, EvTouchEvent *Touch));
 
   protected:
-    EvSmeter(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag = NULL, uint16_t State = VISIBLE_OBJ);
+    EvSmeter(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ);
 
     bool          mLock;
     int16_t       mValue;
@@ -40,7 +40,7 @@ class EvSmeter : public EvPanel
   public:
     const int16_t &Value = mValue;
 
-    static EvSmeter *Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag = NULL, uint16_t State = VISIBLE_OBJ);
+    static EvSmeter *Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ);
 };
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

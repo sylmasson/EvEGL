@@ -34,17 +34,17 @@
  * @param[in]  Top     The top position of the TextBox.
  * @param[in]  Width   The width of the TextBox.
  * @param[in]  Height  The height of the TextBox.
- * @param[out] *Dest   The address pointer of the EvPanel destination. Cannot be NULL.
- * @param[in]  Tag     The tag name of the TextBox. If NULL, the default tag name is "EvTextBox".
+ * @param[out] *Dest   The address pointer of the EvPanel destination. Cannot be nullptr.
+ * @param[in]  Tag     The tag name of the TextBox. If nullptr, the default tag name is "EvTextBox".
  * @param[in]  State   The initial state of the TextBox. Default is set to VISIBLE_OBJ | FILTER_DIS_OBJ.
  *
- * @return     EvTextBox address pointer on success, otherwise returns NULL.
+ * @return     EvTextBox address pointer on success, otherwise returns nullptr.
  * 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 EvTextBox   *EvTextBox::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag, uint16_t State)
 {
-  return !Dest ? NULL : (EvTextBox *)EvObj::TryCreate(new EvTextBox(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvTextBox" : Tag, State), Dest);
+  return !Dest ? nullptr : (EvTextBox *)EvObj::TryCreate(new EvTextBox(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvTextBox" : Tag, State), Dest);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -61,15 +61,15 @@ EvTextBox::EvTextBox(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height,
   BdColor(BD_COLOR);
   BdShape(FIXED_CORNERS);
   BdWidth(24);
-  SetOnTouch(NULL);
-  SetOnChange(NULL);
-  SetOnReturn(NULL);
-  SetOnFilter(NULL);
-  SetOnKbdFocus(NULL, NULL);
+  SetOnTouch(nullptr);
+  SetOnChange(nullptr);
+  SetOnReturn(nullptr);
+  SetOnFilter(nullptr);
+  SetOnKbdFocus(nullptr, nullptr);
   SelectAllOnSetKbdFocus = false;
   mMaxLength = 0;
 
-  if ((Cursor = EvTextCursor::Create(0, 0, 0, 0, this, NULL, DISABLED_OBJ | FIXED_OBJ)) == NULL)
+  if ((Cursor = EvTextCursor::Create(0, 0, 0, 0, this, nullptr, DISABLED_OBJ | FIXED_OBJ)) == nullptr)
     Abort();
   else
   {
@@ -240,7 +240,7 @@ size_t      EvTextBox::WriteKey(uint8_t Key, uint8_t Layout, uint8_t ShiftKey, b
       break;
 
     case '\n':
-      if (mOnReturn != NULL)
+      if (mOnReturn != nullptr)
         (*mOnReturn)(this, mLabel);
 
       LostKbdFocus();
@@ -471,7 +471,7 @@ int16_t     EvTextBox::textTop(void)
 
 int         EvTextBox::filter(uint8_t C)
 {
-  if (mOnFilter != NULL)
+  if (mOnFilter != nullptr)
     return (*mOnFilter)(this, C);
 
   return C;
@@ -509,7 +509,7 @@ void        EvTextBox::refreshEvent(void)
 
   if (IsEditedText())
   {
-    if (mOnChange != NULL)
+    if (mOnChange != nullptr)
       (*mOnChange)(this, mLabel);
 
     SetMoveCursor();
@@ -531,7 +531,7 @@ void        EvTextBox::setKbdFocusEvent(void)
   mAlign = mStyle.align;
   TextAlign((mAlign & ~3) | ALIGNMENT_LOCK);
 
-  if (mOnSetKbdFocus != NULL)
+  if (mOnSetKbdFocus != nullptr)
     (*mOnSetKbdFocus)(this);
 
   if (SelectAllOnSetKbdFocus)
@@ -549,7 +549,7 @@ void        EvTextBox::lostKbdFocusEvent(void)
   mCursorIndex = 0;
   mOffsetX = 0;
 
-  if (mOnLostKbdFocus != NULL)
+  if (mOnLostKbdFocus != nullptr)
     (*mOnLostKbdFocus)(this);
 }
 
@@ -557,7 +557,7 @@ void        EvTextBox::lostKbdFocusEvent(void)
 
 void        EvTextBox::touchEvent(EvTouchEvent *Touch)
 {
-  if (mOnTouch != NULL)
+  if (mOnTouch != nullptr)
     (*mOnTouch)(this, Touch);
 
   switch (Touch->event)

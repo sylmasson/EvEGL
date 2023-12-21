@@ -18,17 +18,17 @@ static EvKeyboard     *sKeyboard[2] = {&Keyboard1077x276, &Keyboard600x252};
  * @param[in]  Top     The top position of the Keyboard.
  * @param[in]  Width   The width of the Keyboard.
  * @param[in]  Height  The height of the Keyboard.
- * @param[out] *Dest   The address pointer of the EvPanel destination. Cannot be NULL.
- * @param[in]  Tag     The tag name of the Keyboard. If NULL, the default tag name is "EvKbd".
+ * @param[out] *Dest   The address pointer of the EvPanel destination. Cannot be nullptr.
+ * @param[in]  Tag     The tag name of the Keyboard. If nullptr, the default tag name is "EvKbd".
  * @param[in]  State   The initial state of the Keyboard. Default is set to SYSTEM_OBJ.
  *
- * @return     EvKbd address pointer on success, otherwise returns NULL.
+ * @return     EvKbd address pointer on success, otherwise returns nullptr.
  * 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 EvKbd       *EvKbd::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag, uint16_t State)
 {
-  return !Dest ? NULL : (EvKbd *)EvObj::TryCreate(new EvKbd(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvKbd" : Tag, State), Dest);
+  return !Dest ? nullptr : (EvKbd *)EvObj::TryCreate(new EvKbd(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvKbd" : Tag, State), Dest);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -39,13 +39,13 @@ EvKbd::EvKbd(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDispl
   mLayout = 0;
   mPrevKey = 0;
   mShiftKey = 0;
-  FocusObj = NULL;
+  FocusObj = nullptr;
   mKinMotion.Setup(200);
-  SetOnTouch(NULL);
+  SetOnTouch(nullptr);
   TouchMax(2);
   Disable();
 
-  if ((mOverKey = EvLabel::Create(0, 0, 0, 0, this, "KbdOverlay", DISABLED_OBJ | FLOAT_OBJ | SYSTEM_OBJ)) == NULL)
+  if ((mOverKey = EvLabel::Create(0, 0, 0, 0, this, "KbdOverlay", DISABLED_OBJ | FLOAT_OBJ | SYSTEM_OBJ)) == nullptr)
     Abort();
   else
   {
@@ -168,7 +168,7 @@ void        EvKbd::drawEvent(void)
 
   for (i = 0, map = layout->kbdMap; i < layout->keyCount; i++, map++)
   {
-    const char  *label = NULL;
+    const char  *label = nullptr;
 
     c = layout->keyChar[i];
     style = &layout->keyStyle[map->style];
@@ -203,7 +203,7 @@ void        EvKbd::refreshEvent(void)
 
 void        EvKbd::touchEvent(EvTouchEvent *Touch)
 {
-  if (mOnTouch != NULL)
+  if (mOnTouch != nullptr)
     (*mOnTouch)(this, Touch);
 
   const EvKbdLayout *layout = &mKb->layout[mLayout];

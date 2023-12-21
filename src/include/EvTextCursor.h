@@ -11,7 +11,7 @@ class EvTextCursor : public EvObj
     uint8_t       Style(uint8_t CursorStyle);
 
   protected:
-    EvTextCursor(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag = NULL, uint16_t State = VISIBLE_OBJ);
+    EvTextCursor(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ);
 
     uint8_t       mCursorState;
     uint16_t      mCursorTimer;
@@ -19,7 +19,7 @@ class EvTextCursor : public EvObj
     virtual void  refreshEvent(void);
 
   public:
-    static EvTextCursor *Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag = NULL, uint16_t State = VISIBLE_OBJ);
+    static EvTextCursor *Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ);
 };
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

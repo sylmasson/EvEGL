@@ -31,7 +31,7 @@ class EvNumInt : public EvObj
     void          SetOnChange(void (*OnChange)(EvNumInt *Sender, int32_t Value));
 
   protected:
-    EvNumInt(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag = NULL, uint16_t State = VISIBLE_OBJ);
+    EvNumInt(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ);
 
     int32_t       mValue;
     int32_t       mMin;
@@ -48,7 +48,7 @@ class EvNumInt : public EvObj
     void          (*mOnChange)(EvNumInt *Sender, int32_t Value);
 
   public:
-    static EvNumInt *Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag = NULL, uint16_t State = VISIBLE_OBJ | FILTER_DIS_OBJ);
+    static EvNumInt *Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ | FILTER_DIS_OBJ);
 };
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

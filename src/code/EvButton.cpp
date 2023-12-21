@@ -14,20 +14,20 @@
  * of its owner Dest.
  * 
  * @param[in]  Left    The left position of the **EvButton**.
- * @param[in]  Top     The top position of the Button.
+ * @param[in]  Top     The top position of the **EvButton**.
  * @param[in]  Width   The width of the **EvButton**.
  * @param[in]  Height  The height of the **EvButton**.
  * @param[out] *Dest   The destination **EvPanel** address pointer.
- * @param[in]  Tag     The tag name of the **EvButton**. If NULL, the default tag name is **"EvButton"**.
+ * @param[in]  Tag     The tag name of the **EvButton**. If nullptr, the default tag name is **"EvButton"**.
  * @param[in]  State   The initial state of the **EvButton**. Default is set to VISIBLE_OBJ | FILTER_DIS_OBJ.
  *
- * @return     **EvButton** address pointer on success, otherwise returns NULL.
+ * @return     **EvButton** address pointer on success, otherwise returns nullptr.
  * 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 EvButton    *EvButton::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag, uint16_t State)
 {
-  return !Dest ? NULL : (EvButton *)EvObj::TryCreate(new EvButton(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvButton" : Tag, State), Dest);
+  return !Dest ? nullptr : (EvButton *)EvObj::TryCreate(new EvButton(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvButton" : Tag, State), Dest);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -38,8 +38,8 @@ EvButton::EvButton(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, E
   TextColor(TEXT_UP, TEXT_DOWN);
   SetColor(COLOR_UP, COLOR_DOWN);
   BdShape(FIXED_CORNERS | SHADOW);
-  SetOnTouch(NULL);
-  SetOnChange(NULL);
+  SetOnTouch(nullptr);
+  SetOnChange(nullptr);
 }
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -79,7 +79,7 @@ bool        EvButton::SetValue(int16_t Value)
   mValue = Value;
   Modified();
 
-  if (mOnChange != NULL)
+  if (mOnChange != nullptr)
     (*mOnChange)(this, mValue);
 
   return true;
@@ -181,7 +181,7 @@ void        EvButton::drawEvent(void)
 
 void        EvButton::touchEvent(EvTouchEvent *Touch)
 {
-  if (mOnTouch != NULL)
+  if (mOnTouch != nullptr)
     (*mOnTouch)(this, Touch);
 
   switch (Touch->event)

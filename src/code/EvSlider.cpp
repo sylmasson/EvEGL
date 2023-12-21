@@ -21,17 +21,17 @@
  * @param[in]  Top     The top position of the Slider.
  * @param[in]  Width   The width of the Slider.
  * @param[in]  Height  The height of the Slider.
- * @param[out] *Dest   The address pointer of the EvPanel destination. Cannot be NULL.
- * @param[in]  Tag     The tag name of the Slider. If NULL, the default tag name is "EvSlider".
+ * @param[out] *Dest   The address pointer of the EvPanel destination. Cannot be nullptr.
+ * @param[in]  Tag     The tag name of the Slider. If nullptr, the default tag name is "EvSlider".
  * @param[in]  State   The initial state of the Slider. Default is set to VISIBLE_OBJ.
  *
- * @return     EvSlider address pointer on success, otherwise returns NULL.
+ * @return     EvSlider address pointer on success, otherwise returns nullptr.
  * 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 EvSlider    *EvSlider::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag, uint16_t State)
 {
-  return !Dest ? NULL : (EvSlider *)EvObj::TryCreate(new EvSlider(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvSlider" : Tag, State), Dest);
+  return !Dest ? nullptr : (EvSlider *)EvObj::TryCreate(new EvSlider(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvSlider" : Tag, State), Dest);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -44,8 +44,8 @@ EvSlider::EvSlider(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, E
   SetDelay(SLIDER_DELAY);
   SetRange(0, 100);
   SetColor(COLOR_LOWER, COLOR_UPPER, COLOR_KNOB);
-  SetOnTouch(NULL);
-  SetOnChange(NULL);
+  SetOnTouch(nullptr);
+  SetOnChange(nullptr);
   mSetPoint = mValue;
   SetValue(0);
 }
@@ -242,7 +242,7 @@ void        EvSlider::touchEvent(EvTouchEvent *Touch)
   value = (knobPos * (mMax - mMin)) / (sliderRange >> 4);
   value = mMin + ((value + 8) >> 4);
 
-  if (mOnTouch != NULL)
+  if (mOnTouch != nullptr)
     (*mOnTouch)(this, Touch);
 
   switch (Touch->event)
@@ -302,7 +302,7 @@ bool        EvSlider::setValue(int16_t Value)
   mValue = Value;
   Modified();
 
-  if (mOnChange != NULL)
+  if (mOnChange != nullptr)
     (*mOnChange)(this, mValue);
 
   return true;

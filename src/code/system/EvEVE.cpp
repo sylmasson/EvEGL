@@ -59,7 +59,7 @@ EvEVE::EvEVE(const uint32_t *Config, uint8_t CS, int16_t RST, SPIClass *Spi, uin
     delay(10);
 
   wrCmdBufClear();
-  mVideoBuf = NULL;
+  mVideoBuf = nullptr;
   mConvertToGray = 0;
   mColorCalibration = 0;
   mStackContextCount = 0;
@@ -150,30 +150,36 @@ uint16_t    EvEVE::Opacity(uint16_t Opacity)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-const EvMem *EvEVE::LoadBmp(const EvBmp *Bmp)
+const EvMem *EvEVE::LoadBmp(const EvBmp *Bmp, uint32_t Options)
 {
   EvMem     *ptr;
 
-  if (Bmp->Layout > L2)
-    return NULL;
-
-  if ((ptr = (EvMem *)RAM_G.FindByOwner(Bmp)) == NULL)
+  if (Bmp->Layout > L2 || (Options > 0 && ChipID < 0x815))
   {
-    if ((ptr = (EvMem *)RAM_G.Malloc(Bmp->PalSize + Bmp->BmpSize, Bmp)) == NULL)
-      return NULL;
+    Serial.println("LoadBmp: Options not supported");
+    return nullptr;
+  }
+
+  if ((ptr = (EvMem *)RAM_G.FindByOwner(Bmp)) == nullptr)
+  {
+    if ((ptr = (EvMem *)RAM_G.Malloc(Bmp->PalSize + Bmp->BmpSize, Bmp)) == nullptr)
+      return nullptr;
 
     if (Bmp->DataSize)
     {
       switch (Bmp->Format & ~BMP_MALLOC)
       {
-        case RAW_DATA: CmdMemwrite(ptr->addr, Bmp->DataSize); break;
+        case RAW_DATA: CmdMemwrite(ptr->addr, Bmp->DataSize); Options = 0; break;
         case JPEG_DATA:
-        case PNG_DATA: CmdLoadImage(ptr->addr, OPT_RGB565 | OPT_NODL); break;
-        case ZIP_DATA: CmdInflate(ptr->addr); break;
+        case PNG_DATA: CmdLoadImage(ptr->addr, Options | OPT_NODL); break;
+        case ZIP_DATA: (Options == 0) ? CmdInflate(ptr->addr) : CmdInflate2(ptr->addr, Options); break;
       }
 
-      wrCmdBufData(Bmp->Data, Bmp->DataSize);
-      wrCmdBufAlign();
+      if (Options == 0)
+      {
+        wrCmdBufData(Bmp->Data, Bmp->DataSize);
+        wrCmdBufAlign();
+      }
     }
   }
 
@@ -192,7 +198,7 @@ bool        EvEVE::UnloadBmp(const EvBmp *Bmp)
 
 bool        EvEVE::UnloadBmp(const EvMem *ptr)
 {
-  if (ptr == NULL || ptr->typeId != EV_BMP)
+  if (ptr == nullptr || ptr->typeId != EV_BMP)
     return false;
 
   if (--(((EvMem *)ptr)->count) == 0)
@@ -205,13 +211,13 @@ bool        EvEVE::UnloadBmp(const EvMem *ptr)
 
 uint32_t    EvEVE::SetPlayVideoBuffer(uint32_t Size)
 {
-  if (Size == 0 || mVideoBuf != NULL)
+  if (Size == 0 || mVideoBuf != nullptr)
   {
     RAM_G.Free(mVideoBuf);
-    mVideoBuf = NULL;
+    mVideoBuf = nullptr;
   }
 
-  if (Size > 0 && (mVideoBuf = RAM_G.Malloc(Size, "Video Buffer", EV_VIDEO)) != NULL)
+  if (Size > 0 && (mVideoBuf = RAM_G.Malloc(Size, "Video Buffer", EV_VIDEO)) != nullptr)
     return mVideoBuf->size;
 
   return 0;
@@ -809,13 +815,18 @@ void        EvEVE::CmdGradient(int16_t X0, int16_t Y0, uint32_t Color0, int16_t 
 
 void        EvEVE::CmdGradientA(int16_t X0, int16_t Y0, uint32_t Color0, int16_t X1, int16_t Y1, uint32_t Color1)
 {
-  wrCmdBuf32(CMD_GRADIENTA);
-  wrCmdBuf16(X0);
-  wrCmdBuf16(Y0);
-  wrCmdBuf32(colorCorrection(Color0) | (Color0 & 0xFF000000));
-  wrCmdBuf16(X1);
-  wrCmdBuf16(Y1);
-  wrCmdBuf32(colorCorrection(Color1) | (Color1 & 0xFF000000));
+  if (ChipID < 0x815)
+    Serial.println("CMD_GRADIENTA not supported");
+  else
+  {
+    wrCmdBuf32(CMD_GRADIENTA);
+    wrCmdBuf16(X0);
+    wrCmdBuf16(Y0);
+    wrCmdBuf32(colorCorrection(Color0) | (Color0 & 0xFF000000));
+    wrCmdBuf16(X1);
+    wrCmdBuf16(Y1);
+    wrCmdBuf32(colorCorrection(Color1) | (Color1 & 0xFF000000));
+  }
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -824,6 +835,20 @@ void        EvEVE::CmdInflate(uint32_t Addr)
 {
   wrCmdBuf32(CMD_INFLATE);
   wrCmdBuf32(Addr);
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+void        EvEVE::CmdInflate2(uint32_t Addr, uint32_t Options)
+{
+  if (ChipID < 0x815)
+    Serial.println("CMD_INFLATE2 not supported");
+  else
+  {
+    wrCmdBuf32(CMD_INFLATE2);
+    wrCmdBuf32(Addr);
+    wrCmdBuf32(Options);
+  }
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -840,6 +865,15 @@ void        EvEVE::CmdLoadImage(uint32_t Addr, uint32_t Options)
   wrCmdBuf32(CMD_LOADIMAGE);
   wrCmdBuf32(Addr);
   wrCmdBuf32(Options);
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+void        EvEVE::CmdMediaFifo(uint32_t Addr, uint32_t BufSize)
+{
+  wrCmdBuf32(CMD_MEDIAFIFO);
+  wrCmdBuf32(Addr);
+  wrCmdBuf32(BufSize);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -970,7 +1004,9 @@ void        EvEVE::CmdSwap(void)
 
 void        EvEVE::CmdSync(void)
 {
-  if (ChipID >= 0x817) 
+  if (ChipID < 0x817)
+    Serial.println("CMD_SYNC not supported");
+  else
     wrCmdBuf32(CMD_SYNC);
 }
 

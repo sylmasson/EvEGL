@@ -16,25 +16,25 @@
  * @param[in]  Top     The top position of Image.
  * @param[in]  Width   The width of Image.
  * @param[in]  Height  The height of Image.
- * @param[out] *Dest   The address pointer of the EvPanel destination. Cannot be NULL.
- * @param[in]  Tag     The tag name of the Image. If NULL, the default tag name is "EvImage".
+ * @param[out] *Dest   The address pointer of the EvPanel destination. Cannot be nullptr.
+ * @param[in]  Tag     The tag name of the Image. If nullptr, the default tag name is "EvImage".
  * @param[in]  State   The initial state of the Image. Default is set to VISIBLE_DIS_OBJ.
  *
- * @return     EvImage address pointer on success, otherwise returns NULL.
+ * @return     EvImage address pointer on success, otherwise returns nullptr.
  * 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 EvImage     *EvImage::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag, uint16_t State)
 {
-  return !Dest ? NULL : (EvImage *)EvObj::TryCreate(new EvImage(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvImage" : Tag, State), Dest);
+  return !Dest ? nullptr : (EvImage *)EvObj::TryCreate(new EvImage(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvImage" : Tag, State), Dest);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 EvImage::EvImage(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) : EvObj(Left, Top, Width, Height, Disp, Tag, State)
 {
-  mBmp = NULL;
-  mLoad = NULL;
+  mBmp = nullptr;
+  mLoad = nullptr;
   mOffsetX = 0;
   mOffsetY = 0;
   mResizeLock = false;
@@ -43,8 +43,8 @@ EvImage::EvImage(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvD
   mScaleX = mScaleY = 1.0;
   mAngle = -1;
   Rotate(0);
-  SetMode(RESIZE_PROPORTIONAL, NEAREST);
-  SetOnTouch(NULL);
+  SetMode(RESIZE_PROPORTIONAL | RESIZE_ON_LOAD, NEAREST);
+  SetOnTouch(nullptr);
   ModifiedCoeff();
   Modified();
 }
@@ -62,14 +62,14 @@ bool        EvImage::Unload(void)
 {
   bool      result = false;
 
-  if (mBmp != NULL && mLoad != NULL)
+  if (mBmp != nullptr && mLoad != nullptr)
   {
     if (mLoad->count == 1 && (mBmp->Format & BMP_MALLOC) != 0)
       free((void *)mBmp);
 
     result = Disp->UnloadBmp(mLoad);
-    mLoad = NULL;
-    mBmp = NULL;
+    mLoad = nullptr;
+    mBmp = nullptr;
     Modified();
   }
 
@@ -82,17 +82,22 @@ const EvBmp *EvImage::Load(const EvBmp *Bmp)
 {
   Unload();
 
-  if (Bmp != NULL && Bmp->Layout != PALETTED8 && (mLoad = Disp->LoadBmp(Bmp)) != NULL)
+  if (Bmp != nullptr && Bmp->Layout != PALETTED8 && (mLoad = Disp->LoadBmp(Bmp)) != nullptr)
   {
     mBmp = Bmp;
-    ReSize(mBmp->Width, mBmp->Height);
-    RotateAround(mBmp->Width >> 1, mBmp->Height >> 1, 0.0, 1.0);
-    SetMode(RESIZE_PROPORTIONAL, NEAREST);
+
+    if (mResizeMode & RESIZE_ON_LOAD)
+    {
+      ReSize(mBmp->Width, mBmp->Height);
+      RotateAround(mBmp->Width >> 1, mBmp->Height >> 1, 0.0, 1.0);
+      SetMode(RESIZE_PROPORTIONAL | RESIZE_ON_LOAD, NEAREST);
+    }
+
     Modified();
     return mBmp;
   }
 
-  return NULL;
+  return nullptr;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -113,10 +118,10 @@ const EvBmp *EvImage::Load(const char *Filename, SDClass &Dev)
     #ifdef  VERBOSE
       Serial.printf("\nDevice or file %s not found\n", Filename);
     #endif
-    return NULL;
+    return nullptr;
   }
 
-  if ((fileSize = file.size()) > 0 && (bmp = (EvBmp *)malloc(sizeof(EvBmp) + fileSize)) != NULL)
+  if ((fileSize = file.size()) > 0 && (bmp = (EvBmp *)malloc(sizeof(EvBmp) + fileSize)) != nullptr)
   {
     data = (uint8_t *)bmp + sizeof(EvBmp);
 
@@ -150,12 +155,12 @@ const EvBmp *EvImage::Load(const char *Filename, SDClass &Dev)
       }
 
       free(bmp);
-      return NULL;
+      return nullptr;
     }
   }
 
   file.close();
-  return NULL;
+  return nullptr;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -267,7 +272,7 @@ void        EvImage::SetOnTouch(void (*OnTouch)(EvImage *Sender, EvTouchEvent *T
 
 void        EvImage::resize(void)
 {
-  if (mBmp != NULL && !mResizeLock)
+  if (mBmp != nullptr && !mResizeLock)
   {
     int16_t left, top;
     int16_t right, bottom;
@@ -347,7 +352,7 @@ void        EvImage::drawSetup(void)
 
 void        EvImage::drawEvent(void)
 {
-  if (mBmp != NULL)
+  if (mBmp != nullptr)
   {
     drawSetup();
     Disp->ColorRGB(RGB555(255, 255, 255));
@@ -359,9 +364,9 @@ void        EvImage::drawEvent(void)
 
 void        EvImage::resizeEvent(void)
 {
-  if (!mResizeLock && mWidth > 0 && mHeight > 0 && mBmp != NULL && mBmp->Width > 0 && mBmp->Height > 0)
+  if (!mResizeLock && mWidth > 0 && mHeight > 0 && mBmp != nullptr && mBmp->Width > 0 && mBmp->Height > 0)
   {
-    switch (mResizeMode)
+    switch (mResizeMode & ~RESIZE_ON_LOAD)
     {
       case RESIZE_NONE:
         mResizeLock = true;
@@ -427,7 +432,7 @@ void        EvImage::refreshEvent(void)
 
 void        EvImage::touchEvent(EvTouchEvent *Touch)
 {
-  if (mOnTouch != NULL)
+  if (mOnTouch != nullptr)
     (*mOnTouch)(this, Touch);
 }
 
@@ -474,7 +479,7 @@ bool        IsValidJPEG(const uint8_t *Data, uint32_t DataSize, EvBmp *Bmp, cons
         if (i != DataSize || layout == 0)
           break;
 
-        if (Bmp != NULL)
+        if (Bmp != nullptr)
         {
           Bmp->Format = JPEG_DATA;
           Bmp->Layout = layout;
@@ -584,7 +589,7 @@ bool        IsValidPNG(const uint8_t *Data, uint32_t DataSize, EvBmp *Bmp, const
         if (palSize == 0 && (layout == PALETTED565 || layout == PALETTED4444))
           break;
 
-        if (Bmp != NULL)
+        if (Bmp != nullptr)
         {
           Bmp->Format = PNG_DATA;
           Bmp->Layout = layout;

@@ -12,17 +12,17 @@
  * @param[in]  Top     The top position of the TextBlock.
  * @param[in]  Width   The width of the TextBlock.
  * @param[in]  Height  The height of the TextBlock.
- * @param[out] *Dest   The address pointer of the EvPanel destination. Cannot be NULL.
- * @param[in]  Tag     The tag name of the TextBlock. If NULL, the default tag name is "EvTextBlock".
+ * @param[out] *Dest   The address pointer of the EvPanel destination. Cannot be nullptr.
+ * @param[in]  Tag     The tag name of the TextBlock. If nullptr, the default tag name is "EvTextBlock".
  * @param[in]  State   The initial state of the TextBlock. Default is set to VISIBLE_OBJ.
  *
- * @return     EvTextBlock address pointer on success, otherwise returns NULL.
+ * @return     EvTextBlock address pointer on success, otherwise returns nullptr.
  * 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 EvTextBlock *EvTextBlock::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag, uint16_t State)
 {
-  return !Dest ? NULL : (EvTextBlock *)EvObj::TryCreate(new EvTextBlock(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvTextBlock" : Tag, State), Dest);
+  return !Dest ? nullptr : (EvTextBlock *)EvObj::TryCreate(new EvTextBlock(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvTextBlock" : Tag, State), Dest);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -32,7 +32,7 @@ EvTextBlock::EvTextBlock(int16_t Left, int16_t Top, uint16_t Width, uint16_t Hei
   mWrapText = true;
   mLineSpacing = 0;
   mLinesCount = 0;
-  mLines = NULL;
+  mLines = nullptr;
   mMaxWidth = 0;
   TextClear();
   TextFont(24);
@@ -40,7 +40,7 @@ EvTextBlock::EvTextBlock(int16_t Left, int16_t Top, uint16_t Width, uint16_t Hei
   TextAlign(LEFT_CENTER);
   TextColor(RGB555(0, 0, 0));
   BgColor(RGB555(255, 255, 255));
-  SetOnTouch(NULL);
+  SetOnTouch(nullptr);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -200,7 +200,7 @@ void        EvTextBlock::refreshEvent(void)
 
 void        EvTextBlock::touchEvent(EvTouchEvent *Touch)
 {
-  if (mOnTouch != NULL)
+  if (mOnTouch != nullptr)
     (*mOnTouch)(this, Touch);
 
   EvScrollBox::touchEvent(Touch);
@@ -226,7 +226,7 @@ bool        EvTextBlock::parseTextAsLines(void)
 
   width = 0;
   mMaxWidth = 0;
-  mLines = NULL;
+  mLines = nullptr;
   mLinesCount = 0;
   startLine = true;
   length = mLabel.length();
@@ -249,7 +249,7 @@ bool        EvTextBlock::parseTextAsLines(void)
 
     if (startLine || width + spWidth + wdWidth > widthLimit)
     {
-      if ((mLines = (SubString *)realloc(mLines, ++mLinesCount * sizeof(SubString))) == NULL)
+      if ((mLines = (SubString *)realloc(mLines, ++mLinesCount * sizeof(SubString))) == nullptr)
       {
         mLinesCount = 0;
         mMaxWidth = 0;

@@ -5,7 +5,7 @@
 
 EvVuBar     *EvVuBar::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag, uint16_t State)
 {
-  return !Dest ? NULL : (EvVuBar *)EvObj::TryCreate(new EvVuBar(Left, Top, Width, Height, Dest->Disp, Tag, State), Dest);
+  return !Dest ? nullptr : (EvVuBar *)EvObj::TryCreate(new EvVuBar(Left, Top, Width, Height, Dest->Disp, Tag, State), Dest);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -18,7 +18,7 @@ EvVuBar::EvVuBar(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvD
   mPeakTimer = 0;
   SetColor(0, 0);
   SetFormat(12, 3, 5);
-  SetOnTouch(NULL);
+  SetOnTouch(nullptr);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -243,7 +243,7 @@ void        EvVuBar::refreshEvent(void)
 
 void        EvVuBar::touchEvent(EvTouchEvent *Touch)
 {
-  if (mOnTouch != NULL)
+  if (mOnTouch != nullptr)
     (*mOnTouch)(this, Touch);
 }
 
