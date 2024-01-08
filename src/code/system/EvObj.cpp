@@ -1420,13 +1420,6 @@ void        EvObj::Refresh(void)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvObj::Preload(void)
-{
-  preloadEvent();
-}
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
 void        EvObj::Draw(void)
 {
   if (!(mStatus & VISIBLE_OBJ) || mView.w <= 0)
@@ -1451,6 +1444,7 @@ void        EvObj::Draw(void)
       }
 
       Disp->CmdAppend(mCache->addr, mCache->used);
+      Disp->wrCmdBufUpdate();
     }
     else
     {
@@ -1490,7 +1484,10 @@ void        EvObj::Draw(void)
       mCache = (mCache == nullptr) ? Disp->RAM_G.Malloc(sizeDL, this) : Disp->RAM_G.Realloc(mCache, sizeDL);
 
       if (mCache != nullptr)
-        Disp->CmdMemcpy(mCache->addr, (((EvMem *)mCache)->startDL = startDL) + RAM_DL, sizeDL);
+      {
+        Disp->CmdMemCpy(mCache->addr, (((EvMem *)mCache)->startDL = startDL) + RAM_DL, sizeDL);
+        Disp->wrCmdBufUpdate();
+      }
 
       if (Disp->sTraceFlags & TRACE_MODIFIED)
       {

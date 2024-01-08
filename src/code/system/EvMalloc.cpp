@@ -22,7 +22,8 @@ EvMalloc::EvMalloc(void)
     mFirst->next = mFirst->prev = nullptr;
   }
 
-  BufferPNG = Malloc(42 * 1024, "PNG decoding process buffer"); // Allocate at 0xF5800
+  BufferPNG = Malloc(42 * 1024, "PNG decoding process buffer");   // Allocate at 0xF5800
+  BufferDMA = Malloc(64 * 1024, "DMA buffer used by MEDIAFIFO");  // Allocate at 0xF0000
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -175,7 +176,7 @@ const EvMem *EvMalloc::Realloc(const EvMem *Ptr, size_t Size)
 
     if (size <= ptr->size)
     { // decrease the size of the block
-      if ((ptr = memSplit(ptr, size)) != nullptr)
+      if (size == ptr->size || (ptr = memSplit(ptr, size)) != nullptr)
         ptr->used = used;
     }
     else

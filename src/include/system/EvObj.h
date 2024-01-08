@@ -191,14 +191,12 @@ class EvObj : public Print
     virtual void  SetDisplay(EvDisplay *Disp);
     virtual void  SetView(void);
     virtual void  Refresh(void);
-    virtual void  Preload(void);
     virtual void  Draw(void);
 
   protected:
     virtual void  drawEvent(void) {};
     virtual void  resizeEvent(void) {};
     virtual void  refreshEvent(void) {};
-    virtual void  preloadEvent(void) {};
     virtual void  setKbdFocusEvent(void) {};
     virtual void  lostKbdFocusEvent(void) {};
     virtual void  touchEvent(EvTouchEvent *Touch) {};

@@ -7,7 +7,7 @@
 class EvSPI
 {
   public:
-    void          hostSetup(uint8_t CS, int16_t RST = -1, SPIClass *Spi = nullptr, uint32_t Baudrate = 16000000);
+    void          hostSetup(uint8_t CS, uint8_t RST = 255, SPIClass *Spi = nullptr, uint32_t Baudrate = 16000000);
     void          hostCommand(uint8_t Cmd, uint8_t Parameter = 0);
     void          hostRequestSPI(void);
 
@@ -20,6 +20,7 @@ class EvSPI
     void          wr16(uint32_t Addr, uint16_t Data);
     void          wr32(uint32_t Addr, uint32_t Data);
     void          wrData(uint32_t Addr, const uint8_t *Data, uint32_t Count);
+    void          wrDataDMA(uint32_t Addr, const uint8_t *Data, uint32_t Count, EventResponderRef EventDMA);
 
     void          wrCmdBuf8(uint8_t Data);
     void          wrCmdBuf16(uint16_t Data);
@@ -35,15 +36,16 @@ class EvSPI
     uint16_t      wrCmdBufFreeSpace(uint16_t FreeSpace);
 
   private:
+    uint8_t       rstPin;
     uint8_t       csPin;
     uint16_t      wrPtr;
     uint16_t      wrFree;
+    uint16_t      wrLast;
     uint32_t      hostAddr;
 
-    static int16_t    rstPin;
-    static uint32_t   baudrate;
-    static SPIClass   *hostSPI;
-    static EvSPI      *inUsed;
+    static uint32_t baudrate;
+    static SPIClass *hostSPI;
+    static EvSPI    *inUsed;
 
     void          csEnable(void);
     void          csDisable(void);

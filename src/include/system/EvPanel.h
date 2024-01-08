@@ -63,7 +63,6 @@ class EvPanel : public EvObj
     virtual void  SetDisplay(EvDisplay *Disp);
     virtual void  SetView(void);
     virtual void  Refresh(void);
-    virtual void  Preload(void);
     virtual void  Draw(void);
     int16_t       OffsetX();
     int16_t       OffsetY();

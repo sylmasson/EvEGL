@@ -1,36 +1,35 @@
 
-#include    <include/system/EvEVE.h>
+#include    <EvGUI.h>
 
 #define     hostRead(addr)  hostTransaction((addr) & 0x3FFFFF)
 #define     hostWrite(addr) hostTransaction(((addr) & 0x3FFFFF) | 0x800000)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-int16_t     EvSPI::rstPin;
 uint32_t    EvSPI::baudrate;
 SPIClass    *EvSPI::hostSPI = nullptr;
 EvSPI       *EvSPI::inUsed = nullptr;
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvSPI::hostSetup(uint8_t CS, int16_t RST, SPIClass *Spi, uint32_t Baudrate)
+void        EvSPI::hostSetup(uint8_t CS, uint8_t RST, SPIClass *Spi, uint32_t Baudrate)
 {
-  wrPtr = 0;
+  wrPtr = wrLast = 0;
   wrFree = RAM_CMD_EMPTY;
   pinMode(csPin = CS, OUTPUT);
   csDisable();
 
+  if ((rstPin = RST) != 255)
+  {
+    pinMode(rstPin, OUTPUT);
+    digitalWrite(rstPin, LOW);
+    delay(20);
+    digitalWrite(rstPin, HIGH);
+    delay(20);
+  }
+
   if (hostSPI == nullptr)
   {
-    if ((rstPin = RST) >= 0)
-    {
-      pinMode(rstPin, OUTPUT);
-      digitalWrite(rstPin, LOW);
-      delay(20);
-      digitalWrite(rstPin, HIGH);
-      delay(20);
-    }
-
     hostSPI = (Spi != nullptr) ? Spi : &SPI;
     baudrate = Baudrate;
     hostSPI->begin();
@@ -151,6 +150,18 @@ void        EvSPI::wrData(uint32_t Addr, const uint8_t *Data, uint32_t Count)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+void        EvSPI::wrDataDMA(uint32_t Addr, const uint8_t *Data, uint32_t Count, EventResponderRef EventDMA)
+{
+  digitalWrite(5, HIGH);
+
+  hostWrite(Addr);
+  TaskDMA.Start();
+  hostAddr += Count;
+  hostSPI->transfer(Data, nullptr, Count, EventDMA);
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
 void        EvSPI::wrCmdBuf8(uint8_t Data)
 {
   if (wrFree < 1)
@@ -206,7 +217,9 @@ void        EvSPI::wrCmdBufData(const uint8_t *Data, uint32_t Count)
     if (wrPtr + cnt > RAM_CMD_SIZE)
       cnt = RAM_CMD_SIZE - wrPtr;
 
-    wrCmdBufFreeSpace(cnt);
+    if (wrFree < cnt)
+      wrCmdBufFreeSpace(cnt);
+
     wrData(RAM_CMD + wrPtr, Data, cnt);
     wrPtr = (wrPtr + cnt) & 0xFFF;
     wrFree -= cnt;
@@ -230,7 +243,7 @@ void        EvSPI::wrCmdBufAlign(void)
 
 void        EvSPI::wrCmdBufClear(void)
 {
-  wrPtr = 0;
+  wrPtr = wrLast = 0;
   wrFree = RAM_CMD_EMPTY;
   wr8(REG_CPURESET, 1);
   wr16(REG_CMD_WRITE, 0);
@@ -258,7 +271,10 @@ bool        EvSPI::wrCmdBufEmpty(void)
 
 void        EvSPI::wrCmdBufUpdate(void)
 {
-  wr16(REG_CMD_WRITE, wrPtr & RAM_CMD_EMPTY);
+  uint16_t  ptr = wrPtr & RAM_CMD_EMPTY;
+
+  if (wrLast != ptr)
+    wr16(REG_CMD_WRITE, wrLast = ptr);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -300,6 +316,9 @@ void        EvSPI::csDisable()
 
 void        EvSPI::hostTransaction(uint32_t Addr)
 {
+  while (TaskDMA.Busy())
+    yield();
+
   if (inUsed != this)
   {
     if (!inUsed)

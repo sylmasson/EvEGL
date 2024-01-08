@@ -100,6 +100,7 @@ class EvMalloc
     const EvMem   *FindFirst(void);
 
     const EvMem   *BufferPNG; // Can be freed if no PNG decoding process is used
+    const EvMem   *BufferDMA;
 
   private:
     EvMem         *mFirst;

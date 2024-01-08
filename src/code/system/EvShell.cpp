@@ -55,6 +55,14 @@ void        ShellInput(const char C)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+void        ShellInput(const char *Str)
+{
+  while (*Str)
+    sShell.Input(*Str++);
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
 EvShell::EvShell(void)
 {
   mAddr = 0;

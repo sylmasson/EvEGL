@@ -212,7 +212,7 @@ bool        EvVideo::load(void)
   {
     mFrame->Format |= BMP_MALLOC;
 
-    if (Load(mFrame) == nullptr)
+    if (Load(mFrame, OPT_MEDIAFIFO) == nullptr)
       free(mFrame);
     else
     {

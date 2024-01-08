@@ -81,7 +81,7 @@ EvPixelBox::EvPixelBox(int16_t Left, int16_t Top, uint16_t Width, uint16_t Heigh
     Abort();
   else
   {
-    Disp->CmdMemset(mDest->addr + mBmp.PalSize, 0, mBmp.BmpSize);
+    Disp->CmdMemSet(mDest->addr + mBmp.PalSize, 0, mBmp.BmpSize);
     BdShape(SQUARE_CORNERS);
     mBmp.BmpSize /= 2;
     SetOnTouch(nullptr);
@@ -104,7 +104,7 @@ void          EvPixelBox::ScrollUp(void)
 
   dst = mDest->addr + mBmp.PalSize;
   src = dst + mBmp.Width;
-  Disp->CmdMemcpy(dst, src, mBmp.BmpSize - mBmp.Width);
+  Disp->CmdMemCpy(dst, src, mBmp.BmpSize - mBmp.Width);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -124,7 +124,7 @@ void          EvPixelBox::ScrollDown(void)
     src = dst + mBmp.BmpSize;
   }
 
-  Disp->CmdMemcpy(dst + mBmp.Width, src, mBmp.BmpSize - mBmp.Width);
+  Disp->CmdMemCpy(dst + mBmp.Width, src, mBmp.BmpSize - mBmp.Width);
   mBufInd = !mBufInd;
   Modified();
 
@@ -132,11 +132,11 @@ void          EvPixelBox::ScrollDown(void)
 
   src = mDest->addr + mBmp.PalSize;
   dst = src + mBmp.BmpSize;
-  Disp->CmdMemcpy(dst, src, mBmp.BmpSize);
+  Disp->CmdMemCpy(dst, src, mBmp.BmpSize);
 
   dst = src + mBmp.Width;
   src += mBmp.BmpSize;
-  Disp->CmdMemcpy(dst, src, mBmp.BmpSize - mBmp.Width); */
+  Disp->CmdMemCpy(dst, src, mBmp.BmpSize - mBmp.Width); */
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -155,7 +155,7 @@ void          EvPixelBox::SetPixel(uint16_t X, uint16_t Y, uint8_t *Color, uint1
   if (X < mBmp.Width && Y < mBmp.Height)
   {
     // condition limit with count here
-    Disp->CmdMemwrite(mDest->addr + mBmp.PalSize + (Y * mBmp.Width) + X + (mBufInd ? mBmp.BmpSize : 0), Count);
+    Disp->CmdMemWrite(mDest->addr + mBmp.PalSize + (Y * mBmp.Width) + X + (mBufInd ? mBmp.BmpSize : 0), Count);
     Disp->wrCmdBufData(Color, Count);
     Disp->wrCmdBufAlign();
 

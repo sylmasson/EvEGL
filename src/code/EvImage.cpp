@@ -35,6 +35,7 @@ EvImage::EvImage(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvD
 {
   mBmp = nullptr;
   mLoad = nullptr;
+  mLoadDMA = nullptr;
   mOffsetX = 0;
   mOffsetY = 0;
   mResizeLock = false;
@@ -78,23 +79,16 @@ bool        EvImage::Unload(void)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-const EvBmp *EvImage::Load(const EvBmp *Bmp)
+const EvBmp *EvImage::Load(const EvBmp *Bmp, uint32_t Options)
 {
-  Unload();
-
-  if (Bmp != nullptr && Bmp->Layout != PALETTED8 && (mLoad = Disp->LoadBmp(Bmp)) != nullptr)
+  if (Bmp != nullptr && Bmp->Layout != PALETTED8)
   {
-    mBmp = Bmp;
+    if (Options == 0)
+      return (load(Bmp, Options));
 
-    if (mResizeMode & RESIZE_ON_LOAD)
-    {
-      ReSize(mBmp->Width, mBmp->Height);
-      RotateAround(mBmp->Width >> 1, mBmp->Height >> 1, 0.0, 1.0);
-      SetMode(RESIZE_PROPORTIONAL | RESIZE_ON_LOAD, NEAREST);
-    }
-
-    Modified();
-    return mBmp;
+    if (Options == OPT_MEDIAFIFO && mLoadDMA == nullptr)
+      if ((mLoadDMA = TaskDMA.Add(Disp, (uint8_t *)Bmp->Data, Bmp->DataSize, (void *)Bmp, (void *)this, onLoading)) != nullptr)
+        return Bmp;
   }
 
   return nullptr;
@@ -102,7 +96,7 @@ const EvBmp *EvImage::Load(const EvBmp *Bmp)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-const EvBmp *EvImage::Load(const char *Filename, SDClass &Dev)
+const EvBmp *EvImage::Load(const char *Filename, SDClass &Dev, uint32_t Options)
 {
   File      file;
   EvBmp     *bmp;
@@ -112,6 +106,9 @@ const EvBmp *EvImage::Load(const char *Filename, SDClass &Dev)
   #ifdef  VERBOSE
   uint32_t  msec = millis();
   #endif
+
+  if (Options != OPT_MEDIAFIFO)
+    Options = 0;
 
   if (!Dev.mediaPresent() || !(file = Dev.open(Filename)))
   {
@@ -144,7 +141,7 @@ const EvBmp *EvImage::Load(const char *Filename, SDClass &Dev)
 
         bmp->Format |= BMP_MALLOC;
 
-        if (Load(bmp))
+        if (Load(bmp, Options))
           return bmp;
       }
       else
@@ -434,6 +431,53 @@ void        EvImage::touchEvent(EvTouchEvent *Touch)
 {
   if (mOnTouch != nullptr)
     (*mOnTouch)(this, Touch);
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+const EvBmp *EvImage::load(const EvBmp *Bmp, uint32_t Options)
+{
+  Unload();
+
+  if ((mLoad = Disp->LoadBmp(Bmp, Options)) != nullptr)
+  {
+    if (mResizeMode & RESIZE_ON_LOAD)
+    {
+      ReSize(Bmp->Width, Bmp->Height);
+      RotateAround(Bmp->Width >> 1, Bmp->Height >> 1, 0.0, 1.0);
+      SetMode(RESIZE_PROPORTIONAL | RESIZE_ON_LOAD, NEAREST);
+    }
+
+    Modified();
+    mBmp = Bmp;
+    return Bmp;
+  }
+
+  return nullptr;
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+void        EvImage::onLoading(EvDMA *Data)
+{
+  EvImage   *Sender = (EvImage *)Data->Sender;
+
+  if (Data->Status == EvDMA::COMPLETED)
+    Sender->mLoadDMA = nullptr;
+
+  else if (Data->Status == EvDMA::BEGIN)
+  {
+    if (Sender->load((const EvBmp *)(Data->Tag), OPT_MEDIAFIFO) == nullptr)
+    {
+      Sender->Disp->ClearCache(); // Clear cache and try again before aborting
+
+      if (Sender->load((const EvBmp *)(Data->Tag), OPT_MEDIAFIFO) == nullptr)
+      {
+        Data->Status = EvDMA::ABORT;
+        Sender->mLoadDMA = nullptr;
+      }
+    }
+  }
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

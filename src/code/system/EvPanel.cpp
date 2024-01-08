@@ -278,16 +278,6 @@ void        EvPanel::Refresh(void)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvPanel::Preload(void)
-{
-  EvObj::Preload();
-
-  for (Node *node = mFirst; node != nullptr; node = node->next)
-    node->obj->Preload();
-}
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
 void        EvPanel::Draw(void)
 {
   if (mStatus & VISIBLE_OBJ)

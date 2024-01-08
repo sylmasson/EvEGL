@@ -377,8 +377,16 @@ class EvEVE : public EvSPI
     uint32_t      clearColorRGB;
   };
 
+  struct MediaFifo
+  {
+    uint32_t      rdPtr;
+    uint32_t      wrPtr;
+    uint32_t      base;
+    uint32_t      size;
+  };
+
   public:
-    EvEVE(const uint32_t *Config, uint8_t CS, int16_t RST = -1, SPIClass *Spi = nullptr, uint32_t Baudrate = 16000000);
+    EvEVE(const uint32_t *Config, uint8_t CS, uint8_t RST = 255, SPIClass *Spi = nullptr, uint32_t Baudrate = 16000000);
 
     void          ClearContext(void);
     void          ClearPrimitive(void);
@@ -390,6 +398,8 @@ class EvEVE : public EvSPI
     const EvMem   *LoadBmp(const EvBmp *Bmp, uint32_t Options = 0);
     bool          UnloadBmp(const EvBmp *Bmp);
     bool          UnloadBmp(const EvMem *ptr);
+    uint32_t      MediaFifoFree(uint32_t &Dst);
+    void          MediaFifoUpdate(uint32_t Cnt);
     uint32_t      SetPlayVideoBuffer(uint32_t Size);
 
     uint16_t      ReadDL(void);
@@ -465,10 +475,10 @@ class EvEVE : public EvSPI
     void          CmdLoadIdentity(void);
     void          CmdLoadImage(uint32_t Addr, uint32_t Options);
     void          CmdMediaFifo(uint32_t Addr, uint32_t BufSize);
-    void          CmdMemcpy(uint32_t Dest, uint32_t Src, uint32_t Num);
-    void          CmdMemset(uint32_t Addr, uint8_t Value, uint32_t Num);
-    void          CmdMemwrite(uint32_t Addr, uint32_t Num);
-    void          CmdMemzero(uint32_t Addr, uint32_t Num);
+    void          CmdMemCpy(uint32_t Dest, uint32_t Src, uint32_t Num);
+    void          CmdMemSet(uint32_t Addr, uint8_t Value, uint32_t Num);
+    void          CmdMemWrite(uint32_t Addr, uint32_t Num);
+    void          CmdMemZero(uint32_t Addr, uint32_t Num);
     void          CmdPlayVideo(uint32_t Opts);
     void          CmdRotate(int32_t Angle);
     void          CmdRomFont(uint32_t Font, uint32_t Romslot);
@@ -498,6 +508,7 @@ class EvEVE : public EvSPI
     int16_t       mStackContextCount;
     uint32_t      mColorCalibration;
     uint32_t      mConvertToGray;
+    MediaFifo     mMediaFifo;
 };
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

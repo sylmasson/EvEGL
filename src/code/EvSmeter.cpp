@@ -15,7 +15,7 @@ EvSmeter::EvSmeter(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, E
   mBG = (EvImage *)EvImage::Create(0, 0, mWidth, mHeight, this, "SmeterBG");
   mNeedle = (EvNeedle *)TryCreate(new EvNeedle(0, 0, 0, 0, Disp, "SmeterNeedle"), this);
 
-  if (!mBG || !mNeedle || !mBG->Load(&sSmeter) || !mNeedle->Load(&sSmeterNeedle))
+  if (!mBG || !mNeedle || !mBG->Load(&sSmeter, OPT_MEDIAFIFO) || !mNeedle->Load(&sSmeterNeedle))
     Abort();
   else
   {

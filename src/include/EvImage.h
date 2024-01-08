@@ -25,8 +25,8 @@ class EvImage : public EvObj
     ~EvImage(void);
 
     bool          Unload(void);
-    const EvBmp   *Load(const EvBmp *Bmp);
-    const EvBmp   *Load(const char *Filename, SDClass &Dev = SD);
+    const EvBmp   *Load(const EvBmp *Bmp, uint32_t Options = 0);
+    const EvBmp   *Load(const char *Filename, SDClass &Dev = SD, uint32_t Options = 0);
     void          ModifiedCoeff(void);
     void          Scale(float ScaleXY);
     void          ScaleX(float Scale);
@@ -63,11 +63,16 @@ class EvImage : public EvObj
     float         mScaleY;
     int32_t       mCoeff[6];    // 0-5 -> A-F
 
+    EvDMA         *mLoadDMA;
     const EvMem   *mLoad;
     const EvBmp   *mBmp;
 
   private:
     void          (*mOnTouch)(EvImage *Sender, EvTouchEvent *Touch);
+
+    static void   onLoading(EvDMA *Data);
+
+    const EvBmp   *load(const EvBmp *Bmp, uint32_t Options);
 
   public:
     static EvImage  *Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag = nullptr, uint16_t State = VISIBLE_DIS_OBJ);

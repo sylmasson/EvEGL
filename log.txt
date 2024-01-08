@@ -1,3 +1,11 @@
+commit 2a2fe5b587183eb76ad2917a5b520f6ff628770e
+Author: Sylvain Masson <sylvainmasson@Sylvains-Mac-mini.local>
+Date:   Wed Dec 20 20:02:13 2023 -0500
+
+    EvEVE: add functions CmdInflate2 and CmdMediaFifo
+    
+    Global: change everywhere NULL to nullptr
+
 commit b9878642ba2b88a09ddd9b338ce18c5ab7dcc5dd
 Author: Sylvain Masson <sylvainmasson@Sylvains-Mac-mini.local>
 Date:   Tue Oct 3 16:47:22 2023 -0400

@@ -122,6 +122,7 @@ struct      EvTouchEvent;
 struct      EvTextStyle;
 struct      EvFont;
 
+class  			EvDMA;
 class       EvSysFont;
 class       EvBitmap;
 class       EvKinMove;
@@ -160,7 +161,7 @@ class       EvVuBar;
 #include    <SD.h>
 #include    <Arduino.h>
 #include    <include/system/EvEVE.h>
-
+#include  	<include/system/EvDMA.h>
 #include    <include/system/EvSysFont.h>
 #include    <include/system/EvKinetic.h>
 #include    <include/system/EvStringList.h>
@@ -194,12 +195,15 @@ class       EvVuBar;
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+extern EvTaskDMA  TaskDMA;
+
 extern const char *OpenEditor(EvDisplay *Disp);
 extern const char *CloseEditor(void);
 extern void       EditorToFront(void);
 extern void       SetEditObj(EvObj *Obj);
 extern void       SetEditObjDestroyed(EvObj *Obj);
-extern void       ShellInput(const char byte);
+extern void       ShellInput(const char C);
+extern void       ShellInput(const char *Str);
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 

@@ -319,12 +319,12 @@ uint8_t     EvSysFont::LoadFont(const EvFont *Fnt, uint8_t Font)
 
     Addr = Dest->addr + FMB_SIZE;
 
-    Disp->CmdMemwrite(Dest->addr, FMB_SIZE);
+    Disp->CmdMemWrite(Dest->addr, FMB_SIZE);
     Disp->wrCmdBufData((const uint8_t *)Fnt, FMB_SIZE - 4);
     Disp->wrCmdBuf32(Addr);
 
     if (Fnt->BmpSize == Fnt->DataSize)
-      Disp->CmdMemwrite(Addr, Fnt->DataSize);
+      Disp->CmdMemWrite(Addr, Fnt->DataSize);
     else
       Disp->CmdInflate(Addr);
 

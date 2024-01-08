@@ -25,7 +25,7 @@ static const char   bitPixel[18] = {16, 1, 4, 8, 8, 8, 16, 16, 0, 0, 0, 0, 0, 0,
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-EvEVE::EvEVE(const uint32_t *Config, uint8_t CS, int16_t RST, SPIClass *Spi, uint32_t Baudrate)
+EvEVE::EvEVE(const uint32_t *Config, uint8_t CS, uint8_t RST, SPIClass *Spi, uint32_t Baudrate)
 {
   uint32_t  reg;
   char      str[32];
@@ -69,6 +69,7 @@ EvEVE::EvEVE(const uint32_t *Config, uint8_t CS, int16_t RST, SPIClass *Spi, uin
   ClearColorRGB(0, 0, 0);
   Clear();
   SwapDL();
+  CmdMediaFifo(RAM_G.BufferDMA->addr, RAM_G.BufferDMA->size);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -154,7 +155,7 @@ const EvMem *EvEVE::LoadBmp(const EvBmp *Bmp, uint32_t Options)
 {
   EvMem     *ptr;
 
-  if (Bmp->Layout > L2 || (Options > 0 && ChipID < 0x815))
+  if (Bmp->Layout > L2 || ((Options & OPT_FLASH) != 0 && ChipID < 0x815))
   {
     Serial.println("LoadBmp: Options not supported");
     return nullptr;
@@ -169,7 +170,7 @@ const EvMem *EvEVE::LoadBmp(const EvBmp *Bmp, uint32_t Options)
     {
       switch (Bmp->Format & ~BMP_MALLOC)
       {
-        case RAW_DATA: CmdMemwrite(ptr->addr, Bmp->DataSize); Options = 0; break;
+        case RAW_DATA: CmdMemWrite(ptr->addr, Bmp->DataSize); Options = 0; break;
         case JPEG_DATA:
         case PNG_DATA: CmdLoadImage(ptr->addr, Options | OPT_NODL); break;
         case ZIP_DATA: (Options == 0) ? CmdInflate(ptr->addr) : CmdInflate2(ptr->addr, Options); break;
@@ -180,6 +181,8 @@ const EvMem *EvEVE::LoadBmp(const EvBmp *Bmp, uint32_t Options)
         wrCmdBufData(Bmp->Data, Bmp->DataSize);
         wrCmdBufAlign();
       }
+
+      wrCmdBufUpdate();
     }
   }
 
@@ -205,6 +208,33 @@ bool        EvEVE::UnloadBmp(const EvMem *ptr)
     RAM_G.Free(ptr);
 
   return true;
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+uint32_t    EvEVE::MediaFifoFree(uint32_t &Dst)
+{
+  uint32_t  free;
+
+  Dst = mMediaFifo.base + mMediaFifo.wrPtr;
+
+  if ((mMediaFifo.rdPtr = rd32(REG_MEDIAFIFO_READ)) > mMediaFifo.wrPtr)
+    free = mMediaFifo.rdPtr - mMediaFifo.wrPtr - 1;
+  else if ((free = mMediaFifo.size - mMediaFifo.wrPtr) && mMediaFifo.rdPtr == 0)
+    free--;
+
+  return (free);
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+void        EvEVE::MediaFifoUpdate(uint32_t Cnt)
+{
+  if ((mMediaFifo.wrPtr += Cnt) >= mMediaFifo.size)
+    mMediaFifo.wrPtr -= mMediaFifo.size;
+
+  wr32(REG_MEDIAFIFO_WRITE, mMediaFifo.wrPtr);
+  mMediaFifo.rdPtr = rd32(REG_MEDIAFIFO_READ);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -874,11 +904,17 @@ void        EvEVE::CmdMediaFifo(uint32_t Addr, uint32_t BufSize)
   wrCmdBuf32(CMD_MEDIAFIFO);
   wrCmdBuf32(Addr);
   wrCmdBuf32(BufSize);
+  wrCmdBufFlush();
+
+  mMediaFifo.rdPtr = rd32(REG_MEDIAFIFO_READ);
+  mMediaFifo.wrPtr = rd32(REG_MEDIAFIFO_WRITE);
+  mMediaFifo.base = rd32(REG_MEDIAFIFO_BASE);
+  mMediaFifo.size = rd32(REG_MEDIAFIFO_SIZE);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvEVE::CmdMemcpy(uint32_t Dest, uint32_t Src, uint32_t Num)
+void        EvEVE::CmdMemCpy(uint32_t Dest, uint32_t Src, uint32_t Num)
 {
   wrCmdBuf32(CMD_MEMCPY);
   wrCmdBuf32(Dest);
@@ -888,7 +924,7 @@ void        EvEVE::CmdMemcpy(uint32_t Dest, uint32_t Src, uint32_t Num)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvEVE::CmdMemset(uint32_t Addr, uint8_t Value, uint32_t Num)
+void        EvEVE::CmdMemSet(uint32_t Addr, uint8_t Value, uint32_t Num)
 {
   wrCmdBuf32(CMD_MEMSET);
   wrCmdBuf32(Addr);
@@ -898,7 +934,7 @@ void        EvEVE::CmdMemset(uint32_t Addr, uint8_t Value, uint32_t Num)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvEVE::CmdMemwrite(uint32_t Addr, uint32_t Num)
+void        EvEVE::CmdMemWrite(uint32_t Addr, uint32_t Num)
 {
   wrCmdBuf32(CMD_MEMWRITE);
   wrCmdBuf32(Addr);
@@ -907,7 +943,7 @@ void        EvEVE::CmdMemwrite(uint32_t Addr, uint32_t Num)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvEVE::CmdMemzero(uint32_t Addr, uint32_t Num)
+void        EvEVE::CmdMemZero(uint32_t Addr, uint32_t Num)
 {
   wrCmdBuf32(CMD_MEMZERO);
   wrCmdBuf32(Addr);

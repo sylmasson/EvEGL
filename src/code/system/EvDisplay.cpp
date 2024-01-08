@@ -12,7 +12,7 @@ EvDisplay   *EvDisplay::sDispList[DISP_MAX];
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-EvDisplay::EvDisplay(uint16_t Width, uint16_t Height, const char *Tag, const uint32_t *Config, uint8_t CS, int16_t RST, SPIClass *Spi, uint32_t Baudrate) :
+EvDisplay::EvDisplay(uint16_t Width, uint16_t Height, const char *Tag, const uint32_t *Config, uint8_t CS, uint8_t RST, SPIClass *Spi, uint32_t Baudrate) :
 EvEVE(Config, CS, RST, Spi, Baudrate), EvPanel(0, 0, Width, Height, this, Tag, VISIBLE_OBJ | SYSTEM_OBJ), EvSysFont(this)
 {
   if (sDispCount >= 3)
@@ -166,6 +166,7 @@ bool        EvDisplay::UpdateAll(void)
   for (i = 0; i < sDispCount; i++)
     if (!sDispList[i]->wrCmdBufEmpty())
     {
+//      Serial.println("Delayed by 1ms");
       sUpdateTimer += 1000;
       return false;
     }
@@ -173,12 +174,9 @@ bool        EvDisplay::UpdateAll(void)
   sUpdateTimer = usec;
 
   for (i = 0; i < sDispCount; i++)
-  {
-    digitalWrite(5, HIGH);
     sDispList[i]->Update();
-    digitalWrite(5, LOW);
-  }
 
+  TaskDMA.Update();
   sFrameCount++;
   return true;
 }
@@ -205,7 +203,6 @@ void        EvDisplay::Update(void)
     (*mOnUpdate)(this);
 
   SwapDL();
-  Preload();
 
   mTimeUsed += micros() - usec;
 }
