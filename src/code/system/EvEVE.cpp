@@ -47,6 +47,7 @@ EvEVE::EvEVE(const uint32_t *Config, uint8_t CS, uint8_t RST, SPIClass *Spi, uin
   while (rd8(REG_CPURESET) != 0)
     delay(10);
 
+  mDL = 0;
   ChipID = 0x800 + rd8(0xC0001);
   CapacitiveTouchEngine = !(rd16(REG_TOUCH_CONFIG) & 0x8000);
   snprintf(str, sizeof(str), "ChipID = %cT%03X", ChipID < 0x815 ? 'F' : 'B', ChipID);
@@ -257,8 +258,13 @@ uint32_t    EvEVE::SetPlayVideoBuffer(uint32_t Size)
 
 uint16_t    EvEVE::ReadDL(void)
 {
-  wrCmdBufFlush();
-  return rd16(REG_CMD_DL);
+  if (mDL < 0)
+  {
+    wrCmdBufFlush();
+    mDL = rd16(REG_CMD_DL);
+  }
+
+  return mDL;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -279,7 +285,7 @@ void        EvEVE::SwapDL(void)
 
 void        EvEVE::AlphaFunc(uint8_t Func, uint8_t Ref)
 {
-  wrCmdBuf32(EV_ALPHA_FUNC(Func, Ref));
+  wrCmdBufDL(EV_ALPHA_FUNC(Func, Ref));
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -289,7 +295,7 @@ void        EvEVE::Begin(uint8_t Prim)
   if ((Prim &= 0x0F) == mActivePrim && ((Prim == POINTS) || (Prim == BITMAPS) || ((Prim == LINES || Prim == RECTS) && !(mVertexCount & 1))))
     return;
 
-  wrCmdBuf32(EV_BEGIN(Prim));
+  wrCmdBufDL(EV_BEGIN(Prim));
   mActivePrim = Prim;
   mVertexCount = 0;
 }
@@ -298,7 +304,7 @@ void        EvEVE::Begin(uint8_t Prim)
 
 void        EvEVE::BitmapExtFormat(uint16_t Format)
 {
-  wrCmdBuf32(EV_BITMAP_EXT_FORMAT(Format));
+  wrCmdBufDL(EV_BITMAP_EXT_FORMAT(Format));
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -307,7 +313,7 @@ void        EvEVE::BitmapHandle(uint8_t Handle)
 {
   if ((Handle &= 0x1F) != mActiveContext.handle)
   {
-    wrCmdBuf32(EV_BITMAP_HANDLE(Handle));
+    wrCmdBufDL(EV_BITMAP_HANDLE(Handle));
     mActiveContext.handle = Handle;
   }
 }
@@ -318,79 +324,79 @@ void        EvEVE::BitmapLayout(uint8_t Format, uint16_t Width, uint16_t Height)
 {
   uint16_t  Linestride = (((uint32_t)Width * bitPixel[Format]) + 7) / 8;
 
-  wrCmdBuf32(EV_BITMAP_LAYOUT_H(Linestride, Height));
-  wrCmdBuf32(EV_BITMAP_LAYOUT(Format, Linestride, Height));
+  wrCmdBufDL(EV_BITMAP_LAYOUT_H(Linestride, Height));
+  wrCmdBufDL(EV_BITMAP_LAYOUT(Format, Linestride, Height));
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 void        EvEVE::BitmapSize(uint8_t Filter, uint8_t WrapX, uint8_t WrapY, uint16_t Width, uint16_t Height)
 {
-  wrCmdBuf32(EV_BITMAP_SIZE_H(Width, Height));
-  wrCmdBuf32(EV_BITMAP_SIZE(Filter, WrapX, WrapY, Width, Height));
+  wrCmdBufDL(EV_BITMAP_SIZE_H(Width, Height));
+  wrCmdBufDL(EV_BITMAP_SIZE(Filter, WrapX, WrapY, Width, Height));
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 void        EvEVE::BitmapSource(uint32_t Addr)
 {
-  wrCmdBuf32(EV_BITMAP_SOURCE(Addr));
+  wrCmdBufDL(EV_BITMAP_SOURCE(Addr));
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 void        EvEVE::BitmapSwizzle(uint8_t R, uint8_t G, uint8_t B, uint8_t A)
 {
-  wrCmdBuf32(EV_BITMAP_SWIZZLE(R, G, B, A));
+  wrCmdBufDL(EV_BITMAP_SWIZZLE(R, G, B, A));
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 void        EvEVE::BitmapTransformA(int32_t Coeff)
 {
-  wrCmdBuf32(EV_BITMAP_TRANSFORM_A(transformCoeff(Coeff)));
+  wrCmdBufDL(EV_BITMAP_TRANSFORM_A(transformCoeff(Coeff)));
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 void        EvEVE::BitmapTransformB(int32_t Coeff)
 {
-  wrCmdBuf32(EV_BITMAP_TRANSFORM_B(transformCoeff(Coeff)));
+  wrCmdBufDL(EV_BITMAP_TRANSFORM_B(transformCoeff(Coeff)));
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 void        EvEVE::BitmapTransformC(int32_t Coeff)
 {
-  wrCmdBuf32(EV_BITMAP_TRANSFORM_C(Coeff >> 8));
+  wrCmdBufDL(EV_BITMAP_TRANSFORM_C(Coeff >> 8));
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 void        EvEVE::BitmapTransformD(int32_t Coeff)
 {
-  wrCmdBuf32(EV_BITMAP_TRANSFORM_D(transformCoeff(Coeff)));
+  wrCmdBufDL(EV_BITMAP_TRANSFORM_D(transformCoeff(Coeff)));
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 void        EvEVE::BitmapTransformE(int32_t Coeff)
 {
-  wrCmdBuf32(EV_BITMAP_TRANSFORM_E(transformCoeff(Coeff)));
+  wrCmdBufDL(EV_BITMAP_TRANSFORM_E(transformCoeff(Coeff)));
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 void        EvEVE::BitmapTransformF(int32_t Coeff)
 {
-  wrCmdBuf32(EV_BITMAP_TRANSFORM_F(Coeff >> 8));
+  wrCmdBufDL(EV_BITMAP_TRANSFORM_F(Coeff >> 8));
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 void        EvEVE::BlendFunc(uint8_t Src, uint8_t Dst)
 {
-  wrCmdBuf32(EV_BLEND_FUNC(Src, Dst));
+  wrCmdBufDL(EV_BLEND_FUNC(Src, Dst));
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -398,28 +404,28 @@ void        EvEVE::BlendFunc(uint8_t Src, uint8_t Dst)
 void        EvEVE::Call(uint16_t Dest)
 {
   ClearPrimitive();
-  wrCmdBuf32(EV_CALL(Dest));
+  wrCmdBufDL(EV_CALL(Dest));
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 void        EvEVE::Cell(uint8_t Cell)
 {
-  wrCmdBuf32(EV_CELL(Cell));
+  wrCmdBufDL(EV_CELL(Cell));
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 void        EvEVE::Clear(void)
 {
-  wrCmdBuf32(EV_CLEAR(1, 1, 1));
+  wrCmdBufDL(EV_CLEAR(1, 1, 1));
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 void        EvEVE::Clear(bool C, bool S, bool T)
 {
-  wrCmdBuf32(EV_CLEAR(C, S, T));
+  wrCmdBufDL(EV_CLEAR(C, S, T));
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -431,7 +437,7 @@ uint8_t     EvEVE::ClearColorA(uint8_t Alpha)
 
   if (Alpha != mActiveContext.clearColorA)
   {
-    wrCmdBuf32(EV_CLEAR_COLOR_A(Alpha));
+    wrCmdBufDL(EV_CLEAR_COLOR_A(Alpha));
     mActiveContext.clearColorA = Alpha;
   }
 
@@ -453,7 +459,7 @@ uint32_t    EvEVE::ClearColorRGB(uint32_t Color)
 
   if (rgb != mActiveContext.clearColorRGB)
   {
-    wrCmdBuf32(EV_CLEAR_COLOR_RGB24(rgb));
+    wrCmdBufDL(EV_CLEAR_COLOR_RGB24(rgb));
     mActiveContext.clearColorRGB = rgb;
   }
 
@@ -492,14 +498,14 @@ uint32_t    EvEVE::ClearColorRGB(uint8_t R, uint8_t G, uint8_t B)
 
 void        EvEVE::ClearStencil(uint8_t Value)
 {
-  wrCmdBuf32(EV_CLEAR_STENCIL(Value));
+  wrCmdBufDL(EV_CLEAR_STENCIL(Value));
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 void        EvEVE::ClearTag(uint8_t Value)
 {
-  wrCmdBuf32(EV_CLEAR_TAG(Value));
+  wrCmdBufDL(EV_CLEAR_TAG(Value));
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -511,7 +517,7 @@ uint8_t     EvEVE::ColorA(uint8_t Alpha)
 
   if (Alpha != mActiveContext.colorA)
   {
-    wrCmdBuf32(EV_COLOR_A(Alpha));
+    wrCmdBufDL(EV_COLOR_A(Alpha));
     mActiveContext.colorA = Alpha;
   }
 
@@ -533,7 +539,7 @@ uint32_t    EvEVE::ColorRGB(uint32_t Color)
 
   if (rgb != mActiveContext.colorRGB)
   {
-    wrCmdBuf32(EV_COLOR_RGB24(rgb));
+    wrCmdBufDL(EV_COLOR_RGB24(rgb));
     mActiveContext.colorRGB = rgb;
   }
 
@@ -572,35 +578,35 @@ uint32_t    EvEVE::ColorRGB(uint8_t R, uint8_t G, uint8_t B)
 
 void        EvEVE::ColorMask(bool R, bool G, bool B, bool A)
 {
-  wrCmdBuf32(EV_COLOR_MASK(R, G, B, A));
+  wrCmdBufDL(EV_COLOR_MASK(R, G, B, A));
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 void        EvEVE::ColorMask(uint8_t Mask)
 {
-  wrCmdBuf32(EV_COLOR_MASK4(Mask));
+  wrCmdBufDL(EV_COLOR_MASK4(Mask));
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 void        EvEVE::Display(void)
 {
-  wrCmdBuf32(EV_DISPLAY());
+  wrCmdBufDL(EV_DISPLAY());
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 void        EvEVE::End(void)
 {
-  wrCmdBuf32(EV_END());
+  wrCmdBufDL(EV_END());
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 void        EvEVE::Jump(uint16_t Dest)
 {
-  wrCmdBuf32(EV_JUMP(Dest));
+  wrCmdBufDL(EV_JUMP(Dest));
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -609,7 +615,7 @@ void        EvEVE::LineWidth(uint16_t Radius)
 {
   if ((Radius &= 0xFFF) != mActiveContext.lineWidth)
   {
-    wrCmdBuf32(EV_LINE_WIDTH(Radius));
+    wrCmdBufDL(EV_LINE_WIDTH(Radius));
     mActiveContext.lineWidth = Radius;
   }
 }
@@ -618,21 +624,21 @@ void        EvEVE::LineWidth(uint16_t Radius)
 
 void        EvEVE::Macro(uint8_t M)
 {
-  wrCmdBuf32(EV_MACRO(M));
+  wrCmdBufDL(EV_MACRO(M));
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 void        EvEVE::Nop(void)
 {
-  wrCmdBuf32(EV_NOP());
+  wrCmdBufDL(EV_NOP());
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 void        EvEVE::PaletteSource(uint32_t Addr)
 {
-  wrCmdBuf32(EV_PALETTE_SOURCE(Addr));
+  wrCmdBufDL(EV_PALETTE_SOURCE(Addr));
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -641,7 +647,7 @@ void        EvEVE::PointSize(uint16_t Radius)
 {
   if ((Radius &= 0x1FFF) != mActiveContext.pointSize)
   {
-    wrCmdBuf32(EV_POINT_SIZE(Radius));
+    wrCmdBufDL(EV_POINT_SIZE(Radius));
     mActiveContext.pointSize = Radius;
   }
 }
@@ -650,7 +656,7 @@ void        EvEVE::PointSize(uint16_t Radius)
 
 void        EvEVE::Return(void)
 {
-  wrCmdBuf32(EV_RETURN());
+  wrCmdBufDL(EV_RETURN());
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -663,7 +669,7 @@ void        EvEVE::RestoreContext(void)
   if ((uint16_t)mStackContextCount <= 3)
     mActiveContext = mStackContext[mStackContextCount];
 
-  wrCmdBuf32(EV_RESTORE_CONTEXT());
+  wrCmdBufDL(EV_RESTORE_CONTEXT());
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -676,56 +682,56 @@ void        EvEVE::SaveContext(void)
   if (++mStackContextCount > 3)
     Serial.println("EvEVE SaveContext Error: 4-Level Context Stack Overflow");
 
-  wrCmdBuf32(EV_SAVE_CONTEXT());
+  wrCmdBufDL(EV_SAVE_CONTEXT());
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 void        EvEVE::ScissorSize(uint16_t Width, uint16_t Height)
 {
-  wrCmdBuf32(EV_SCISSOR_SIZE(Width, Height));
+  wrCmdBufDL(EV_SCISSOR_SIZE(Width, Height));
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 void        EvEVE::ScissorXY(uint16_t X, uint16_t Y)
 {
-  wrCmdBuf32(EV_SCISSOR_XY(X, Y));
+  wrCmdBufDL(EV_SCISSOR_XY(X, Y));
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 void        EvEVE::StencilFunc(uint8_t Func, uint8_t Ref, uint8_t Mask)
 {
-  wrCmdBuf32(EV_STENCIL_FUNC(Func, Ref, Mask));
+  wrCmdBufDL(EV_STENCIL_FUNC(Func, Ref, Mask));
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 void        EvEVE::StencilMask(uint8_t Mask)
 {
-  wrCmdBuf32(EV_STENCIL_MASK(Mask));
+  wrCmdBufDL(EV_STENCIL_MASK(Mask));
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 void        EvEVE::StencilOp(uint8_t Fail, uint8_t Pass)
 {
-  wrCmdBuf32(EV_STENCIL_OP(Fail, Pass));
+  wrCmdBufDL(EV_STENCIL_OP(Fail, Pass));
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 void        EvEVE::TagValue(uint8_t Value)
 {
-  wrCmdBuf32(EV_TAG(Value));
+  wrCmdBufDL(EV_TAG(Value));
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 void        EvEVE::TagMask(uint8_t Mask)
 {
-  wrCmdBuf32(EV_TAG_MASK(Mask));
+  wrCmdBufDL(EV_TAG_MASK(Mask));
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -760,7 +766,7 @@ void        EvEVE::Vertex2f(int16_t X, int16_t Y)
     VertexFormat(fmt);
   }
 
-  wrCmdBuf32(EV_VERTEX2F(X, Y));
+  wrCmdBufDL(EV_VERTEX2F(X, Y));
   mVertexCount++;
 }
 
@@ -775,7 +781,7 @@ void        EvEVE::Vertex2i(int16_t X, int16_t Y)
 
 void        EvEVE::Vertex2ii(uint16_t X, uint16_t Y, uint8_t Handle, uint8_t Cell)
 {
-  wrCmdBuf32(EV_VERTEX2II(X, Y, Handle, Cell));
+  wrCmdBufDL(EV_VERTEX2II(X, Y, Handle, Cell));
   mVertexCount++;
 }
 
@@ -785,7 +791,7 @@ void        EvEVE::VertexFormat(uint8_t Fmt)
 {
   if ((Fmt &= 0x07) == 4 || Fmt != mActiveContext.format)
   {
-    wrCmdBuf32(EV_VERTEX_FORMAT(Fmt));
+    wrCmdBufDL(EV_VERTEX_FORMAT(Fmt));
     mActiveContext.format = Fmt;
   }
 }
@@ -794,14 +800,14 @@ void        EvEVE::VertexFormat(uint8_t Fmt)
 
 void        EvEVE::VertexTranslateX(uint32_t X)
 {
-  wrCmdBuf32(EV_VERTEX_TRANSLATE_X(X));
+  wrCmdBufDL(EV_VERTEX_TRANSLATE_X(X));
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 void        EvEVE::VertexTranslateY(uint32_t Y)
 {
-  wrCmdBuf32(EV_VERTEX_TRANSLATE_Y(Y));
+  wrCmdBufDL(EV_VERTEX_TRANSLATE_Y(Y));
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -811,6 +817,7 @@ void        EvEVE::CmdAppend(uint32_t Addr, uint32_t Num)
   wrCmdBuf32(CMD_APPEND);
   wrCmdBuf32(Addr);
   wrCmdBuf32(Num);
+  mDL += Num;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -819,6 +826,7 @@ void        EvEVE::CmdCalibrate(void)
 {
   wrCmdBuf32(CMD_CALIBRATE);
   wrCmdBuf32(0xFFFFFFFF);
+  mDL = -1;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -826,6 +834,7 @@ void        EvEVE::CmdCalibrate(void)
 void        EvEVE::CmdDlStart(void)
 {
   wrCmdBuf32(CMD_DLSTART);
+  mDL = 0;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -839,6 +848,7 @@ void        EvEVE::CmdGradient(int16_t X0, int16_t Y0, uint32_t Color0, int16_t 
   wrCmdBuf16(X1);
   wrCmdBuf16(Y1);
   wrCmdBuf32(colorCorrection(Color1));
+  mDL = -1;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -856,6 +866,7 @@ void        EvEVE::CmdGradientA(int16_t X0, int16_t Y0, uint32_t Color0, int16_t
     wrCmdBuf16(X1);
     wrCmdBuf16(Y1);
     wrCmdBuf32(colorCorrection(Color1) | (Color1 & 0xFF000000));
+    mDL = -1;
   }
 }
 
@@ -956,6 +967,7 @@ void        EvEVE::CmdPlayVideo(uint32_t Opts)
 {
   wrCmdBuf32(CMD_PLAYVIDEO);
   wrCmdBuf32(Opts);
+  mDL = -1;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -964,6 +976,7 @@ void        EvEVE::CmdRotate(int32_t Angle)
 {
   wrCmdBuf32(CMD_ROTATE);
   wrCmdBuf32(Angle);
+  mDL = -1;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -982,6 +995,7 @@ void        EvEVE::CmdScale(int32_t X, int32_t Y)
   wrCmdBuf32(CMD_SCALE);
   wrCmdBuf32(X);
   wrCmdBuf32(Y);
+  mDL = -1;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -993,6 +1007,7 @@ void        EvEVE::CmdSetBitmap(uint32_t Addr, uint16_t Layout, uint16_t Width, 
   wrCmdBuf16(Layout);
   wrCmdBuf16(Width);
   wrCmdBuf32(Height);
+  mDL = -1;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -1020,6 +1035,7 @@ void        EvEVE::CmdSetRotate(uint8_t R)
   wrCmdBuf32(CMD_SETROTATE);
   wrCmdBuf32(R & 3);
   wrCmdBufFlush();
+  mDL = -1;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -1027,6 +1043,7 @@ void        EvEVE::CmdSetRotate(uint8_t R)
 void        EvEVE::CmdSetMatrix(void)
 {
   wrCmdBuf32(CMD_SETMATRIX);
+  mDL = -1;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -1053,6 +1070,16 @@ void        EvEVE::CmdTranslate(int32_t X, int32_t Y)
   wrCmdBuf32(CMD_TRANSLATE);
   wrCmdBuf32(X);
   wrCmdBuf32(Y);
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+void        EvEVE::wrCmdBufDL(uint32_t Data)
+{
+  wrCmdBuf32(Data);
+
+  if (mDL >= 0)
+    mDL+=4;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

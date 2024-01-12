@@ -1,10 +1,12 @@
 
 #include    <EvGUI.h>
 
+#define     DEBUG     1
+
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 uint16_t    EvDisplay::sDispCount = 0;
-uint16_t    EvDisplay::sFrameCount = 0;
+uint32_t    EvDisplay::sFrameNumber = 0;
 uint16_t    EvDisplay::sTraceFlags = 0;
 uint32_t    EvDisplay::sSecondTimer = 0;
 uint32_t    EvDisplay::sUpdateTimer = 0;
@@ -34,6 +36,13 @@ EvEVE(Config, CS, RST, Spi, Baudrate), EvPanel(0, 0, Width, Height, this, Tag, V
   memset(&mTouch, 0, sizeof(mTouch));
   mTimeUsed = 0;
   MaxDL = 0;
+
+#ifdef DEBUG
+  pinMode(28, OUTPUT);   // debug Disp1 update
+  pinMode(37, OUTPUT);   // debug Disp2 update
+  digitalWrite(28, LOW);
+  digitalWrite(37, LOW);
+#endif
 
   BgColor(RGB555(0, 0, 0));
   Rotate(rd8(REG_ROTATE));
@@ -127,37 +136,36 @@ void        EvDisplay::SetOnTouch(void (*OnTouch)(EvObj *Obj, EvTouchEvent *Touc
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-bool        EvDisplay::UpdateAll(void)
+bool        EvDisplay::Update(void)
 {
   uint16_t  i;
   uint32_t  usec = micros();
 
   if (usec - sSecondTimer >= 1000000L)
   {
-    if (sFrameCount)
-      for (i = 0; i < sDispCount; i++)
+    for (i = 0; i < sDispCount; i++)
+    {
+      EvDisplay *disp = sDispList[i];
+
+      if ((sTraceFlags & TRACE_FPS) && disp->mFrameCount > 0)
       {
-        EvDisplay *disp = sDispList[i];
+        char    str[80];
+        float   timeUsed = disp->mTimeUsed / 1000.0;
 
-        if (sTraceFlags & TRACE_FPS)
-        {
-          char    str[80];
-          float   timeUsed = disp->mTimeUsed / 1000L;
-
-          snprintf(str, sizeof(str) - 1, "\n[%s] %u FPS", disp->Tag, sFrameCount);
-          Serial.print(str);
-          snprintf(str, sizeof(str) - 1, " using %.2f msec/frame (%4.1f%%)", timeUsed / sFrameCount, timeUsed / 10);
-          Serial.print(str);
-          snprintf(str, sizeof(str) - 1, " with %4u bytes of DL (%4.1f%%)", disp->MaxDL, (disp->MaxDL * 100.0) / 8192.0);
-          Serial.print(str);
-        }
-
-        disp->mTimeUsed = 0;
-        disp->MaxDL = 0;
+        snprintf(str, sizeof(str) - 1, "\n[%s] %u FPS", disp->Tag, disp->mFrameCount);
+        Serial.print(str);
+        snprintf(str, sizeof(str) - 1, " using %.2f msec/frame (%4.1f%%)", timeUsed / disp->mFrameCount, timeUsed / 10);
+        Serial.print(str);
+        snprintf(str, sizeof(str) - 1, " with %4u bytes of DL (%4.1f%%)", disp->MaxDL, (disp->MaxDL * 100.0) / 8192.0);
+        Serial.print(str);
       }
 
+      disp->mFrameCount = 0;
+      disp->mTimeUsed = 0;
+      disp->MaxDL = 0;
+    }
+
     sSecondTimer += 1000000L;
-    sFrameCount = 0;
   }
 
   if (!sDispCount || usec - sUpdateTimer < PERIOD_REFRESH)
@@ -172,21 +180,31 @@ bool        EvDisplay::UpdateAll(void)
     }
 
   sUpdateTimer = usec;
+  sFrameNumber++;
 
+#ifdef DEBUG
+  digitalWrite(28, HIGH);
+  sDispList[0]->update();
+  digitalWrite(28, LOW);
+  digitalWrite(37, HIGH);
+  sDispList[1]->update();
+  digitalWrite(37, LOW);
+#else
   for (i = 0; i < sDispCount; i++)
-    sDispList[i]->Update();
+    sDispList[i]->update();
+#endif
 
   TaskDMA.Update();
-  sFrameCount++;
   return true;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvDisplay::Update(void)
+void        EvDisplay::update(void)
 {
   uint32_t  usec = micros();
 
+  mFrameCount++;
   touchUpdate();
   Refresh();
 
@@ -194,7 +212,7 @@ void        EvDisplay::Update(void)
     Kbd->ToFront();
 
   EditorToFront();
-  displayUpdate();
+  dispUpdate();
 
   if ((SizeDL = ReadDL()) > MaxDL)
     MaxDL = SizeDL;
@@ -203,13 +221,12 @@ void        EvDisplay::Update(void)
     (*mOnUpdate)(this);
 
   SwapDL();
-
   mTimeUsed += micros() - usec;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvDisplay::displayUpdate(void)
+void        EvDisplay::dispUpdate(void)
 {
   Opacity(OPACITY_MAX);
   ColorA(255);
@@ -233,34 +250,34 @@ void        EvDisplay::touchUpdate(void)
     mTouch[1].id = 1;
     touchPos.xy = rd32(REG_CTOUCH_TOUCH1_XY);
     mTouch[1].tag = ((touchPos.xy & 0x80008000) ? 0 : rd8(REG_CTOUCH_TAG1));
-    touchUpdatePtr(&mTouch[1], touchPos, msec);
+    touchUpdate(&mTouch[1], touchPos, msec);
 
     mTouch[2].id = 2;
     touchPos.xy = rd32(REG_CTOUCH_TOUCH2_XY);
     mTouch[2].tag = ((touchPos.xy & 0x80008000) ? 0 : rd8(REG_CTOUCH_TAG2));
-    touchUpdatePtr(&mTouch[2], touchPos, msec);
+    touchUpdate(&mTouch[2], touchPos, msec);
 
     mTouch[3].id = 3;
     touchPos.xy = rd32(REG_CTOUCH_TOUCH3_XY);
     mTouch[3].tag = ((touchPos.xy & 0x80008000) ? 0 : rd8(REG_CTOUCH_TAG3));
-    touchUpdatePtr(&mTouch[3], touchPos, msec);
+    touchUpdate(&mTouch[3], touchPos, msec);
 
     mTouch[4].id = 4;
     touchPos.x = rd16(REG_CTOUCH_TOUCH4_X);
     touchPos.y = rd16(REG_CTOUCH_TOUCH4_Y);
     mTouch[4].tag = ((touchPos.xy & 0x80008000) ? 0 : rd8(REG_CTOUCH_TAG4));
-    touchUpdatePtr(&mTouch[4], touchPos, msec);
+    touchUpdate(&mTouch[4], touchPos, msec);
   }
 
   mTouch[0].id = 0;
   touchPos.xy = rd32(REG_TOUCH_SCREEN_XY);
   mTouch[0].tag = ((touchPos.xy & 0x80008000) ? 0 : rd8(REG_TOUCH_TAG));
-  touchUpdatePtr(&mTouch[0], touchPos, msec);
+  touchUpdate(&mTouch[0], touchPos, msec);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvDisplay::touchUpdatePtr(EvTouchEvent *Touch, EvTouchPos TouchPos, uint32_t msec)
+void        EvDisplay::touchUpdate(EvTouchEvent *Touch, EvTouchPos TouchPos, uint32_t msec)
 {
   Touch->event = 0;
   Touch->timer = msec - Touch->startTimer;

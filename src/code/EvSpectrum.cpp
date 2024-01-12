@@ -108,7 +108,7 @@ void        EvSpectrum::drawEvent(void)
   uint16_t  i, len, vCnt, vCall, size = mDataSize;
   int16_t   x, y, prevX, prevY, xBuf[size], yBuf[size];
 
-  Disp->CmdGradient(0, 0, 0xc0c000, 0, mHeight, 0x000000);
+//  Disp->CmdGradient(0, 0, 0xc0c000, 0, mHeight, 0x000000);
 
   for (i = x = y = len = vCnt = 0; i < size; i++)
   {

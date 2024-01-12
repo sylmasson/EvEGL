@@ -3,6 +3,8 @@
 
 // #define     VERBOSE
 
+uint8_t     EvVideo::sVideoCount = 0;
+
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
  * @brief      Create a new instance of playback Video object.
@@ -31,6 +33,7 @@ EvVideo     *EvVideo::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t
 
 EvVideo::EvVideo(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) : EvImage(Left, Top, Width, Height, Disp, Tag, State)
 {
+  mFrameSync = ++sVideoCount & 1;
   mFrame = nullptr;
   mNextLoad = false;
   mRun = false;
@@ -101,6 +104,8 @@ bool        EvVideo::NextFrame(void)
   if (!mFile || mFrame != nullptr)
     return false;
 
+  digitalWrite(38, HIGH);
+
   for (; mIndex < mFileSize; mIndex += size)
   {
     if (!read(data, mIndex, 8))
@@ -157,6 +162,7 @@ bool        EvVideo::NextFrame(void)
 
         mRun = false;
         break; */
+        digitalWrite(38, LOW);
         mNextLoad = true;
         return true;
       }
@@ -166,6 +172,7 @@ bool        EvVideo::NextFrame(void)
     }
   }
 
+  digitalWrite(38, LOW);
   return (mIndex == mFileSize);
 }
 
@@ -190,13 +197,14 @@ bool        EvVideo::Play(void)
 
 void        EvVideo::refreshEvent(void)
 {
-  if (mRun)
+  if (mRun && (Disp->sFrameNumber & 1) == mFrameSync)
   {
-    if (mNextLoad)
-      load();
-    else
+//    if (mNextLoad)
+//      load();
+//    else
     {
       NextFrame();
+      load();
       EvImage::refreshEvent();
     }
   }

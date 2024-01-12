@@ -1,3 +1,15 @@
+commit 677115e24f1b5c2f093e988bbdae20ac5a5dc74e
+Author: Sylvain Masson <sylvainmasson@Sylvains-Mac-mini.local>
+Date:   Mon Jan 8 16:43:15 2024 -0500
+
+    EvDMA: DMA implementation on SPI
+    
+    EvEVE: MediaFifo implementation
+    
+    EvDisplay: change default SPI clock to 30Mhz
+    
+    Global: cleaning and minor change
+
 commit 2a2fe5b587183eb76ad2917a5b520f6ff628770e
 Author: Sylvain Masson <sylvainmasson@Sylvains-Mac-mini.local>
 Date:   Wed Dec 20 20:02:13 2023 -0500

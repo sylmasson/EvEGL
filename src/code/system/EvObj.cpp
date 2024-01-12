@@ -1480,6 +1480,7 @@ void        EvObj::Draw(void)
       }
 
       Disp->RestoreContext();
+      Disp->wrCmdBufUpdate();
       sizeDL = Disp->ReadDL() - startDL;
       mCache = (mCache == nullptr) ? Disp->RAM_G.Malloc(sizeDL, this) : Disp->RAM_G.Realloc(mCache, sizeDL);
 

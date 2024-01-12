@@ -32,6 +32,7 @@ class EvVideo : public EvImage
     uint32_t      mFileSize;
     uint32_t      mIndex;
     uint32_t      mFrameCount;
+    uint8_t       mFrameSync;
     EvBmp         *mFrame;
     bool          mNextLoad;
     bool          mRun;
@@ -41,6 +42,8 @@ class EvVideo : public EvImage
 
     bool          load(void);
     bool          read(uint32_t *Data, uint32_t Pos, uint32_t Count);
+
+    static uint8_t  sVideoCount;
 
   public:
     static EvVideo  *Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ);

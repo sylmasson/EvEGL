@@ -17,15 +17,16 @@ class EvDisplay : public EvEVE, public EvPanel, public EvSysFont
     void          SetOnUpdate(void (*OnUpdate)(EvDisplay *Disp));
     void          SetOnTouch(void (*OnTouch)(EvObj *Obj, EvTouchEvent *Touch));
 
-    void          Update(void);
-    static bool   UpdateAll(void);
+    static bool   Update(void);
 
   protected:
-    void          displayUpdate(void);
+    void          update(void);
+    void          dispUpdate(void);
     void          touchUpdate(void);
-    void          touchUpdatePtr(EvTouchEvent *Touch, EvTouchPos TouchPos, uint32_t msec);
+    void          touchUpdate(EvTouchEvent *Touch, EvTouchPos TouchPos, uint32_t msec);
 
     uint8_t       mOrientation;
+    uint8_t       mFrameCount;
     uint32_t      mTimeUsed;
     EvTouchEvent  mTouch[5];
 
@@ -44,7 +45,7 @@ class EvDisplay : public EvEVE, public EvPanel, public EvSysFont
     const uint8_t &Orientation = mOrientation;
 
     static uint16_t   sDispCount;
-    static uint16_t   sFrameCount;
+    static uint32_t   sFrameNumber;
     static uint16_t   sTraceFlags;
     static uint32_t   sSecondTimer;
     static uint32_t   sUpdateTimer;
