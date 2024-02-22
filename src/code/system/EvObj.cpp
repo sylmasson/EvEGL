@@ -1,7 +1,7 @@
 
 #include    <EvGUI.h>
 
-//#define     VERBOS
+//#define     VERBOSE
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
@@ -22,6 +22,7 @@ EvObj::EvObj(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDispl
   mBdWidth = 0;
   mBdColor = 0;
   mBgColor = 0;
+  mBgColorA = 0;
   mOpacity = 256;
   mOwner = nullptr;
   mCache = nullptr;
@@ -40,7 +41,7 @@ EvObj::EvObj(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDispl
 
 EvObj::~EvObj(void)
 {
-  #ifdef VERBOS
+  #ifdef VERBOSE
     char    str[32];
 
     snprintf(str, sizeof(str) - 1, "~EvObj: %p ", this);
@@ -266,6 +267,19 @@ bool        EvObj::IsVisible(void)
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
+ * @brief      Check if the Object is viewable.
+ * 
+ * @return     true if viewable.
+ * 
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+bool        EvObj::IsViewable(void)
+{
+  return ((mStatus & VISIBLE_OBJ) != 0 && mView.w > 0) ? true : false;
+}
+
+/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *
  * @brief      Check if the Object is enabled.
  * 
  * @return     true if enabled.
@@ -453,10 +467,17 @@ void        EvObj::BdColor(uint16_t Color)
  * 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvObj::BgColor(uint16_t Color)
+void        EvObj::BgColor(uint16_t Color, uint8_t Aplha)
 {
-  if (mBgColor != Color)
+  if (!(Color & 0x8000))
+    Aplha = 0;
+  else if (Aplha == 0)
+    Color &= ~0x8000;
+
+  if (mBgColor != Color || mBgColorA != Aplha)
   {
+
+    mBgColorA = Aplha;
     mBgColor = Color;
     Modified();
   }
@@ -545,15 +566,74 @@ void        EvObj::ReSize(uint16_t Width, uint16_t Height)
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
+ * @brief      Align the object to its owner.
+ * 
+ * @param[in]  Align   The Object alignment.
+ * @param[in]  PadX    The horizontal Object padding.
+ * @param[in]  PadY    The vertical Object padding.
+ * 
+ * Ten choices are possible:
+ * 
+ * @tableofcontents
+ * |     Align      |
+ * | -------------- |
+ * | LEFT_TOP       |
+ * | CENTER_TOP     |
+ * | RIGHT_TOP      |
+ * | LEFT_CENTER    |
+ * | CENTER_CENTER  |
+ * | RIGHT_CENTER   |
+ * | LEFT_BOTTOM    |
+ * | CENTER_BOTTOM  |
+ * | RIGHT_BOTTOM   |
+ * | CENTER         |
+ * 
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+void        EvObj::OwnerAlign(uint8_t Align, int16_t PadX, int16_t PadY)
+{
+  if (mOwner != nullptr)
+  {
+    int16_t   x, y;
+
+    switch ((Align >> 2) & 3)
+    {
+      case 0: y = PadY; break;
+      case 1: y = (mOwner->mHeight - mHeight) / 2; break;
+      case 2: y = mOwner->mHeight - mHeight - PadY; break;
+      case 3: y = mTop; break;
+    }
+
+    switch (Align & 3)
+    {
+      case 0: x = PadX; break;
+      case 1: x = (mOwner->mWidth - mWidth) / 2; break;
+      case 2: x = mOwner->mWidth - mWidth - PadX; break;
+      case 3: x = mLeft;
+    }
+
+    MoveTo(x, y);
+  }
+}
+
+/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *
  * @brief      Get the EvPanel owner of the Object.
+ * 
+ * @param[in]  Level    The owner's back level.
  * 
  * @return     Owner's EvPanel address pointer if one exists, otherwise returns nullptr.
  * 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-EvPanel     *EvObj::GetOwner(void)
+EvPanel     *EvObj::GetOwner(uint16_t Level)
 {
-  return mOwner;
+  EvPanel   *owner = mOwner;
+
+  while (--Level && owner != nullptr)
+    owner = owner->mOwner;
+
+  return owner;
 }
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -1458,11 +1538,11 @@ void        EvObj::Draw(void)
       Disp->Opacity(mOpacity);
       Disp->ClearPrimitive();
 
+      if ((mBgColor & 0x8000) != 0 && Disp->ColorA(mBgColorA) != 0)
+        FillRectangle2f(0, 0, mWidth << 4, mHeight << 4, mBgColor, mBdRadius);
+
       if (Disp->ColorA(255) != 0)
       {
-        if ((mBgColor & 0x8000) != 0)
-          FillRectangle2f(0, 0, mWidth << 4, mHeight << 4, mBgColor, mBdRadius);
-
         mStatus &= ~(MODIFIED_OBJ | MOVED_OBJ | FUNCT_USED_OBJ);
         drawEvent();
 
@@ -1510,7 +1590,7 @@ EvObj       *EvObj::TryCreate(EvObj *Obj, EvPanel *Dest)
     Serial.println("TryCreate: Dest is nullptr");
   else if (Obj != nullptr)
   {
-    #ifdef VERBOS
+    #ifdef VERBOSE
       char    str[80];
 
       snprintf(str, sizeof(str) - 1, "TryCreate: %p \"%s\"", Obj, Tag);
@@ -1519,13 +1599,13 @@ EvObj       *EvObj::TryCreate(EvObj *Obj, EvPanel *Dest)
 
     if (!(Obj->mStatus & ABORT_OBJ) && Dest->AddObj(Obj) != nullptr)
     {
-      #ifdef VERBOS
+      #ifdef VERBOSE
         Serial.println(" Ok");
       #endif
       return Obj;
     }
 
-    #ifdef VERBOS
+    #ifdef VERBOSE
       Serial.println(" Abort");
     #endif
 

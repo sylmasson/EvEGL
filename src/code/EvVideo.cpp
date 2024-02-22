@@ -1,9 +1,116 @@
 
 #include    <EvGUI.h>
 
-// #define     VERBOSE
+#define     VERBOSE                 1       // 0 = None, 1 = AviInfo only, 2 = Full
+
+#define     AVIF_HASINDEX           0x00000010
+#define     AVIF_MUSTUSEINDEX       0x00000020
+#define     AVIF_ISINTERLEAVED      0x00000100
+#define     AVIF_TRUSTCKTYPE        0x00000800
+#define     AVIF_WASCAPTUREFILE     0x00010000
+#define     AVIF_COPYRIGHTED        0x00020000
+
+#define     AVIMAINHEADER_SIZE      56
+#define     AVISTREAMHEADER_SIZE    56
+#define     BITMAPINFOHEADER_SIZE   40
+#define     WAVEFORMATEX_SIZE       18
+#define     WAVEFORMAT_SIZE         14
+#define     AVIOLDINDEX_SIZE        16
+
+#define     WAVE_FORMAT_PCM         0x01    // Support audio format supported
+#define     WAVE_FORMAT_MULAW       0x07
+#define     WAVE_FORMAT_IMA_ADPCM   0x11
+
+#define     LIMIT_INFO_DEFAULT      20
+
+#define     FOURCC(str)             (*(uint32_t *)str)
+
+#define     printFmt                Serial.printf
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+typedef struct
+{
+  uint32_t  dwMicroSecPerFrame;
+  uint32_t  dwMaxBytesPerSec;
+  uint32_t  dwPaddingGranularity;
+  uint32_t  dwFlags;
+  uint32_t  dwTotalFrames;
+  uint32_t  dwInitialFrames;
+  uint32_t  dwStreams;
+  uint32_t  dwSuggestedBufferSize;
+  uint32_t  dwWidth;
+  uint32_t  dwHeight;
+  uint32_t  dwReserved[4];
+} AVIMAINHEADER;  // 'avih'
+
+typedef struct
+{
+  uint32_t  fccType;
+  uint32_t  fccHandler;
+  uint32_t  dwFlags;
+  uint16_t  wPriority;
+  uint16_t  wLanguage;
+  uint32_t  dwInitialFrames;
+  uint32_t  dwScale;
+  uint32_t  dwRate;
+  uint32_t  dwStart;
+  uint32_t  dwLength;
+  uint32_t  dwSuggestedBufferSize;
+  uint32_t  dwQuality;
+  uint32_t  dwSampleSize;
+  struct
+  {
+    int16_t left;
+    int16_t top;
+    int16_t right;
+    int16_t bottom;
+  } rcFrame;
+} AVISTREAMHEADER;  // 'strh'
+
+typedef struct
+{
+  uint32_t  biSize;
+  int32_t   biWidth;
+  int32_t   biHeight;
+  uint16_t  biPlanes;
+  uint16_t  biBitCount;
+  uint32_t  biCompression;
+  uint32_t  biSizeImage;
+  int32_t   biXPelsPerMeter;
+  int32_t   biYPelsPerMeter;
+  uint32_t  biClrUsed;
+  uint32_t  biClrImportant;
+} BITMAPINFOHEADER; // 'strf' for video
+
+typedef struct
+{
+  uint16_t  wFormatTag;
+  uint16_t  nChannels;
+  uint32_t  nSamplesPerSec;
+  uint32_t  nAvgBytesPerSec;
+  uint16_t  nBlockAlign;
+  uint16_t  wBitsPerSample;
+  uint16_t  cbSize;
+} WAVEFORMATEX;     // 'strf' for audio
+
+typedef struct
+{
+  uint32_t  dwChunkId;
+  uint32_t  dwFlags;
+  uint32_t  dwOffset;
+  uint32_t  dwSize;
+} AVIOLDINDEX;      // 'idx1'
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 uint8_t     EvVideo::sVideoCount = 0;
+
+extern void sendAudio(int16_t *Buffer, uint16_t Len);
+
+#if (VERBOSE > 0)
+  static const char *sWaveFormat[4] = {"Unknown format", "PCM signed integer format", "Mu-law encoded format", "IMA ADPCM format"};
+#endif
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
@@ -24,7 +131,7 @@ uint8_t     EvVideo::sVideoCount = 0;
  * 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-EvVideo     *EvVideo::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag, uint16_t State)
+EvVideo      *EvVideo::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag, uint16_t State)
 {
   return !Dest ? nullptr : (EvVideo *)EvObj::TryCreate(new EvVideo(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvVideo" : Tag, State), Dest);
 }
@@ -33,147 +140,123 @@ EvVideo     *EvVideo::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t
 
 EvVideo::EvVideo(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) : EvImage(Left, Top, Width, Height, Disp, Tag, State)
 {
+  SetOnLoadFrame(nullptr);
+  SetMode(RESIZE_PROPORTIONAL, BILINEAR);
   mFrameSync = ++sVideoCount & 1;
-  mFrame = nullptr;
-  mNextLoad = false;
-  mRun = false;
+  Mute = false;
+  mSpeed = 1;
+  mSkip = 0;
+  mCtrl = 0;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 EvVideo::~EvVideo(void)
 {
-  Unload();
-  free(mFrame);
-
-  if (mFile)
-    mFile.close();
+  Close();
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-bool        EvVideo::Open(const char *Filename, SDClass &Dev)
+bool        EvVideo::Open(const char *FileName, SDClass &Dev)
 {
-  uint32_t  data[3];
-
-  if (mFile)
-    mFile.close();
-
-  Unload();
-  free(mFrame);
-  mFrame = nullptr;
-
-  if (!Dev.mediaPresent() || !(mFile = Dev.open(Filename)))
+  struct
   {
-    #ifdef VERBOSE
-      Serial.printf("\nDevice or file %s not found\n", Filename);
-    #endif
-    return false;
-  }
+    uint32_t  fcc;
+    uint32_t  cb;
+    uint32_t  type;
+  } hdr;
 
-  if ((mFileSize = mFile.size()) > 0 && read(data, 0, sizeof(data)) == true)
-    if (data[0] == *(uint32_t *)"RIFF" && data[1] == (mFileSize - 8) && data[2] == *(uint32_t *)"AVI ")
-    {
-      #ifdef VERBOSE
-        Serial.printf("\nRIFF %u AVI\n", data[1]);
+  Close();
+
+  if (!Dev.mediaPresent() || !(mFile = Dev.open(FileName)) || !(mFidx = Dev.open(FileName)))
+  {
+    #if (VERBOSE > 0)
+      printFmt("\nDevice or file \"%s\" not found\n", FileName);
+    #endif
+  }
+  else
+  {
+    if ((mFileSize = mFile.size()) > 0 && readFile(&hdr, mFileInd = 0, sizeof(hdr)) == true)
+      if (hdr.fcc == FOURCC("RIFF") && hdr.cb == (mFileSize - 8) && hdr.type == FOURCC("AVI "))
+      {
+      #if (VERBOSE > 1)
+        printFmt("\nReading file \"%s\"\n", FileName);
+        printAddr(mFileInd);
+        printFmt("'RIFF'('AVI '");
+        printSize(hdr.cb);
       #endif
 
-      mFrameCount = 0;
-      mRun = false;
-      mIndex = 12;
+        mFileInd = 12;
 
-      return NextFrame();
-    }
+        if (readInfo(mFileSize, 1, LIMIT_INFO_DEFAULT) == true)
+        {
+        #if (VERBOSE > 1)
+          printAddr(mFileInd);
+          printFmt("End of file \"%s\"\n", FileName);
+        #endif
+        #if (VERBOSE > 0)
+          printFmt("\nAviInfo \"%s\"\n", FileName);
+          printFmt("{\n");
+          printFmt("  Width = %u\n", mAviInfo.Width);
+          printFmt("  Height = %u\n", mAviInfo.Height);
+          printFmt("  Stream = %u\n", mAviInfo.Stream);
+          printFmt("  AudioFmt = %u (%s)\n", mAviInfo.AudioFmt, sWaveFormat[mAviInfo.AudioFmt]);
+          printFmt("  AudioChan = %u\n", mAviInfo.AudioChan);
+          printFmt("  SampleDepth = %u bits\n", mAviInfo.SampleDepth);
+          printFmt("  SampleRate  = %u Hz\n", mAviInfo.SampleRate);
+          printFmt("  SampleCount = %u\n", mAviInfo.SampleCount);
+          printFmt("  AudioBufSize = %u bytes\n", mAviInfo.AudioBufSize);
+          printFmt("  VideoBufSize = %u bytes\n", mAviInfo.VideoBufSize);
+          printFmt("  VideoLength  = %.2f sec\n", mAviInfo.VideoLength);
+          printFmt("  FrameRate  = %.2f Hz\n", mAviInfo.FrameRate);
+          printFmt("  FrameCount = %u\n", mAviInfo.FrameCount);
+          printFmt("  MoviBegin = 0x%08X\n", mAviInfo.MoviBegin);
+          printFmt("  MoviEnd   = 0x%08X\n", mAviInfo.MoviEnd);
+          printFmt("  Idx1Begin = 0x%08X\n", mAviInfo.Idx1Begin);
+          printFmt("  Idx1End   = 0x%08X\n", mAviInfo.Idx1End);
+          printFmt("  VideoFcc = '%s'\n", mAviInfo.VideoFcc);
+          printFmt("  AudioFcc = '%s'\n", mAviInfo.AudioFcc);
+          printFmt("}\n");
+        #endif
 
-  #ifdef VERBOSE
-    Serial.printf("%s is not valid AVI file\n", Filename);
-  #endif
+        #if (VERBOSE > 0)
+          printFmt("\nmFrame\n");
+          printFmt("{\n");
+          printFmt("  Nbr    = #%u\n", mFrame.Nbr);
+          printFmt("  Ind    = 0x%08X\n", mFrame.Ind);
+          printFmt("  Offset = 0x%08X\n", mFrame.Offset);
+          printFmt("  Length = %u\n", mFrame.Length);
+          printFmt("}\n");
+        #endif
 
-  mFile.close();
+          mCtrl = 0;
+          return (seekFirst() && loadFrame());
+        }
+      }
+
+    #if (VERBOSE > 0)
+      printFmt("\n\"%s\" is not valid AVI file\n", FileName);
+    #endif
+  }
+
+  Close();
   return false;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-bool        EvVideo::NextFrame(void)
+void        EvVideo::Close(void)
 {
-  uint8_t   *jpeg;
-  uint32_t  size, data[3];
-  char      str[] = "????";
+  Unload();
+  memset(&mFrame, 0, sizeof(mFrame));
+  memset(&mAviInfo, 0, sizeof(mAviInfo));
 
-  if (!mFile || mFrame != nullptr)
-    return false;
+  if (mFile)
+    mFile.close();
 
-  digitalWrite(38, HIGH);
-
-  for (; mIndex < mFileSize; mIndex += size)
-  {
-    if (!read(data, mIndex, 8))
-      break;
-
-    mIndex += 8;
-    size = data[1];
-    memcpy(str, data, 4);
-
-    if (strcmp(str, "LIST") == 0)
-    {
-      if (!read(&data[2], mIndex, 4))
-        break;
-
-      memcpy(str, &data[2], 4);
-
-      #ifdef VERBOSE
-        Serial.printf("LIST %u %s\n", size, str);
-      #endif
-
-      mIndex += 4;
-      size = 0;
-    }
-    else
-    {
-      #ifdef VERBOSE
-        Serial.printf("%s %u @%lX\n", str, size, index);
-      #endif
-
-      if (strcmp(&str[2], "dc") == 0 && (mFrame = (EvBmp *)malloc(sizeof(EvBmp) + size)) != nullptr)
-      {
-        jpeg = ((uint8_t *)mFrame) + sizeof(EvBmp);
-
-        if (!mFile.seek(mIndex) || mFile.read(jpeg, size) != size || !IsValidJPEG(jpeg, size, mFrame, "VideoFrame"))
-          break;
-
-        mFrameCount++;
-
-        #ifdef VERBOSE
-          Serial.printf("Frame %u\n", mFrameCount);
-        #endif
-
-        if (size & 1)
-          size++;
-
-        mIndex += size;
-//        Disp->CmdSync();
-
-/*        if (Load(mFrame))
-        {
-          SetMode(RESIZE_PROPORTIONAL, BILINEAR);
-          return true;
-        }
-
-        mRun = false;
-        break; */
-        digitalWrite(38, LOW);
-        mNextLoad = true;
-        return true;
-      }
-
-      if (size & 1)
-        size++;
-    }
-  }
-
-  digitalWrite(38, LOW);
-  return (mIndex == mFileSize);
+  if (mFidx)
+    mFidx.close();
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -183,61 +266,612 @@ bool        EvVideo::Play(void)
   if (!mFile)
     return false;
 
-  Unload();
-  free(mFrame);
-  mFrame = nullptr;
-  mFrameCount = 0;
-  mIndex = 12;
-  mRun = true;
+  mCtrl = VIDEO_RUN;
+  return (mFrame.Nbr >= mAviInfo.FrameCount) ? seekFirst() : true;
+}
 
-  return NextFrame();
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+bool        EvVideo::Stop(void)
+{
+  if (!mFile)
+    return false;
+
+  mCtrl = VIDEO_LOAD;
+  return seekFirst();
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+bool        EvVideo::Pause(void)
+{
+  if (!mFile)
+    return false;
+
+  mCtrl = 0;
+  return true;
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+bool        EvVideo::Rewind(uint8_t Speed)
+{
+  if (!mFile)
+    return false;
+
+  mSpeed = Speed;
+  mCtrl = VIDEO_RUN | VIDEO_REWIND;
+  return true;
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+bool        EvVideo::Forward(uint8_t Speed)
+{
+  if (!mFile)
+    return false;
+
+  mSpeed = Speed;
+  mCtrl = VIDEO_RUN;
+  return true;
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+bool        EvVideo::Seek(uint32_t FrameNbr)
+{
+  if (!mFile)
+    return false;
+
+  mSkip = 0;
+  mCtrl |= VIDEO_LOAD;
+  return (seek(FrameNbr));
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+void        EvVideo::SetOnLoadFrame(void (*OnLoadFrame)(EvVideo *Sender, uint32_t FrameNbr))
+{
+  mOnLoadFrame = OnLoadFrame;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 void        EvVideo::refreshEvent(void)
 {
-  if (mRun && (Disp->sFrameNumber & 1) == mFrameSync)
+  if ((Disp->sFrameNumber & 1) == mFrameSync)
   {
-//    if (mNextLoad)
-//      load();
-//    else
+    if (mSkip)
+      mSkip--;
+    else if (mCtrl & (VIDEO_RUN | VIDEO_LOAD))
     {
-      NextFrame();
-      load();
-      EvImage::refreshEvent();
+      if (loadFrame() == false || mFrame.Nbr >= mAviInfo.FrameCount || mSpeed == 0)
+        mCtrl = 0;
+      else
+      {
+        uint32_t  Nbr = mFrame.Nbr;
+
+        mCtrl &= ~VIDEO_LOAD;
+
+        if (mCtrl & VIDEO_REWIND)
+          rewind(mSpeed);
+        else if (!Mute && mSpeed == 1 && mCtrl & VIDEO_RUN)
+          nextFrame(1);
+        else
+          forward(mSpeed);
+
+        if (Nbr == mFrame.Nbr)
+          mCtrl = 0;
+      }
     }
   }
+
+  EvImage::refreshEvent();
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-bool        EvVideo::load(void)
+bool        EvVideo::loadFrame(void)
 {
-  bool      result = false;
+  EvBmp     *bmp;
+  uint8_t   *jpeg;
 
-  if (mFrame != nullptr)
+  if ((bmp = (EvBmp *)malloc(sizeof(EvBmp) + mFrame.Length)) != nullptr)
   {
-    mFrame->Format |= BMP_MALLOC;
+    jpeg = ((uint8_t *)bmp) + sizeof(EvBmp);
 
-    if (Load(mFrame, OPT_MEDIAFIFO) == nullptr)
-      free(mFrame);
+    if (readFile(jpeg, mFrame.Offset, mFrame.Length) && IsValidJPEG(jpeg, mFrame.Length, bmp, "VideoFrame"))
+    {
+      bmp->Format |= BMP_MALLOC;
+
+      if (Load(bmp, OPT_MEDIAFIFO) != nullptr)
+      {
+        if (mOnLoadFrame != nullptr)
+          (*mOnLoadFrame)(this, mFrame.Nbr);
+
+        return true;
+      }
+
+      free(bmp);
+    }
+  }
+
+  return false;
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+bool        EvVideo::nextFrame(uint32_t FrameCnt)
+{
+  int16_t   audio[2048];
+  uint32_t  size = mFrame.Length;
+  struct
+  {
+    uint32_t  fcc;
+    uint32_t  cb;
+  } chunk;
+
+  digitalWrite(38, HIGH);
+  mFileInd = mFrame.Offset;
+
+  while (FrameCnt > 0)
+  {
+    if (size & 1)
+      size++;
+
+    mFileInd += size;
+
+    if (!readFile(&chunk, mFileInd, 8))
+      return false;
+
+    mFileInd += 8;
+    size = chunk.cb;
+
+    if (chunk.fcc == FOURCC(mAviInfo.AudioFcc))
+    {
+      if (!readFile(audio, mFileInd, size))
+        return false;
+
+      sendAudio(audio, size);
+    }
+    else if (chunk.fcc == FOURCC(mAviInfo.VideoFcc))
+    {
+      mFrame.Nbr++;
+      mFrame.Length = size;
+      mFrame.Offset = mFileInd;
+      FrameCnt--;
+    }
+
+    mFrame.Ind += AVIOLDINDEX_SIZE;
+  }
+
+  digitalWrite(38, LOW);
+  return true;
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+bool        EvVideo::rewind(uint32_t FrameCnt)
+{
+  AVIOLDINDEX   idx;
+  uint32_t      ind = mFrame.Ind;
+
+  if (!ind)
+    return false;
+
+  while (FrameCnt)
+  {
+    if ((ind -= AVIOLDINDEX_SIZE) < mAviInfo.Idx1Begin)
+      return seekFirst();
+
+    if (!readFidx(&idx, ind, AVIOLDINDEX_SIZE))
+      return false;
+
+    if (idx.dwChunkId == FOURCC(mAviInfo.VideoFcc))
+    {
+      mFrame.Nbr--;
+      mFrame.Ind = ind;
+      mFrame.Offset = idx.dwOffset + mAviInfo.MoviBegin + 4;
+      mFrame.Length = idx.dwSize;
+      FrameCnt--;
+    }
+  }
+
+  return true;
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+bool        EvVideo::forward(uint32_t FrameCnt)
+{
+  AVIOLDINDEX   idx;
+  uint32_t      ind = mFrame.Ind;
+
+  if (!ind)
+    return false;
+
+  while (FrameCnt)
+  {
+    if ((ind += AVIOLDINDEX_SIZE) >= mAviInfo.Idx1End)
+      return seekLast();
+
+    if (!readFidx(&idx, ind, AVIOLDINDEX_SIZE))
+      return false;
+
+    if (idx.dwChunkId == FOURCC(mAviInfo.VideoFcc))
+    {
+      mFrame.Nbr++;
+      mFrame.Ind = ind;
+      mFrame.Offset = idx.dwOffset + mAviInfo.MoviBegin + 4;
+      mFrame.Length = idx.dwSize;
+      FrameCnt--;
+    }
+  }
+
+  return true;
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+bool        EvVideo::seek(uint32_t FrameNbr)
+{
+  int32_t   rel;
+
+  if ((FrameNbr == 0 || mFrame.Ind == 0) && !seekFirst())
+    return false;
+
+  if (FrameNbr > mAviInfo.FrameCount)
+    FrameNbr = mAviInfo.FrameCount;
+
+  return ((rel = FrameNbr - mFrame.Nbr) < 0) ? rewind(-rel) : forward(rel);
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+bool        EvVideo::seekFirst(void)
+{
+  mFrame.Nbr = 0;
+  mFrame.Ind = mAviInfo.Idx1Begin - AVIOLDINDEX_SIZE;
+  return forward(1);
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+bool        EvVideo::seekLast(void)
+{
+  mFrame.Nbr = mAviInfo.FrameCount + 1;
+  mFrame.Ind = mAviInfo.Idx1End;
+  return rewind(1);
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+bool        EvVideo::readInfo(uint32_t BlkEnd, uint16_t TabCnt, uint32_t Limit)
+{
+  char        str[] = "????";
+#if (VERBOSE > 1)
+  char        tab[] = "\t\t\t\t\t\t\t\t\t\t";
+  const char  begin[] = " (", end[] = "%s\t       )\n";
+#endif
+  uint32_t    size, limit = Limit;
+  struct
+  {
+    uint32_t  fcc;
+    uint32_t  cb;
+  } chunk;
+
+  if (BlkEnd > mFileSize)
+    return false;
+
+#if (VERBOSE > 1)
+  if (TabCnt < sizeof(tab))
+    tab[TabCnt] = 0;
+#endif
+
+  for (; mFileInd < BlkEnd; mFileInd += size)
+  {
+    if (!readFile(&chunk, mFileInd, 8))
+      return false;
+
+    mFileInd += 8;
+    size = chunk.cb;
+
+  #if (VERBOSE > 1)
+    FOURCC(str) = chunk.fcc;
+    printAddr(mFileInd - 8);
+    printFmt("%s'%s'", tab, str);
+  #endif
+
+    if (chunk.fcc == FOURCC("LIST"))
+    {
+      if (!readFile(str, mFileInd, 4))
+        return false;
+
+    #if (VERBOSE > 1)
+      printFmt(begin);
+      printFmt("'%s'", str);
+      printSize(size);
+    #endif
+
+      mFileInd += 4;
+
+      if (FOURCC(str) == FOURCC("movi"))
+      {
+        mAviInfo.MoviBegin = mFileInd;
+        mAviInfo.MoviEnd = mFileInd + size - 4;
+      }
+
+      if (readInfo(mFileInd + size - 4, TabCnt + 1, (FOURCC(str) == FOURCC("movi")) ? Limit : (uint32_t)-1) == false)
+        return false;
+
+    #if (VERBOSE > 1)
+      printFmt(end, tab);
+    #endif
+      size = 0;
+    }
+    else if (chunk.fcc == FOURCC("avih") && size == AVIMAINHEADER_SIZE)
+    {
+      AVIMAINHEADER   avih;
+
+      if (!readFile(&avih, mFileInd, AVIMAINHEADER_SIZE))
+        return false;
+
+      mAviInfo.Width = avih.dwWidth;
+      mAviInfo.Height = avih.dwHeight;
+      mAviInfo.FrameCount = avih.dwTotalFrames;
+
+    #if (VERBOSE > 1)
+      printFmt(begin);
+      printSize(size);
+      printFmt("%s\t\tdwMicroSecPerFrame = %u\n", tab, avih.dwMicroSecPerFrame);
+      printFmt("%s\t\tdwMaxBytesPerSec = %u\n", tab, avih.dwMaxBytesPerSec);
+      printFmt("%s\t\tdwPaddingGranularity = %u\n", tab, avih.dwPaddingGranularity);
+      printFmt("%s\t\tdwFlags = 0x%x%s", tab, avih.dwFlags, avih.dwFlags & AVIF_HASINDEX ? " (has index)\n" : "/n");
+      printFmt("%s\t\tdwTotalFrames = %u\n", tab, avih.dwTotalFrames);
+      printFmt("%s\t\tdwInitialFrames = %u\n", tab, avih.dwInitialFrames);
+      printFmt("%s\t\tdwStreams = %u\n", tab, avih.dwStreams);
+      printFmt("%s\t\tdwSuggestedBufferSize = %u\n", tab, avih.dwSuggestedBufferSize);
+      printFmt("%s\t\tdwWidth = %u\n", tab, avih.dwWidth);
+      printFmt("%s\t\tdwHeight = %u\n", tab, avih.dwHeight);
+      printFmt(end, tab);
+    #endif
+    }
+    else if (chunk.fcc == FOURCC("strh") && size == AVISTREAMHEADER_SIZE)
+    {
+      AVISTREAMHEADER   strh;
+
+      if (!readFile(&strh, mFileInd, AVISTREAMHEADER_SIZE))
+        return false;
+
+      if (strh.fccType == FOURCC("auds"))
+      {
+        mAviInfo.AudioBufSize = strh.dwSuggestedBufferSize;
+        mAviInfo.SampleRate = strh.dwRate / strh.dwScale;
+        mAviInfo.SampleCount = strh.dwLength;
+
+        if (!FOURCC(mAviInfo.AudioFcc))
+          snprintf(mAviInfo.AudioFcc, sizeof(mAviInfo.AudioFcc), "%02uwb", mAviInfo.Stream & 0x0F);
+      }
+      else if (strh.fccType == FOURCC("vids") && strh.fccHandler == FOURCC("MJPG"))
+      {
+        mAviInfo.VideoBufSize = strh.dwSuggestedBufferSize;
+        mAviInfo.FrameRate = (strh.dwScale == 0) ? 0 : (float)strh.dwRate / (float)strh.dwScale;
+        mAviInfo.VideoLength = (mAviInfo.FrameRate == 0) ? 0 : (float)mAviInfo.FrameCount / mAviInfo.FrameRate;
+
+        if (!FOURCC(mAviInfo.VideoFcc))
+          snprintf(mAviInfo.VideoFcc, sizeof(mAviInfo.VideoFcc), "%02udc", mAviInfo.Stream & 0x0F);
+      }
+
+      mAviInfo.Stream++;
+
+    #if (VERBOSE > 1)
+      printFmt(begin);
+      printSize(size);
+      FOURCC(str) = strh.fccType;
+      printFmt("%s\t\tfccType = \"%s\"\n", tab, str);
+      FOURCC(str) = strh.fccHandler;
+      printFmt("%s\t\tfccHandler = \"%s\"\n", tab, str);
+      printFmt("%s\t\tdwFlags = 0x%x\n", tab, strh.dwFlags);
+      printFmt("%s\t\twPriority = %u\n", tab, strh.wPriority);
+      printFmt("%s\t\twLanguage = %u\n", tab, strh.wLanguage);
+      printFmt("%s\t\tdwInitialFrames = %u\n", tab, strh.dwInitialFrames);
+      printFmt("%s\t\tdwScale = %u\n", tab, strh.dwScale);
+      printFmt("%s\t\tdwRate = %u\n", tab, strh.dwRate);
+      printFmt("%s\t\tdwStart = %u\n", tab, strh.dwStart);
+      printFmt("%s\t\tdwLength = %u\n", tab, strh.dwLength);
+      printFmt("%s\t\tdwSuggestedBufferSize = %u\n", tab, strh.dwSuggestedBufferSize);
+      printFmt("%s\t\tdwQuality = %d\n", tab, strh.dwQuality);
+      printFmt("%s\t\tdwSampleSize = %u\n", tab, strh.dwSampleSize);
+      printFmt("%s\t\trcFrame.left = %d\n", tab, strh.rcFrame.left);
+      printFmt("%s\t\trcFrame.top = %d\n", tab, strh.rcFrame.top);
+      printFmt("%s\t\trcFrame.right = %d\n", tab, strh.rcFrame.right);
+      printFmt("%s\t\trcFrame.bottom = %d\n", tab, strh.rcFrame.bottom);
+      printFmt(end, tab);
+    #endif
+    }
+    else if (chunk.fcc == FOURCC("strf"))
+    {
+      if (size == BITMAPINFOHEADER_SIZE)
+      {
+        BITMAPINFOHEADER  strf;
+
+        if (!readFile(&strf, mFileInd, BITMAPINFOHEADER_SIZE))
+          return false;
+
+      #if (VERBOSE > 1)
+        printFmt(begin);
+        printSize(size);
+        printFmt("%s\t\tbiSize = %u\n", tab, strf.biSize);
+        printFmt("%s\t\tbiWidth = %d\n", tab, strf.biWidth);
+        printFmt("%s\t\tbiHeight = %d\n", tab, strf.biHeight);
+        printFmt("%s\t\tbiPlanes = %u\n", tab, strf.biPlanes);
+        printFmt("%s\t\tbiBitCount = %u\n", tab, strf.biBitCount);
+        printFmt("%s\t\tbiCompression = %u\n", tab, strf.biCompression);
+        printFmt("%s\t\tbiSizeImage = %u\n", tab, strf.biSizeImage);
+        printFmt("%s\t\tbiXPelsPerMeter = %d\n", tab, strf.biXPelsPerMeter);
+        printFmt("%s\t\tbiYPelsPerMeter = %d\n", tab, strf.biYPelsPerMeter);
+        printFmt("%s\t\tbiClrUsed = %d\n", tab, strf.biClrUsed);
+        printFmt("%s\t\tbiClrImportant = %d\n", tab, strf.biClrImportant);
+        printFmt(end, tab);
+      #endif
+      }
+      else
+      {
+        WAVEFORMATEX  strf;
+        int16_t       strfSize;
+
+        strf.cbSize = 0;
+        strfSize = (size > WAVEFORMATEX_SIZE) ? WAVEFORMATEX_SIZE : size;
+
+        if (!readFile(&strf, mFileInd, strfSize))
+          return false;
+
+        if (strfSize == WAVEFORMAT_SIZE)
+          strf.wBitsPerSample = 8 * strf.nAvgBytesPerSec / strf.nSamplesPerSec / strf.nChannels;
+
+        switch (strf.wFormatTag)
+        {
+          case WAVE_FORMAT_PCM: mAviInfo.AudioFmt = 1; break;
+          case WAVE_FORMAT_MULAW: mAviInfo.AudioFmt = 2; break;
+          case WAVE_FORMAT_IMA_ADPCM: mAviInfo.AudioFmt = 3; break;
+          default: mAviInfo.AudioFmt = 0;
+        }
+
+        mAviInfo.AudioChan = strf.nChannels;
+        mAviInfo.SampleDepth = strf.wBitsPerSample;
+
+      #if (VERBOSE > 1)
+        printFmt(begin);
+        printSize(size);
+        printFmt("%s\t\twFormatTag = %u (%s)\n", tab, strf.wFormatTag, sWaveFormat[mAviInfo.AudioFmt]);
+        printFmt("%s\t\tnChannels = %u\n", tab, strf.nChannels);
+        printFmt("%s\t\tnSamplesPerSec = %u\n", tab, strf.nSamplesPerSec);
+        printFmt("%s\t\tnAvgBytesPerSec = %u\n", tab, strf.nAvgBytesPerSec);
+        printFmt("%s\t\tnBlockAlign = %u\n", tab, strf.nBlockAlign);
+        printFmt("%s\t\twBitsPerSample = %u\n", tab, strf.wBitsPerSample);
+        printFmt(end, tab);
+      #endif
+      }
+    }
+    else if (chunk.fcc == FOURCC("idx1"))
+    {
+      AVIOLDINDEX   idx;
+
+      if ((size & 3) != 0)
+        return false;
+
+      mAviInfo.Idx1Begin = mFileInd;
+      mAviInfo.Idx1End = mFileInd + size;
+
+    #if (VERBOSE > 1)
+      printFmt(begin);
+      printSize(size);
+
+      uint32_t frame = 0;
+    #endif
+      if (Limit < (limit = size / 4))
+        limit = Limit;
+
+      for (; limit > 0 && mFileInd < BlkEnd; mFileInd += AVIOLDINDEX_SIZE, limit--)
+      {
+        if (!readFile(&idx, mFileInd, AVIOLDINDEX_SIZE))
+          return false;
+
+      #if (VERBOSE > 1)
+        printAddr(mFileInd);
+        FOURCC(str) = idx.dwChunkId;
+        printFmt("%s\t'%s' +%08X%7u", tab, str, idx.dwOffset, idx.dwSize);
+
+        if (idx.dwChunkId == FOURCC(mAviInfo.VideoFcc))
+          printFmt("  #%u\n", ++frame);
+        else
+          printFmt("\n");
+      #endif
+      }
+
+    #if (VERBOSE > 1)
+      if (limit == 0)
+      {
+        printAddr(mFileInd);
+        printFmt("%s\t ....", tab);
+        printSize(BlkEnd - mFileInd);
+      }
+
+      printFmt(end, tab);
+    #endif
+      mFileInd = BlkEnd;
+      size = 0;
+    }
+    else if (chunk.fcc == FOURCC("ISFT"))
+    {
+    #if (VERBOSE > 1)
+      char    package[128];
+
+      if (size > sizeof(package) - 1)
+        size = sizeof(package) - 1;
+
+      if (!readFile(package, mFileInd, size))
+        return false;
+
+      package[size + 1] = 0;
+      printFmt(" %s\n", package);
+    #endif
+      mFileInd = BlkEnd;
+      size = 0;
+    }
     else
     {
-      SetMode(RESIZE_PROPORTIONAL, BILINEAR);
-      mNextLoad = false;
-      result = true;
+    #if (VERBOSE > 1)
+      printSize(size);
+    #endif
+      if (!--limit)
+      {
+      #if (VERBOSE > 1)
+        printAddr(mFileInd);
+        printFmt("%s ....", tab);
+        printSize(BlkEnd - mFileInd);
+      #endif
+        mFileInd = BlkEnd;
+        size = 0;
+      }
     }
 
-    mFrame = nullptr;
+    if (size & 1)
+      size++;
   }
 
-  return result;
+  return true;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-bool        EvVideo::read(uint32_t *Data, uint32_t Pos, uint32_t Count)
+bool        EvVideo::readFile(void *Data, uint32_t Pos, uint32_t Count)
 {
   return (mFile.seek(Pos) != 0 && mFile.read(Data, Count) == Count);
 }
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+bool        EvVideo::readFidx(void *Data, uint32_t Pos, uint32_t Count)
+{
+  return (mFidx.seek(Pos) != 0 && mFidx.read(Data, Count) == Count);
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+void        EvVideo::printAddr(uint32_t Addr)
+{
+#if (VERBOSE > 1)
+  printFmt("%08X ", Addr);
+#endif
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+void        EvVideo::printSize(uint32_t Size)
+{
+#if (VERBOSE > 1)
+  printFmt(" %u\n", Size);
+#endif
+}
+

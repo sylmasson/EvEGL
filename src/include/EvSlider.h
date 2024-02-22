@@ -19,22 +19,22 @@
 class EvSlider : public EvObj
 {
   public:
-    int16_t       Value(void);
-    bool          SetValue(int16_t Value);
+    int32_t       Value(void);
+    bool          SetValue(int32_t Value);
     void          SetDelay(uint16_t Msec);
     void          SetColor(uint16_t ColorLower, uint16_t ColorUpper, uint16_t ColorKnob);
-    void          SetRange(int16_t Min, int16_t Max);
+    void          SetRange(int32_t Min, int32_t Max);
     void          SetOnTouch(void (*OnTouch)(EvSlider *Sender, EvTouchEvent *Touch));
     void          SetOnChange(void (*OnChange)(EvSlider *Sender, int32_t Value));
 
   protected:
     EvSlider(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ);
 
-    int16_t       mValue;
-    int16_t       mMin;
-    int16_t       mMax;
-    int16_t       mInc;
-    int16_t       mSetPoint;
+    int32_t       mValue;
+    int32_t       mMin;
+    int32_t       mMax;
+    int32_t       mInc;
+    int32_t       mSetPoint;
     int16_t       mThickness;
     int16_t       mKnobSize;
     int16_t       mSliderWidth;
@@ -54,7 +54,7 @@ class EvSlider : public EvObj
     void          (*mOnTouch)(EvSlider *Sender, EvTouchEvent *Touch);
     void          (*mOnChange)(EvSlider *Sender, int32_t Value);
 
-    bool          setValue(int16_t Value);
+    bool          setValue(int32_t Value);
 
   public:
     static EvSlider *Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ);

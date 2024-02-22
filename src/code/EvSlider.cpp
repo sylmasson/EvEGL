@@ -58,7 +58,7 @@ EvSlider::EvSlider(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, E
  * 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-int16_t     EvSlider::Value(void)
+int32_t     EvSlider::Value(void)
 {
   return mValue;
 }
@@ -79,7 +79,7 @@ int16_t     EvSlider::Value(void)
  * 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-bool        EvSlider::SetValue(int16_t Value)
+bool        EvSlider::SetValue(int32_t Value)
 {
   if (mValue != mSetPoint)
     return false;
@@ -125,7 +125,7 @@ void        EvSlider::SetColor(uint16_t ColorLower, uint16_t ColorUpper, uint16_
 
 /// @copydoc EvNumInt::SetRange()
 
-void        EvSlider::SetRange(int16_t Min, int16_t Max)
+void        EvSlider::SetRange(int32_t Min, int32_t Max)
 {
   if (Min != Max)
   {
@@ -153,10 +153,11 @@ void        EvSlider::SetOnChange(void (*OnChange)(EvSlider *Sender, int32_t Val
 
 void        EvSlider::drawEvent(void)
 {
-  int16_t   x, y, border, radius, knobPos;
+  int32_t   knobPos;
+  int16_t   x, y, border, radius;
 
   mKnobSize = (mBdShape == ROUND_CORNERS) ? mSliderWidth : ((mSliderWidth * 2) / 3);
-  knobPos = ((int32_t)(mValue - mMin) * (mSliderLength - mKnobSize)) / (mMax - mMin);
+  knobPos = ((mValue - mMin) * (mSliderLength - mKnobSize)) / (mMax - mMin);
   x = y = (mSliderWidth - mThickness) >> 1;
   radius = mBdRadius >> 1;
   Disp->Clear(0, 1, 1);
@@ -211,7 +212,7 @@ void        EvSlider::resizeEvent(void)
 
 void        EvSlider::refreshEvent(void)
 {
-  int16_t   value = mValue;
+  int32_t   value = mValue;
 
   if (value != mSetPoint)
   {
@@ -234,7 +235,7 @@ void        EvSlider::refreshEvent(void)
 
 void        EvSlider::touchEvent(EvTouchEvent *Touch)
 {
-  int16_t   value, knobPos, sliderRange;
+  int32_t   value, knobPos, sliderRange;
 
   sliderRange = mSliderLength - mKnobSize;
   knobPos = ((mWidth >= mHeight ? Touch->x : mHeight - Touch->y) << 4) - (mKnobSize >> 1);
@@ -279,7 +280,7 @@ void        EvSlider::touchEvent(EvTouchEvent *Touch)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-bool        EvSlider::setValue(int16_t Value)
+bool        EvSlider::setValue(int32_t Value)
 {
   if (mMax > mMin)
   {

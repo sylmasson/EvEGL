@@ -33,52 +33,64 @@ EvKbd       *EvKbd::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t H
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-EvKbd::EvKbd(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) : EvPanel(Left, Top, Width, Height, Disp, Tag, State)
+EvKbd::EvKbd(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) : EvSideBar(Left, Top, Width, Height, Disp, Tag, State)
 {
   mKey = 0;
   mLayout = 0;
   mPrevKey = 0;
   mShiftKey = 0;
   FocusObj = nullptr;
-  mKinMotion.Setup(200);
+//  mKinMotion.Setup(220);
   SetOnTouch(nullptr);
   TouchMax(2);
-  Disable();
+//  Disable();
 
   if ((mOverKey = EvLabel::Create(0, 0, 0, 0, this, "KbdOverlay", DISABLED_OBJ | FLOAT_OBJ | SYSTEM_OBJ)) == nullptr)
-    Abort();
-  else
   {
-    mOverKey->TextPadding(0, 7);
-    mOverKey->BdColor(OVER_KEY_BD_COLOR);
-    mOverKey->BdWidth(24);
-    SetKeyboard(Disp->Orientation & 2 ? 1 : 0);
+    Abort();
+    return;
   }
+
+  mOverKey->TextPadding(0, 7);
+  mOverKey->BdColor(OVER_KEY_BD_COLOR);
+  mOverKey->BdWidth(24);
+
+  SetOwner(Disp); // Owner is not yet initialized
+  SetKeyboard(Disp->Orientation & 2 ? 1 : 0);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 void        EvKbd::Open(void)
 {
-  if (!IsEnabled())
+  EvSideBar::Open();
+  ToFront();
+  Enable();
+
+/*  if (!IsEnabled())
   {
     mKinMotion.Start(mKb->top - mTop);
     ToFront();
     Enable();
     Show();
-  }
+  } */
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 void        EvKbd::Close(void)
 {
-  if (IsEnabled())
+  EvSideBar::Close();
+  mKey = mPrevKey = 0;
+  mOverKey->Hide();
+  Disable();
+
+/*  if (IsEnabled())
   {
     Disable();
     mOverKey->Hide();
     mKinMotion.Start(Disp->Height() - mTop + 1);
-  }
+  } */
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -111,6 +123,14 @@ void        EvKbd::SetKeyboard(int Keyboard)
 void        EvKbd::SetKeyboard(EvKeyboard *Keyboard)
 {
   mKb = Keyboard;
+  BgColor(mKb->bgColor);
+  BdRadius(mKb->bdRadius);
+  ReSize(mKb->width, mKb->height);
+  mKb->top = (int16_t)Disp->Height() - mKb->height;
+  mKb->left = ((int16_t)Disp->Width() - (int16_t)mKb->width) / 2;
+  EvSideBar::Setup(mKb->left, mKb->top, SIDEBAR_BOTTOM);
+
+/*  mKb = Keyboard;
   mKinMotion.Stop();
   BgColor(mKb->bgColor);
   BdRadius(mKb->bdRadius);
@@ -118,9 +138,7 @@ void        EvKbd::SetKeyboard(EvKeyboard *Keyboard)
 
   mKb->top = (int16_t)Disp->Height() - mKb->height;
   mKb->left = ((int16_t)Disp->Width() - (int16_t)mKb->width) / 2;
-  MoveTo(mKb->left, IsEnabled() ? mKb->top : Disp->Height());
-//  MoveTo(mKb->left, Disp->Height() - (IsEnabled() ? mKb->height : 0));
-//  MoveTo(mKb->left, Disp->Height() - (IsEnabled() ? mKb->height : 0));
+  MoveTo(mKb->left, IsEnabled() ? mKb->top : Disp->Height()); */
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -193,11 +211,11 @@ void        EvKbd::drawEvent(void)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvKbd::refreshEvent(void)
+/* void        EvKbd::refreshEvent(void)
 {
   if (mKinMotion.IsEnabled())
     MoveTo(mKb->left, mTop + mKinMotion.Value());
-}
+} */
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 

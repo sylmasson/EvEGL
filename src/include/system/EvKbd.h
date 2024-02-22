@@ -55,7 +55,8 @@ struct EvKeyboard
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-class EvKbd : public EvPanel
+//class EvKbd : public EvPanel
+class EvKbd : public EvSideBar
 {
   public:
     void          Open(void);
@@ -73,12 +74,12 @@ class EvKbd : public EvPanel
     uint8_t       mPrevKey;
     uint8_t       mShiftKey;
     bool          mDoubleTouch;
-    EvKinMove     mKinMotion;
+//    EvKinMove     mKinMotion;
     EvLabel       *mOverKey;
     EvKeyboard    *mKb;
 
     virtual void  drawEvent(void);
-    virtual void  refreshEvent(void);
+//    virtual void  refreshEvent(void);
     virtual void  touchEvent(EvTouchEvent *Touch);
 
   private:

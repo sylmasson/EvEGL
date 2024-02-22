@@ -1,3 +1,11 @@
+commit 81ee1fd496b95b6ea538149cb764ecf75d32c713
+Author: Sylvain Masson <sylvainmasson@Sylvains-Mac-mini.local>
+Date:   Fri Jan 12 10:07:50 2024 -0500
+
+    EvEVE: DL tracking for ReadDL optimization
+    
+    EvDisplay: cleaning and minor change
+
 commit 677115e24f1b5c2f093e988bbdae20ac5a5dc74e
 Author: Sylvain Masson <sylvainmasson@Sylvains-Mac-mini.local>
 Date:   Mon Jan 8 16:43:15 2024 -0500

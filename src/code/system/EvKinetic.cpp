@@ -97,6 +97,12 @@ void        EvKinMove::Setup(uint16_t Period)
 
 void        EvKinMove::Start(int16_t Pixels)
 {
+  if (Pixels == 0)
+  {
+    Stop();
+    return;
+  }
+  
   mNegative = (Pixels < 0);
   mPixels = abs(Pixels);
   mScale = ((uint32_t)mPixels << 16) / mTotal;

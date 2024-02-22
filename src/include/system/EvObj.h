@@ -119,6 +119,7 @@ class EvObj : public Print
     void          Modified(void);
     void          ModifiedText(void);
     bool          IsVisible(void);
+    bool          IsViewable(void);
     bool          IsEnabled(void);
     bool          IsModified(void);
     bool          IsModifiedText(void);
@@ -128,12 +129,13 @@ class EvObj : public Print
     void          BdRadius(uint16_t Radius);  // 1/16 pixel
     void          BdWidth(uint16_t Width);    // 1/16 pixel
     void          BdColor(uint16_t Color);
-    void          BgColor(uint16_t Color);
+    void          BgColor(uint16_t Color, uint8_t Alpha = 255);
     void          MoveRel(int16_t X, int16_t Y);
     void          MoveTo(int16_t Left, int16_t Top);
     void          MoveTo(EvPanel *Dest);
     void          ReSize(uint16_t Width, uint16_t Height);
-    EvPanel       *GetOwner(void);
+    void          OwnerAlign(uint8_t Align, int16_t PadX = 0, int16_t PadY = 0);
+    EvPanel       *GetOwner(uint16_t Level = 1);
     void          SetOwner(EvPanel *Owner);
     void          ToFront(bool AllOwner = true);
     void          SetKbdFocus(uint8_t Layout = LAYOUT_SHIFT);
@@ -212,11 +214,12 @@ class EvObj : public Print
     uint8_t       mTouchCnt;
     uint8_t       mTouchMax;
 
+    uint16_t      mBgColor;
+    uint8_t       mBgColorA;
     uint8_t       mBdShape;
     uint16_t      mBdRadius;  // 1/16 pixel
     uint16_t      mBdWidth;   // 1/16 pixel
     uint16_t      mBdColor;
-    uint16_t      mBgColor;
 
     String        mLabel;
     EvView        mView;

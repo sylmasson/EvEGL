@@ -84,6 +84,14 @@
 #define     LAST_FONT       31
 #define     FMB_SIZE        148
 
+// EvSideBar constant
+
+#define  		SIDEBAR_NONE    0
+#define  		SIDEBAR_LEFT		1
+#define  		SIDEBAR_RIGHT		2
+#define  		SIDEBAR_TOP			3
+#define  		SIDEBAR_BOTTOM	4
+
 // EvScrollBar constant
 
 #define     SCROLL_BAR_OFF  0
@@ -132,6 +140,7 @@ class       EvStringList;
 class       EvObj;
 class       EvPanel;
 class       EvDisplay;
+class  			EvSideBar;
 class       EvScrollBar;
 class       EvScrollBox;
 class       EvTouchCal;
@@ -153,7 +162,9 @@ class       EvTextCursor;
 class       EvTerminal;
 class       EvSpectrum;
 class       EvPixelBox;
+class  			EvPlayer;
 class       EvSmeter;
+class  			EvVideo;
 class       EvVuBar;
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -168,6 +179,7 @@ class       EvVuBar;
 #include    <include/system/EvObj.h>
 #include    <include/system/EvPanel.h>
 #include    <include/system/EvDisplay.h>
+#include    <include/system/EvSideBar.h>
 #include    <include/system/EvScrollBar.h>
 #include    <include/system/EvScrollBox.h>
 #include    <include/system/EvTouchCal.h>
@@ -190,7 +202,8 @@ class       EvVuBar;
 #include    <include/EvSmeter.h>
 #include    <include/EvSpectrum.h>
 #include    <include/EvPixelBox.h>
-#include    <include/EvVideo.h>
+#include  	<include/EvPlayer.h>
+#include		<include/EvVideo.h>
 #include    <include/EvVuBar.h>
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
