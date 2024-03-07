@@ -36,7 +36,7 @@ EvCheckBox  *EvCheckBox::Create(int16_t Left, int16_t Top, uint16_t Width, uint1
 EvCheckBox::EvCheckBox(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) : EvObj(Left, Top, Width, Height, Disp, Tag, State)
 {
   mValue = false;
-  mTouchBox = false;
+  mTouchFlag = false;
   TextLabel("CheckBox");
   TextAlign(LEFT_CENTER);
   TextColor(COLOR_TEXT, COLOR_TEXT_2);
@@ -137,7 +137,7 @@ void        EvCheckBox::drawEvent(void)
   if (!mValue)
   {
     FillRectangle(0, 0, size, size, mColorBorder, radius);
-    Disp->ColorA(255 >> mTouchBox);
+    Disp->ColorA(255 >> mTouchFlag);
     if ((bd = size >> 2) < 16) bd = 16;
     if ((radius -= bd) < 16) radius = 16;
     FillRectangle2f(bd, bd, (size << 4) - (bd * 2), (size << 4) - (bd * 2), mColorUncheck, radius);
@@ -145,7 +145,7 @@ void        EvCheckBox::drawEvent(void)
   }
   else
   {
-    Disp->ColorA(255 >> mTouchBox);
+    Disp->ColorA(255 >> mTouchFlag);
     FillRectangle(0, 0, size, size, mColorCheck, radius);
     Disp->ColorA(255);
     Disp->ColorRGB(mColorUncheck);
@@ -175,8 +175,8 @@ void        EvCheckBox::touchEvent(EvTouchEvent *Touch)
   switch (Touch->event)
   {
     case TOUCH_START:
+      mTouchFlag = true;
       Touch->event = 0;
-      mTouchBox = true;
       Modified();
       break;
 
@@ -184,8 +184,8 @@ void        EvCheckBox::touchEvent(EvTouchEvent *Touch)
       SetValue(!mValue);
 
     case TOUCH_CANCEL:
+      mTouchFlag = false;
       Touch->event = 0;
-      mTouchBox = false;
       Modified();
       break;
   }

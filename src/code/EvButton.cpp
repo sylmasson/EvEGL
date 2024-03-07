@@ -35,6 +35,7 @@ EvButton    *EvButton::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_
 EvButton::EvButton(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) : EvObj(Left, Top, Width, Height, Disp, Tag, State)
 {
   mValue = false;
+  mTouchFlag = false;
   TextColor(TEXT_UP, TEXT_DOWN);
   SetColor(COLOR_UP, COLOR_DOWN);
   BdShape(FIXED_CORNERS | SHADOW);
@@ -186,11 +187,17 @@ void        EvButton::touchEvent(EvTouchEvent *Touch)
 
   switch (Touch->event)
   {
-    case TOUCH_CANCEL:
     case TOUCH_START:
-    case TOUCH_END:
-      SetValue(Touch->event == TOUCH_START);
+      mTouchFlag = true;
       Touch->event = 0;
+      SetValue(true);
+      break;
+
+    case TOUCH_CANCEL:
+    case TOUCH_END:
+      mTouchFlag = false;
+      Touch->event = 0;
+      SetValue(false);
       break;
   }
 }

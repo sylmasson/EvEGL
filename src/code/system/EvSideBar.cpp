@@ -1,6 +1,8 @@
 
 #include    <EvGUI.h>
 
+// #define     SIDEBAR_DEBUG   SIDEBAR_RIGHT
+
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
  * @brief      Create a new instance of the standard SideBar.
@@ -29,26 +31,32 @@ EvSideBar   *EvSideBar::Create(int16_t Left, int16_t Top, uint16_t Width, uint16
 
 EvSideBar::EvSideBar(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) : EvPanel(Left, Top, Width, Height, Disp, Tag, State)
 {
-  Setup(SIDEBAR_NONE);
+  Setup(SIDEBAR_TOP);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 void        EvSideBar::Open(void)
 {
-  if (!IsViewable())
+  if (!mOpen)
   {
-    int16_t delta = 0;
+    int16_t pixel = 0;
 
     switch (mType)
     {
-      case SIDEBAR_LEFT:
-      case SIDEBAR_RIGHT: delta = mOpenLeft - mLeft; break;
-      case SIDEBAR_TOP:
-      case SIDEBAR_BOTTOM: delta = mOpenTop - mTop; break;
+      case SIDEBAR_LEFT: pixel = mPadX - mLeft; mShift = -pixel; break;
+      case SIDEBAR_TOP: pixel = mPadY - mTop; mShift = -pixel; break;
+      case SIDEBAR_RIGHT: pixel = GetOwner()->Width() - mPadX - mWidth - mLeft; mShift = 0; break;
+      case SIDEBAR_BOTTOM: pixel = GetOwner()->Height() - mPadY - mHeight - mTop; mShift = 0; break;
     }
 
-    mKinMotion.Start(delta);
+    #ifdef SIDEBAR_DEBUG
+      if (mType == SIDEBAR_DEBUG)
+        Serial.printf("SideBar Open: pixel = %d\n", pixel);
+    #endif
+
+    mKinMotion.Start(pixel);
+    mOpen = true;
     Show();
   }
 }
@@ -57,47 +65,119 @@ void        EvSideBar::Open(void)
 
 void        EvSideBar::Close(void)
 {
-  if (IsViewable())
+  if (mOpen)
   {
-    int16_t delta = 0;
+    int16_t pixel = 0;
 
     switch (mType)
     {
-      case SIDEBAR_LEFT: delta = -mLeft - mWidth - 1; break;
-      case SIDEBAR_RIGHT: delta = GetOwner()->Width() - mLeft + 1; break;
-      case SIDEBAR_TOP: delta = -mTop - mHeight - 1; break;
-      case SIDEBAR_BOTTOM: delta = GetOwner()->Height() - mTop + 1; break;
+      case SIDEBAR_LEFT: pixel = -mLeft - mWidth - 1; mShift = 0; break;
+      case SIDEBAR_TOP: pixel = -mTop - mHeight - 1; mShift = 0; break;
+      case SIDEBAR_RIGHT: pixel = GetOwner()->Width() - mLeft + 1; mShift = -pixel; break;
+      case SIDEBAR_BOTTOM: pixel = GetOwner()->Height() - mTop + 1; mShift = -pixel; break;
     }
 
-    mKinMotion.Start(delta);
+    #ifdef SIDEBAR_DEBUG
+      if (mType == SIDEBAR_DEBUG)
+        Serial.printf("SideBar Close: pixel = %d\n", pixel);
+    #endif
+
+    mKinMotion.Start(pixel);
+    mOpen = false;
   }
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvSideBar::Setup(uint8_t Type, uint16_t Period)
+bool        EvSideBar::IsOpen(void)
 {
-  Setup(mLeft, mTop, Type, Period);
+  return mOpen;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvSideBar::Setup(int16_t Left, int16_t Top, uint8_t Type, uint16_t Period)
+void        EvSideBar::SetPosition(void)
 {
-  mKinMotion.Setup(Period);
-  mOpenLeft = Left;
-  mOpenTop = Top;
+  int16_t   left, top;
 
-  if (!IsViewable())
-    switch (mType = Type)
+  if (mKinMotion.IsEnabled())
+  {
+    left = mLeft;
+    top = mTop;
+
+    switch (mType)
     {
-      case SIDEBAR_LEFT: Left = -mWidth; break;
-      case SIDEBAR_RIGHT: Left = GetOwner()->Width(); break;
-      case SIDEBAR_TOP: Top = -mHeight; break;
-      case SIDEBAR_BOTTOM: Top = GetOwner()->Height(); break;
+      case SIDEBAR_LEFT: left = mShift; break;
+      case SIDEBAR_TOP: top = mShift; break;
+      case SIDEBAR_RIGHT: left = GetOwner()->Width() + mShift; break;
+      case SIDEBAR_BOTTOM: top = GetOwner()->Height() + mShift; break;
     }
+  }
+  else
+  {
+    left = mPadX;
+    top = mPadY;
 
-  MoveTo(Left, Top);
+    if (mOpen)
+      switch (mType)
+      {
+        case SIDEBAR_LEFT: break;
+        case SIDEBAR_TOP:  break;
+        case SIDEBAR_RIGHT: left = GetOwner()->Width() - mPadX - mWidth; break;
+        case SIDEBAR_BOTTOM: top = GetOwner()->Height() - mPadY - mHeight; break;
+      }
+    else
+      switch (mType)
+      {
+        case SIDEBAR_LEFT: left = -mWidth - 1; break;
+        case SIDEBAR_TOP:  top = -mHeight - 1; break;
+        case SIDEBAR_RIGHT: left = GetOwner()->Width() + 1; break;
+        case SIDEBAR_BOTTOM: top = GetOwner()->Height() + 1; break;
+      }
+  }
+
+  #ifdef SIDEBAR_DEBUG
+    if (mType == SIDEBAR_DEBUG)
+      Serial.printf("SideBar SetPosition: left = %d top = %d\n", left, top);
+  #endif
+
+  MoveTo(left, top);
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+void        EvSideBar::SetPadding(int16_t PadX, int16_t PadY)
+{
+  mPadX = PadX;
+  mPadY = PadY;
+  SetPosition();
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+void        EvSideBar::Setup(uint8_t Type, bool OpenState, uint16_t Period)
+{
+  Setup(0, 0, Type, OpenState, Period);
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+void        EvSideBar::Setup(int16_t PadX, int16_t PadY, uint8_t Type, bool OpenState, uint16_t Period)
+{
+  mShift = 0;
+  mPadX = PadX;
+  mPadY = PadY;
+  mOpen = OpenState;
+  mType = (Type > SIDEBAR_BOTTOM) ? SIDEBAR_TOP : Type;
+  mKinMotion.Setup(Period);
+  SetPosition();
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+void        EvSideBar::resizeEvent(void)
+{
+  SetPosition();
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -106,18 +186,8 @@ void        EvSideBar::refreshEvent(void)
 {
   if (mKinMotion.IsEnabled())
   {
-    int16_t left = mOpenLeft;
-    int16_t top = mOpenTop;
-
-    switch (mType)
-    {
-      case SIDEBAR_LEFT:
-      case SIDEBAR_RIGHT: left = mLeft + mKinMotion.Value(); break;
-      case SIDEBAR_TOP:
-      case SIDEBAR_BOTTOM: top = mTop + mKinMotion.Value(); break;
-    }
-
-    MoveTo(left, top);
+    mShift += mKinMotion.Value();
+    SetPosition();
   }
 }
 

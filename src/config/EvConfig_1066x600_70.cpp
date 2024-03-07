@@ -3,13 +3,13 @@
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-const uint32_t  EvConfig_1077x600_70[] =
+const uint32_t  EvConfig_1066x600_70[] =
 {
   REG_FREQUENCY, 72000000,
   REG_TRIM, 28,
   REG_PCLK_FREQ, 0xD12,
   REG_PCLK_2X, 0,
-  REG_HSIZE, 1077,
+  REG_HSIZE, 1066,
   REG_VSIZE, 600,
   REG_HCYCLE, 1344,
   REG_HOFFSET, 160,

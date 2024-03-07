@@ -519,7 +519,7 @@ class EvEVE : public EvSPI
 extern const uint32_t   EvConfig_800x480_43[];
 extern const uint32_t   EvConfig_800x480_50[];
 extern const uint32_t   EvConfig_1024x600_70[];
-extern const uint32_t   EvConfig_1077x600_70[];
+extern const uint32_t   EvConfig_1066x600_70[];
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 

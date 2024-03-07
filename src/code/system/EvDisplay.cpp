@@ -116,8 +116,7 @@ void        EvDisplay::Rotate(uint8_t Orientation)
     ReSize(w, h);
 
   if (Kbd != nullptr)
-    Kbd->SetKeyboard((mOrientation & 2) ? 1 : 0);
-
+    Kbd->SetKeyboard((mOrientation & 2) ? 1 : 0, Kbd->IsOpen());
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

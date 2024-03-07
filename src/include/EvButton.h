@@ -30,9 +30,10 @@ class EvButton : public EvObj
     int16_t       mValue;
     uint16_t      mColorUp;
     uint16_t      mColorDown;
+    bool          mTouchFlag;
 
-    virtual void  drawEvent(void);
-    virtual void  touchEvent(EvTouchEvent *Touch);
+    virtual void  drawEvent(void) override;
+    virtual void  touchEvent(EvTouchEvent *Touch) override;
 
   private:
     void          (*mOnTouch)(EvButton *Sender, EvTouchEvent *Touch);

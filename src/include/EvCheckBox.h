@@ -33,7 +33,7 @@ class EvCheckBox : public EvObj
     uint16_t      mColorCheck;
     uint16_t      mColorUncheck;
     uint16_t      mColorBorder;
-    bool          mTouchBox;
+    bool          mTouchFlag;
 
     virtual void  drawEvent(void);
     virtual void  touchEvent(EvTouchEvent *Touch);

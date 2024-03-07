@@ -36,6 +36,7 @@ EvLabel::EvLabel(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvD
   TextAlign(RIGHT_CENTER);
   TextColor(TEXT_COLOR);
   SetOnTouch(nullptr);
+  mTouchFlag = false;
 }
 
 /// @copydoc EvButton::SetOnTouch()
@@ -58,4 +59,18 @@ void        EvLabel::touchEvent(EvTouchEvent *Touch)
 {
   if (mOnTouch != nullptr)
     (*mOnTouch)(this, Touch);
+
+  switch (Touch->event)
+  {
+    case TOUCH_START:
+      mTouchFlag = true;
+      Touch->event = 0;
+      break;
+
+    case TOUCH_CANCEL:
+    case TOUCH_END:
+      mTouchFlag = false;
+      Touch->event = 0;
+      break;
+  }
 }

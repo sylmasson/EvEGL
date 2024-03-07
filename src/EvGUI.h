@@ -86,11 +86,10 @@
 
 // EvSideBar constant
 
-#define  		SIDEBAR_NONE    0
-#define  		SIDEBAR_LEFT		1
+#define  		SIDEBAR_LEFT		0
+#define  		SIDEBAR_TOP			1
 #define  		SIDEBAR_RIGHT		2
-#define  		SIDEBAR_TOP			3
-#define  		SIDEBAR_BOTTOM	4
+#define  		SIDEBAR_BOTTOM	3
 
 // EvScrollBar constant
 

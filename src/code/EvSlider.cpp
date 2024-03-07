@@ -261,6 +261,9 @@ void        EvSlider::touchEvent(EvTouchEvent *Touch)
       }
       break;
 
+    case TOUCH_HOLD:
+      mTouchKnob = true;
+
     case TOUCH_END:
       if (mSliderDelay < PERIOD_REFRESH)
         SetValue(value);

@@ -4,8 +4,7 @@
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-//static EvKeyboard     *sKeyboard[2] = {&Keyboard480x230, &Keyboard1024x276};
-static EvKeyboard     *sKeyboard[2] = {&Keyboard1077x276, &Keyboard600x252};
+static EvKeyboard     *sKeyboard[2] = {&Keyboard1066x276, &Keyboard600x252};
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
@@ -36,14 +35,13 @@ EvKbd       *EvKbd::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t H
 EvKbd::EvKbd(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) : EvSideBar(Left, Top, Width, Height, Disp, Tag, State)
 {
   mKey = 0;
+  mKeyId = 0;
   mLayout = 0;
   mPrevKey = 0;
   mShiftKey = 0;
   FocusObj = nullptr;
-//  mKinMotion.Setup(220);
   SetOnTouch(nullptr);
   TouchMax(2);
-//  Disable();
 
   if ((mOverKey = EvLabel::Create(0, 0, 0, 0, this, "KbdOverlay", DISABLED_OBJ | FLOAT_OBJ | SYSTEM_OBJ)) == nullptr)
   {
@@ -66,14 +64,6 @@ void        EvKbd::Open(void)
   EvSideBar::Open();
   ToFront();
   Enable();
-
-/*  if (!IsEnabled())
-  {
-    mKinMotion.Start(mKb->top - mTop);
-    ToFront();
-    Enable();
-    Show();
-  } */
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -84,13 +74,6 @@ void        EvKbd::Close(void)
   mKey = mPrevKey = 0;
   mOverKey->Hide();
   Disable();
-
-/*  if (IsEnabled())
-  {
-    Disable();
-    mOverKey->Hide();
-    mKinMotion.Start(Disp->Height() - mTop + 1);
-  } */
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -113,32 +96,22 @@ void        EvKbd::SetLayout(uint8_t Layout)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvKbd::SetKeyboard(int Keyboard)
+void        EvKbd::SetKeyboard(int Keyboard, bool OpenState)
 {
-  SetKeyboard(sKeyboard[Keyboard]);
+  SetKeyboard(sKeyboard[Keyboard], OpenState);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvKbd::SetKeyboard(EvKeyboard *Keyboard)
+void        EvKbd::SetKeyboard(EvKeyboard *Keyboard, bool OpenState)
 {
   mKb = Keyboard;
+  mKey = mPrevKey = 0;
+  mOverKey->Hide();
   BgColor(mKb->bgColor);
   BdRadius(mKb->bdRadius);
   ReSize(mKb->width, mKb->height);
-  mKb->top = (int16_t)Disp->Height() - mKb->height;
-  mKb->left = ((int16_t)Disp->Width() - (int16_t)mKb->width) / 2;
-  EvSideBar::Setup(mKb->left, mKb->top, SIDEBAR_BOTTOM);
-
-/*  mKb = Keyboard;
-  mKinMotion.Stop();
-  BgColor(mKb->bgColor);
-  BdRadius(mKb->bdRadius);
-  ReSize(mKb->width, mKb->height);
-
-  mKb->top = (int16_t)Disp->Height() - mKb->height;
-  mKb->left = ((int16_t)Disp->Width() - (int16_t)mKb->width) / 2;
-  MoveTo(mKb->left, IsEnabled() ? mKb->top : Disp->Height()); */
+  Setup(SIDEBAR_BOTTOM, OpenState);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -211,14 +184,6 @@ void        EvKbd::drawEvent(void)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-/* void        EvKbd::refreshEvent(void)
-{
-  if (mKinMotion.IsEnabled())
-    MoveTo(mKb->left, mTop + mKinMotion.Value());
-} */
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
 void        EvKbd::touchEvent(EvTouchEvent *Touch)
 {
   if (mOnTouch != nullptr)
@@ -237,6 +202,13 @@ void        EvKbd::touchEvent(EvTouchEvent *Touch)
         const EvKbdMapping  *map;
         const EvKeyStyle    *style;
 
+        if (mKey > ' ' && mKey <= '~')
+        {
+          writeKey(!mShiftKey ? mKey : toupper(mKey));
+          mOverKey->Hide();
+        }
+
+        mKeyId = Touch->id;
         i = Touch->tag - 1;
         map = &layout->kbdMap[i];
         mKey = layout->keyChar[i];
@@ -280,8 +252,10 @@ void        EvKbd::touchEvent(EvTouchEvent *Touch)
       Touch->event = 0;
       break;
 
-    case TOUCH_REPEAT:
     case TOUCH_HOLD:
+      Touch->repeatDelay = 100;
+
+    case TOUCH_REPEAT:
       if (mKey == ' ' || mKey == '\b')
         writeKey(mKey);
 
@@ -289,6 +263,9 @@ void        EvKbd::touchEvent(EvTouchEvent *Touch)
       break;
 
     case TOUCH_END:
+      if (Touch->id != mKeyId)
+        break;
+
       switch (mPrevKey = mKey)
       {
         case 0: break;
@@ -306,7 +283,7 @@ void        EvKbd::touchEvent(EvTouchEvent *Touch)
       break;
 
     case TOUCH_CANCEL:
-      mKey = mPrevKey = 0;
+      mKey = mKeyId = mPrevKey = 0;
       Touch->event = 0;
       mOverKey->Hide();
       break;

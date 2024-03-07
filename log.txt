@@ -1,3 +1,17 @@
+commit e1f190ca849b68670db0133963dfdf6e12a3cad0
+Author: Sylvain Masson <sylvainmasson@Sylvains-Mac-mini.local>
+Date:   Thu Feb 22 09:32:00 2024 -0500
+
+    EvPlayer: Start of a new object class using EvVideo to watch videos
+    
+    EvVideo: Major change including Pause, Foward, Rewind using AVI file index
+    
+    EvSideBar: New object class allowing Sidebars at Left, Right, Top or bottom
+    
+    EvBkd: Modification to use the new EvSideBar class
+    
+    EvObj: Changed BgColor to support Alpha color, Changed GetOwner to support multiple level, Added IsViewable and OwnerAlign functions
+
 commit 81ee1fd496b95b6ea538149cb764ecf75d32c713
 Author: Sylvain Masson <sylvainmasson@Sylvains-Mac-mini.local>
 Date:   Fri Jan 12 10:07:50 2024 -0500

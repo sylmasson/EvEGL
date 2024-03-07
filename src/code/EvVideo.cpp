@@ -246,6 +246,13 @@ bool        EvVideo::Open(const char *FileName, SDClass &Dev)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+bool        EvVideo::IsRunning(void)
+{
+  return (mCtrl & VIDEO_RUN) ? true : false;
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
 void        EvVideo::Close(void)
 {
   Unload();
@@ -300,7 +307,7 @@ bool        EvVideo::Rewind(uint8_t Speed)
     return false;
 
   mSpeed = Speed;
-  mCtrl = VIDEO_RUN | VIDEO_REWIND;
+  mCtrl |= VIDEO_REWIND;
   return true;
 }
 
@@ -312,7 +319,7 @@ bool        EvVideo::Forward(uint8_t Speed)
     return false;
 
   mSpeed = Speed;
-  mCtrl = VIDEO_RUN;
+  mCtrl &= ~VIDEO_REWIND;
   return true;
 }
 

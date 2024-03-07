@@ -55,31 +55,29 @@ struct EvKeyboard
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-//class EvKbd : public EvPanel
 class EvKbd : public EvSideBar
 {
   public:
     void          Open(void);
     void          Close(void);
     void          SetLayout(uint8_t Layout);
-    void          SetKeyboard(int Keyboard);
-    void          SetKeyboard(EvKeyboard *Keyboard);
+    void          SetKeyboard(int Keyboard, bool OpenState = false);
+    void          SetKeyboard(EvKeyboard *Keyboard, bool OpenState = false);
     void          SetOnTouch(void (*OnTouch)(EvKbd *Sender, EvTouchEvent *Touch));
 
   protected:
     EvKbd(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ);
 
     uint8_t       mKey;
+    uint8_t       mKeyId;
     uint8_t       mLayout;
     uint8_t       mPrevKey;
     uint8_t       mShiftKey;
     bool          mDoubleTouch;
-//    EvKinMove     mKinMotion;
     EvLabel       *mOverKey;
     EvKeyboard    *mKb;
 
     virtual void  drawEvent(void);
-//    virtual void  refreshEvent(void);
     virtual void  touchEvent(EvTouchEvent *Touch);
 
   private:

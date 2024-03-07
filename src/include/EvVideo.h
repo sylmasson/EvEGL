@@ -57,6 +57,7 @@ class EvVideo : public EvImage
     ~EvVideo(void);
 
     bool          Open(const char *FileName, SDClass &Dev = SD);
+    bool          IsRunning(void);
     void          Close(void);
     bool          Play(void);
     bool          Stop(void);
