@@ -418,7 +418,7 @@ void        EvDot::drawEvent(void)
 void        EvDot::touchEvent(EvTouchEvent *Touch)
 {
   if (mOnTouch)
-    (*mOnTouch)(this, Touch);
+    mOnTouch(this, Touch);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -427,7 +427,7 @@ EvEditor::EvEditor(EvDisplay *Disp, const char *Tag) : EvPanel(0, 0, Disp->Width
 {
   if (!(DotMove = (EvDot *)TryCreate(new EvDot(50, OnTouchDotMove, Disp, "DotMove"), this)) ||
       !(DotReSize = (EvDot *)TryCreate(new EvDot(50, OnTouchDotReSize, Disp, "DotReSize"), this)))
-    Abort();
+    abortCreate();
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -522,7 +522,7 @@ EvProperty::EvProperty(EvDisplay *Disp, const char *Tag) : EvPanel(0, 0, 150, 31
       !(SelAlignY = EvSelector::Create(10, 172, 128, 32, PanText, nullptr, VISIBLE_OBJ | SYSTEM_OBJ | FILTER_DIS_OBJ)) ||
       !SelShape->SetBmp(ShapeIcons, 4) || !SelAlignX->SetBmp(AlignIconsX, 4) || !SelAlignY->SetBmp(AlignIconsY, 3))
     {
-      Abort();
+      abortCreate();
       return;
     }
 

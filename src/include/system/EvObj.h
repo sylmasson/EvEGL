@@ -101,8 +101,12 @@ struct EvTextStyle
 
 class EvObj : public Print
 {
-  public:
+  friend class EvPanel;
+
+  protected:
     EvObj(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ);
+
+  public:
     virtual       ~EvObj(void);
 
     int16_t       Left(void);
@@ -112,7 +116,6 @@ class EvObj : public Print
     uint8_t       Shape(void);
     void          Show(void);
     void          Hide(void);
-    void          Abort(void);
     void          Enable(void);
     void          Disable(void);
     void          Delete(void);
@@ -182,14 +185,13 @@ class EvObj : public Print
     void          BeginFunction(uint16_t &Label, uint16_t CmdSize);
     void          EndFunction(uint16_t Label, uint16_t CmdSize);
 
-  public:         // Public functions reserved for the system
+    // Public functions reserved for the system
     void          DisplayTagList(void);
     bool          TouchStart(void);
     void          TouchEnd(void);
     void          TouchMax(uint8_t Max);
     void          TouchUpdate(EvTouchEvent *Touch);
     virtual EvObj *Touching(EvTouchEvent *Touch);
-//    virtual bool  MustBeDraw(void);
     virtual void  SetDisplay(EvDisplay *Disp);
     virtual void  SetView(void);
     virtual void  Refresh(void);
@@ -237,7 +239,11 @@ class EvObj : public Print
     const EvTextStyle &Style = mStyle;  ///< The informations struct of style of the text of the object.
     const EvView      &View = mView;    ///< The informations struct of the partial View of the object.
 
-    static EvObj      *TryCreate(EvObj *Obj, EvPanel *Dest);
+  protected:
+    void          abortCreate(void);
+
+  public:
+    static EvObj  *TryCreate(EvObj *Obj, EvPanel *Dest);
 };
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

@@ -21,6 +21,9 @@
 
 class EvScrollBar : public EvObj
 {
+  protected:
+    EvScrollBar(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ);
+
   public:
     int16_t       Value(void);
     void          WakeUp(void);
@@ -36,8 +39,6 @@ class EvScrollBar : public EvObj
     void          SetOnChange(void (*OnChange)(EvScrollBar *Sender, int32_t Value));
 
   protected:
-    EvScrollBar(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ);
-
     int16_t       mValue;
     int16_t       mSpeed;
     uint16_t      mPageSize;

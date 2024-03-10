@@ -8,7 +8,7 @@ class EvStringList
 {
   public:
     EvStringList(void);
-    ~EvStringList(void);
+    virtual ~EvStringList(void);
 
     int           Clear(void);
     int           Add(const char *Str);

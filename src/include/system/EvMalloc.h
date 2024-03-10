@@ -85,7 +85,7 @@ class EvMalloc
 {
   public:
     EvMalloc(void);
-    ~EvMalloc(void);
+    virtual       ~EvMalloc(void);
 
     void          Free(const EvMem *Ptr);
     const EvMem   *Malloc(size_t Size, const void *Owner = nullptr, uint8_t TypeId = EV_UNDEFINED);

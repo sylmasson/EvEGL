@@ -45,7 +45,7 @@ EvKbd::EvKbd(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDispl
 
   if ((mOverKey = EvLabel::Create(0, 0, 0, 0, this, "KbdOverlay", DISABLED_OBJ | FLOAT_OBJ | SYSTEM_OBJ)) == nullptr)
   {
-    Abort();
+    abortCreate();
     return;
   }
 
@@ -187,7 +187,7 @@ void        EvKbd::drawEvent(void)
 void        EvKbd::touchEvent(EvTouchEvent *Touch)
 {
   if (mOnTouch != nullptr)
-    (*mOnTouch)(this, Touch);
+    mOnTouch(this, Touch);
 
   const EvKbdLayout *layout = &mKb->layout[mLayout];
 

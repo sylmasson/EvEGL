@@ -20,6 +20,9 @@
 
 class EvScrollBox : public EvPanel
 {
+  protected:
+    EvScrollBox(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ | CONTROL_OBJ);
+
   public:
     bool          Scrolling(void);
     void          SetScrollSpeed(uint8_t Speed, uint16_t Period = 640);
@@ -31,8 +34,6 @@ class EvScrollBox : public EvPanel
     virtual void  Draw(void);
 
   protected:
-    EvScrollBox(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ | CONTROL_OBJ);
-
     int16_t       mSpeedX;
     int16_t       mSpeedY;
     uint16_t      mPageWidth;

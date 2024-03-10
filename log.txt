@@ -1,3 +1,21 @@
+commit 5170ad50b20c6800529a740166dfc77dfcccbe2c
+Author: Sylvain Masson <sylvainmasson@Sylvains-Mac-mini.local>
+Date:   Thu Mar 7 18:43:07 2024 -0500
+
+    EvPlayer: Add Play button, TimeLapse, Screen size and Video speed option
+    
+    EvSideBar: Rewrote all code to support resizing live SideBar
+    
+    EvKbd: Improvement to support two finger touch at a time
+    
+    EvLabel, EvButton, EvCheckBox: Add mTouchFlag member attribute
+    
+    EvVideo, EvSlider, EvDisplay: Cleaning and minor change
+    
+    keyboard: Replaced EvKbd_1077x276_70.cpp with EvKbd_1066x276_70.ccp
+    
+    config: Replaced EvConfig_1077x600_70.cpp with EvConfig_1066x600_70.ccp
+
 commit e1f190ca849b68670db0133963dfdf6e12a3cad0
 Author: Sylvain Masson <sylvainmasson@Sylvains-Mac-mini.local>
 Date:   Thu Feb 22 09:32:00 2024 -0500

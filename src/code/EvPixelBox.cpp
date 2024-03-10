@@ -78,7 +78,7 @@ EvPixelBox::EvPixelBox(int16_t Left, int16_t Top, uint16_t Width, uint16_t Heigh
   mBufInd = 0;
 
   if ((mDest = Disp->LoadBmp(&mBmp)) == nullptr)
-    Abort();
+    abortCreate();
   else
   {
     Disp->CmdMemSet(mDest->addr + mBmp.PalSize, 0, mBmp.BmpSize);
@@ -198,5 +198,5 @@ void        EvPixelBox::drawEvent(void)
 void        EvPixelBox::touchEvent(EvTouchEvent *Touch)
 {
   if (mOnTouch != nullptr)
-    (*mOnTouch)(this, Touch);
+    mOnTouch(this, Touch);
 }

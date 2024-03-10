@@ -182,7 +182,7 @@ bool        EvScrollBar::SetValue(int16_t Value, bool Wakeup)
     WakeUp();
 
   if (mOnChange != nullptr)
-    (*mOnChange)(this, mValue);
+    mOnChange(this, mValue);
 
   return true;
 }

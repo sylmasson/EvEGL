@@ -22,6 +22,9 @@
 
 class EvNumInt : public EvObj
 {
+  protected:
+    EvNumInt(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ);
+
   public:
     int32_t       Value(void);
     bool          SetValue(int32_t Value);
@@ -31,8 +34,6 @@ class EvNumInt : public EvObj
     void          SetOnChange(void (*OnChange)(EvNumInt *Sender, int32_t Value));
 
   protected:
-    EvNumInt(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ);
-
     int32_t       mValue;
     int32_t       mMin;
     int32_t       mMax;

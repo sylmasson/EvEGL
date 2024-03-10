@@ -70,7 +70,7 @@ EvTextBox::EvTextBox(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height,
   mMaxLength = 0;
 
   if ((Cursor = EvTextCursor::Create(0, 0, 0, 0, this, nullptr, DISABLED_OBJ | FIXED_OBJ)) == nullptr)
-    Abort();
+    abortCreate();
   else
   {
     Cursor->BgColor(CURSOR_COLOR);
@@ -241,7 +241,7 @@ size_t      EvTextBox::WriteKey(uint8_t Key, uint8_t Layout, uint8_t ShiftKey, b
 
     case '\n':
       if (mOnReturn != nullptr)
-        (*mOnReturn)(this, mLabel);
+        mOnReturn(this, mLabel);
 
       LostKbdFocus();
       break;
@@ -472,7 +472,7 @@ int16_t     EvTextBox::textTop(void)
 int         EvTextBox::filter(uint8_t C)
 {
   if (mOnFilter != nullptr)
-    return (*mOnFilter)(this, C);
+    return mOnFilter(this, C);
 
   return C;
 }
@@ -510,7 +510,7 @@ void        EvTextBox::refreshEvent(void)
   if (IsEditedText())
   {
     if (mOnChange != nullptr)
-      (*mOnChange)(this, mLabel);
+      mOnChange(this, mLabel);
 
     SetMoveCursor();
     Modified();
@@ -532,7 +532,7 @@ void        EvTextBox::setKbdFocusEvent(void)
   TextAlign((mAlign & ~3) | ALIGNMENT_LOCK);
 
   if (mOnSetKbdFocus != nullptr)
-    (*mOnSetKbdFocus)(this);
+    mOnSetKbdFocus(this);
 
   if (SelectAllOnSetKbdFocus)
     SelectAll();
@@ -550,7 +550,7 @@ void        EvTextBox::lostKbdFocusEvent(void)
   mOffsetX = 0;
 
   if (mOnLostKbdFocus != nullptr)
-    (*mOnLostKbdFocus)(this);
+    mOnLostKbdFocus(this);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -558,7 +558,7 @@ void        EvTextBox::lostKbdFocusEvent(void)
 void        EvTextBox::touchEvent(EvTouchEvent *Touch)
 {
   if (mOnTouch != nullptr)
-    (*mOnTouch)(this, Touch);
+    mOnTouch(this, Touch);
 
   switch (Touch->event)
   {

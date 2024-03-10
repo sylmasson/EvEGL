@@ -16,13 +16,14 @@ class EvNeedle : public EvImage
 
 class EvSmeter : public EvPanel
 {
+  protected:
+    EvSmeter(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ);
+
   public:
     bool          SetValue(int32_t Value);
     void          SetOnTouch(void (*OnTouch)(EvSmeter *Sender, EvTouchEvent *Touch));
 
   protected:
-    EvSmeter(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ);
-
     bool          mLock;
     int16_t       mValue;
     float         mAngle;

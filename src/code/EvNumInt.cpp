@@ -93,7 +93,7 @@ bool        EvNumInt::SetValue(int32_t Value)
   TextLabel(str);
 
   if (mOnChange != nullptr)
-    (*mOnChange)(this, Value);
+    mOnChange(this, Value);
 
   return true;
 }
@@ -161,7 +161,7 @@ void        EvNumInt::touchEvent(EvTouchEvent *Touch)
   int16_t   relY = Touch->y;
 
   if (mOnTouch != nullptr)
-    (*mOnTouch)(this, Touch);
+    mOnTouch(this, Touch);
 
   switch (Touch->event)
   {

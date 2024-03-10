@@ -15,6 +15,9 @@ class EvPlayer : public EvPanel
       virtual void  drawEvent(void);
   };
 
+  protected:
+    EvPlayer(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ);
+
   public:
     bool          Open(const char *FileName, SDClass &Dev = SD);
     bool          IsRunning(void);
@@ -31,8 +34,6 @@ class EvPlayer : public EvPanel
     void          TouchInfo(EvTouchEvent *Touch);
 
   protected:
-    EvPlayer(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ);
-
     bool          mRun;
     bool          mLock;
     bool          mFullScreen;
@@ -44,10 +45,12 @@ class EvPlayer : public EvPanel
     uint16_t      mSmallWidth;
     uint16_t      mSmallHeight;
 
-    void          resize(void);
     virtual void  resizeEvent(void);
     virtual void  refreshEvent(void);
     virtual void  touchEvent(EvTouchEvent *Touch);
+
+  private:
+    void          resize(void);
 
   public:
     EvVideo       *Video;

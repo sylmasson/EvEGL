@@ -244,7 +244,7 @@ void        EvSlider::touchEvent(EvTouchEvent *Touch)
   value = mMin + ((value + 8) >> 4);
 
   if (mOnTouch != nullptr)
-    (*mOnTouch)(this, Touch);
+    mOnTouch(this, Touch);
 
   switch (Touch->event)
   {
@@ -307,7 +307,7 @@ bool        EvSlider::setValue(int32_t Value)
   Modified();
 
   if (mOnChange != nullptr)
-    (*mOnChange)(this, mValue);
+    mOnChange(this, mValue);
 
   return true;
 }

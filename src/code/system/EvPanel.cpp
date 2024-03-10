@@ -1,6 +1,8 @@
 
 #include    <EvGUI.h>
 
+//#define     VERBOSE
+
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
  * @brief      Create a new instance of a standard Panel.
@@ -43,13 +45,25 @@ EvPanel::~EvPanel(void)
   EvObj     *obj;
   Node      *node, *next;
 
+  #ifdef VERBOSE
+    char    str[32];
+
+    snprintf(str, sizeof(str) - 1, "~EvPanel: %p ", this);
+    Serial.print(str);
+    DisplayTagList();
+    Serial.println();
+  #endif
+
   for (node = mFirst; node != nullptr; node = next)
   {
     obj = node->obj;
     next = node->next;
 
     if (obj != nullptr)
+    {
+      obj->mOwner = nullptr;
       delete obj;
+    }
 
     delete node;
   }

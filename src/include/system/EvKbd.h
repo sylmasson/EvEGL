@@ -57,6 +57,9 @@ struct EvKeyboard
 
 class EvKbd : public EvSideBar
 {
+  protected:
+    EvKbd(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ);
+
   public:
     void          Open(void);
     void          Close(void);
@@ -66,8 +69,6 @@ class EvKbd : public EvSideBar
     void          SetOnTouch(void (*OnTouch)(EvKbd *Sender, EvTouchEvent *Touch));
 
   protected:
-    EvKbd(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ);
-
     uint8_t       mKey;
     uint8_t       mKeyId;
     uint8_t       mLayout;

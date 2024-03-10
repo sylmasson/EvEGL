@@ -217,7 +217,7 @@ void        EvDisplay::update(void)
     MaxDL = SizeDL;
 
   if (mOnUpdate)
-    (*mOnUpdate)(this);
+    mOnUpdate(this);
 
   SwapDL();
   mTimeUsed += micros() - usec;
@@ -297,7 +297,7 @@ void        EvDisplay::touchUpdate(EvTouchEvent *Touch, EvTouchPos TouchPos, uin
           Touch->event = TOUCH_DOUBLE;
 
           if (mOnTouch != nullptr)
-            (*mOnTouch)(Touch->owner, Touch);
+            mOnTouch(Touch->owner, Touch);
 
           if (Touch->event)
             Touch->owner->TouchUpdate(Touch);
@@ -384,7 +384,7 @@ void        EvDisplay::touchUpdate(EvTouchEvent *Touch, EvTouchPos TouchPos, uin
   if (Touch->event)
   {
     if (mOnTouch != nullptr)
-      (*mOnTouch)(Touch->owner, Touch);
+      mOnTouch(Touch->owner, Touch);
 
     if (Touch->event)
       Touch->owner->TouchUpdate(Touch);

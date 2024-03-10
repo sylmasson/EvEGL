@@ -20,12 +20,13 @@
 
 class EvLabel : public EvObj
 {
+  protected:
+    EvLabel(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ);
+
   public:
     void          SetOnTouch(void (*OnTouch)(EvLabel *Sender, EvTouchEvent *Touch));
 
   protected:
-    EvLabel(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ);
-
     bool          mTouchFlag;
 
     virtual void  drawEvent(void);

@@ -180,7 +180,7 @@ bool        EvSelector::SetValue(int16_t Value)
   setNewVal(-1);
 
   if (mOnChange != nullptr)
-    (*mOnChange)(this, mValue);
+    mOnChange(this, mValue);
 
   return true;
 }
@@ -397,7 +397,7 @@ void        EvSelector::touchEvent(EvTouchEvent *Touch)
   int16_t   value;
 
   if (mOnTouch != nullptr)
-    (*mOnTouch)(this, Touch);
+    mOnTouch(this, Touch);
 
   if (mWidth >= mHeight)
     value = (Touch->x * mCount) / mWidth;

@@ -222,7 +222,7 @@ void        EvTouchCal::touchEvent(EvTouchEvent *Touch)
 
         case CANCEL_BTN:
           if (mOnExit != nullptr)
-            (*mOnExit)(this, mTouchTag == SAVE_BTN);
+            mOnExit(this, mTouchTag == SAVE_BTN);
 
           Delete();
           break;

@@ -53,8 +53,11 @@ typedef struct
 
 class EvVideo : public EvImage
 {
+  protected:
+    EvVideo(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ);
+
   public:
-    ~EvVideo(void);
+    virtual       ~EvVideo(void);
 
     bool          Open(const char *FileName, SDClass &Dev = SD);
     bool          IsRunning(void);
@@ -68,10 +71,6 @@ class EvVideo : public EvImage
     void          SetOnLoadFrame(void (*OnLoadFrame)(EvVideo *Sender, uint32_t FrameNbr));
 
   protected:
-    EvVideo(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ);
-
-    virtual void  refreshEvent(void);
-
     uint8_t       mCtrl;
     uint8_t       mSpeed;
     uint8_t       mSkip;
@@ -82,6 +81,8 @@ class EvVideo : public EvImage
     uint8_t       mFrameSync;
     AVIINFO       mAviInfo;
     AVIFRAME      mFrame;
+
+    virtual void  refreshEvent(void);
 
   private:
     bool          loadFrame(void);

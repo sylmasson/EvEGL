@@ -314,7 +314,7 @@ void        EvStringList::SetOnChange(void (*OnChange)(EvObj *Sender, int32_t Co
 void        EvStringList::Modified(void)
 {
   if (mOnChange != nullptr)
-    (*mOnChange)(mSender, mCount);
+    mOnChange(mSender, mCount);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

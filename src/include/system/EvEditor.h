@@ -38,7 +38,7 @@ class EvEditor : public EvPanel
 {
   public:
     EvEditor(EvDisplay *Disp, const char *Tag);
-    ~EvEditor(void);
+    virtual       ~EvEditor(void);
 
     EvDot         *DotMove;
     EvDot         *DotReSize;
@@ -54,7 +54,7 @@ class EvProperty : public EvPanel
 {
   public:
     EvProperty(EvDisplay *Disp, const char *Tag);
-    ~EvProperty(void);
+    virtual       ~EvProperty(void);
 
     bool          Minimized;
 

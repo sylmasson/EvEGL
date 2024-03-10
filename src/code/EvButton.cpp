@@ -81,7 +81,7 @@ bool        EvButton::SetValue(int16_t Value)
   Modified();
 
   if (mOnChange != nullptr)
-    (*mOnChange)(this, mValue);
+    mOnChange(this, mValue);
 
   return true;
 }
@@ -183,7 +183,7 @@ void        EvButton::drawEvent(void)
 void        EvButton::touchEvent(EvTouchEvent *Touch)
 {
   if (mOnTouch != nullptr)
-    (*mOnTouch)(this, Touch);
+    mOnTouch(this, Touch);
 
   switch (Touch->event)
   {

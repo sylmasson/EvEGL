@@ -6,6 +6,9 @@
 
 class EvVuBar : public EvObj
 {
+  protected:
+    EvVuBar(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ);
+
   public:
     bool          SetValue(int16_t Value);
     void          SetPeakDetect(bool Enabled);
@@ -14,8 +17,6 @@ class EvVuBar : public EvObj
     bool          SetFormat(uint8_t Low, uint8_t Med, uint8_t High, uint8_t SpaceWidth = 4);
 
   protected:
-    EvVuBar(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ);
-
     int16_t       mValue;
     int16_t       mDotValue;
     int16_t       mPeakValue;

@@ -39,7 +39,7 @@ EvScrollBox::EvScrollBox(int16_t Left, int16_t Top, uint16_t Width, uint16_t Hei
   mScrollBarY = EvScrollBar::Create(0, 0, 20, Height, this, nullptr, VISIBLE_OBJ | FIXED_OBJ | SYSTEM_OBJ);
 
   if (mScrollBarX == nullptr || mScrollBarY == nullptr)
-    Abort();
+    abortCreate();
   else
   {
     mScrollBarX->SetScrollBarSync(mScrollBarY);

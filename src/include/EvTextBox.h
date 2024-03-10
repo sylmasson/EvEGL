@@ -6,6 +6,9 @@
 
 class EvTextBox : public EvPanel
 {
+  protected:
+    EvTextBox(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ);
+
   public:
     void          Unselect(void);
     void          SelectAll(void);
@@ -26,11 +29,8 @@ class EvTextBox : public EvPanel
     virtual size_t  WriteKey(uint8_t Key, uint8_t Layout, uint8_t ShiftKey, bool DoubleTouch);
     virtual size_t  write(uint8_t C);
     virtual size_t  write(const uint8_t *Buffer, size_t Count);
-//     virtual int     availableForWrite(void) { return 1; };
 
   protected:
-    EvTextBox(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ);
-
     void          selectWord(EvTouchEvent *Touch);
     void          moveToWord(EvTouchEvent *Touch);
     void          moveToChar(EvTouchEvent *Touch);

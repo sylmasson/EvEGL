@@ -430,7 +430,7 @@ void        EvImage::refreshEvent(void)
 void        EvImage::touchEvent(EvTouchEvent *Touch)
 {
   if (mOnTouch != nullptr)
-    (*mOnTouch)(this, Touch);
+    mOnTouch(this, Touch);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

@@ -56,7 +56,7 @@ void        EvTaskDMA::Update(void)
     if (mInProgress->OnEvent != nullptr)
     {
       mInProgress->Status = EvDMA::BEGIN;
-      (*mInProgress->OnEvent)(mInProgress);
+      mInProgress->OnEvent(mInProgress);
 
       if (mInProgress->Status == EvDMA::ABORT)
       {

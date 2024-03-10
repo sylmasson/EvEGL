@@ -6,11 +6,13 @@
 
 class EvTouchCal : public EvObj
 {
-  public:
+  protected:
     EvTouchCal(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ | SYSTEM_OBJ);
-    ~EvTouchCal(void);
 
-    void          SetOnExit(void (*mOnExit)(EvTouchCal *Sender, bool Save));
+  public:
+    virtual       ~EvTouchCal(void);
+
+    void          SetOnExit(void (*OnExit)(EvTouchCal *Sender, bool Save));
     void          SetText(const char *Text[]);
 
   protected:

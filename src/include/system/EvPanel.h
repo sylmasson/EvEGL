@@ -46,8 +46,11 @@ class EvPanel : public EvObj
     Node          *next;
   };
 
+  protected:
+    EvPanel(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ);
+
   public:
-    ~EvPanel(void);
+    virtual       ~EvPanel(void);
 
     EvObj         *AddObj(EvObj *Obj, const char *Tag = nullptr);
     EvObj         *RemoveObj(EvObj *Obj);
@@ -59,7 +62,6 @@ class EvPanel : public EvObj
   public:         // Public functions reserved for the system
     void          SetToFront(EvObj *Obj, bool AllOwner = true);
     virtual EvObj *Touching(EvTouchEvent *Touch);
-//    virtual bool  MustBeDraw(void);
     virtual void  SetDisplay(EvDisplay *Disp);
     virtual void  SetView(void);
     virtual void  Refresh(void);
@@ -68,8 +70,6 @@ class EvPanel : public EvObj
     int16_t       OffsetY();
 
   protected:
-    EvPanel(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ);
-
     int16_t       mOffsetX;
     int16_t       mOffsetY;
     Node          *mFirst;

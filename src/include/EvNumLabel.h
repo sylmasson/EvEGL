@@ -21,6 +21,9 @@
 
 class EvNumLabel : public EvLabel
 {
+  protected:
+    EvNumLabel(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ);
+
   public:
     int32_t       Value(void);
     float         ValueFloat(void);
@@ -29,8 +32,6 @@ class EvNumLabel : public EvLabel
     void          SetFormat(const char *Format);
 
   protected:
-    EvNumLabel(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ);
-
     union
     {
       int32_t     i;

@@ -21,8 +21,11 @@
 
 class EvImage : public EvObj
 {
+  protected:
+    EvImage(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag = nullptr, uint16_t State = VISIBLE_DIS_OBJ);
+
   public:
-    ~EvImage(void);
+    virtual       ~EvImage(void);
 
     bool          Unload(void);
     const EvBmp   *Load(const EvBmp *Bmp, uint32_t Options = 0);
@@ -39,8 +42,6 @@ class EvImage : public EvObj
     void          SetOnTouch(void (*OnTouch)(EvImage *Sender, EvTouchEvent *Touch));
 
   protected:
-    EvImage(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag = nullptr, uint16_t State = VISIBLE_DIS_OBJ);
-
     void          resize(void);
     void          drawSetup(void);
     virtual void  drawEvent(void);

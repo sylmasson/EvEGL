@@ -33,7 +33,7 @@ EvSpectrum     *EvSpectrum::Create(int16_t Left, int16_t Top, uint16_t Width, ui
 EvSpectrum::EvSpectrum(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) : EvObj(Left, Top, Width, Height, Disp, Tag, State)
 {
   if ((mData = (uint8_t *)calloc(mDataSize = Width / 2, sizeof(*mData))) == nullptr)
-    Abort();
+    abortCreate();
   else
   {
     SetColor(LINE_COLOR, FILL_COLOR);
@@ -173,7 +173,7 @@ void        EvSpectrum::drawEvent(void)
 void        EvSpectrum::touchEvent(EvTouchEvent *Touch)
 {
   if (mOnTouch != nullptr)
-    (*mOnTouch)(this, Touch);
+    mOnTouch(this, Touch);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

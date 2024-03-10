@@ -48,7 +48,7 @@ EvPlayer::EvPlayer(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, E
       !(FullButton = (Button *)TryCreate(new Button(60, SIDEBAR_HEIGHT, Disp, "FullButton"), BottomBar)) ||
       !(SpeedButton = (Button *)TryCreate(new Button(60, SIDEBAR_HEIGHT, Disp, "SpeedButton"), BottomBar)))
   {
-    Abort();
+    abortCreate();
     return;
   }
 
@@ -256,31 +256,6 @@ void        EvPlayer::TouchInfo(EvTouchEvent *Touch)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvPlayer::resize(void)
-{
-  Video->ReSize(mWidth, mHeight);
-  Video->OwnerAlign(CENTER);
-
-  TopBar->ReSize(mWidth, SIDEBAR_HEIGHT);
-  TopBar->SetPosition();
-  TimeLapse->ReSize(mWidth, SIDEBAR_HEIGHT);
-  TimeLapse->OwnerAlign(CENTER);
-
-  BottomBar->ReSize(mWidth, SIDEBAR_HEIGHT);
-  BottomBar->SetPosition();
-  TimeLine->ReSize(mWidth - SpeedButton->Width() - FullButton->Width(), SIDEBAR_HEIGHT - 16);
-  TimeLine->OwnerAlign(CENTER, 0, 5);
-
-  PlayButton->OwnerAlign(CENTER);
-  FullButton->OwnerAlign(RIGHT_CENTER);
-  SpeedButton->OwnerAlign(LEFT_CENTER);
-
-  FullButton->Modified();
-  mFullScreen = false;
-}
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
 void        EvPlayer::resizeEvent(void)
 {
   if (!mLock)
@@ -429,6 +404,31 @@ void        EvPlayer::Button::drawEvent(void)
         Disp->Vertex2i(x +  0, y +  0);
       }
   }
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+void        EvPlayer::resize(void)
+{
+  Video->ReSize(mWidth, mHeight);
+  Video->OwnerAlign(CENTER);
+
+  TopBar->ReSize(mWidth, SIDEBAR_HEIGHT);
+  TopBar->SetPosition();
+  TimeLapse->ReSize(mWidth, SIDEBAR_HEIGHT);
+  TimeLapse->OwnerAlign(CENTER);
+
+  BottomBar->ReSize(mWidth, SIDEBAR_HEIGHT);
+  BottomBar->SetPosition();
+  TimeLine->ReSize(mWidth - SpeedButton->Width() - FullButton->Width(), SIDEBAR_HEIGHT - 16);
+  TimeLine->OwnerAlign(CENTER, 0, 5);
+
+  PlayButton->OwnerAlign(CENTER);
+  FullButton->OwnerAlign(RIGHT_CENTER);
+  SpeedButton->OwnerAlign(LEFT_CENTER);
+
+  FullButton->Modified();
+  mFullScreen = false;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

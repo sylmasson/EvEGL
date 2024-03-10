@@ -6,13 +6,14 @@
 
 class EvTextCursor : public EvObj
 {
+  protected:
+    EvTextCursor(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ);
+
   public:
     uint8_t       Style(void);
     uint8_t       Style(uint8_t CursorStyle);
 
   protected:
-    EvTextCursor(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ);
-
     uint8_t       mCursorState;
     uint16_t      mCursorTimer;
 

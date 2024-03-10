@@ -394,7 +394,7 @@ bool        EvVideo::loadFrame(void)
       if (Load(bmp, OPT_MEDIAFIFO) != nullptr)
       {
         if (mOnLoadFrame != nullptr)
-          (*mOnLoadFrame)(this, mFrame.Nbr);
+          mOnLoadFrame(this, mFrame.Nbr);
 
         return true;
       }

@@ -17,6 +17,9 @@
 
 class EvButton : public EvObj
 {
+  protected:
+    EvButton(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ);
+
   public:
     int16_t       Value(void);
     bool          SetValue(int16_t Value);
@@ -25,8 +28,6 @@ class EvButton : public EvObj
     void          SetOnChange(void (*OnChange)(EvButton *Sender, int32_t Value));
 
   protected:
-    EvButton(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ);
-
     int16_t       mValue;
     uint16_t      mColorUp;
     uint16_t      mColorDown;

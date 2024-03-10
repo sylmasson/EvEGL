@@ -50,6 +50,12 @@ EvObj::~EvObj(void)
     Serial.println();
   #endif
 
+  if (IsOnKbdFocus())
+    LostKbdFocus();
+
+  if (mOwner != nullptr)
+    mOwner->RemoveObj(this);
+
   SetEditObjDestroyed(this);
 
   if (mCache != nullptr)
@@ -199,16 +205,10 @@ void        EvObj::Disable(void)
  *
  * @brief      Delete the Object.
  * 
- * Before deleting Object, it will be removed from its EvPanel owner if there is one.
- * In this case the owner is set as modified.
- * 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 void        EvObj::Delete(void)
 {
-  if (mOwner != nullptr)
-    mOwner->RemoveObj(this);
-
   delete this;
 }
 
@@ -237,19 +237,6 @@ void        EvObj::Modified(void)
 void        EvObj::ModifiedText(void)
 {
   mStatus |= (MODIFIED_OBJ | MODIF_TEXT_OBJ);
-}
-
-/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- *
- * @brief      Sets the abort flag of the Object.
- * 
- * Notify that the creation of the Object is fail.
- * 
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-void        EvObj::Abort(void)
-{
-  mStatus |= ABORT_OBJ;
 }
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -1584,6 +1571,13 @@ void        EvObj::Draw(void)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+void        EvObj::abortCreate(void)
+{
+  mStatus |= ABORT_OBJ;
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
 EvObj       *EvObj::TryCreate(EvObj *Obj, EvPanel *Dest)
 {
   if (Dest == nullptr)
@@ -1593,7 +1587,7 @@ EvObj       *EvObj::TryCreate(EvObj *Obj, EvPanel *Dest)
     #ifdef VERBOSE
       char    str[80];
 
-      snprintf(str, sizeof(str) - 1, "TryCreate: %p \"%s\"", Obj, Tag);
+      snprintf(str, sizeof(str) - 1, "TryCreate: %p \"%s\"", Obj, Obj->Tag);
       Serial.print(str);
     #endif
 
@@ -1614,3 +1608,5 @@ EvObj       *EvObj::TryCreate(EvObj *Obj, EvPanel *Dest)
 
   return nullptr;
 }
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

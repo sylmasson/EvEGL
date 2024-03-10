@@ -58,7 +58,7 @@ void        EvLabel::drawEvent(void)
 void        EvLabel::touchEvent(EvTouchEvent *Touch)
 {
   if (mOnTouch != nullptr)
-    (*mOnTouch)(this, Touch);
+    mOnTouch(this, Touch);
 
   switch (Touch->event)
   {

@@ -96,7 +96,7 @@ bool        EvToggle::SetValue(int16_t Value)
   Modified();
 
   if (mOnChange != nullptr)
-    (*mOnChange)(this, mValue);
+    mOnChange(this, mValue);
 
   return true;
 }
@@ -193,7 +193,7 @@ void        EvToggle::touchEvent(EvTouchEvent *Touch)
   int16_t   pos, toogleSize;
 
   if (mOnTouch != nullptr)
-    (*mOnTouch)(this, Touch);
+    mOnTouch(this, Touch);
 
   if (mWidth >= mHeight)
   {

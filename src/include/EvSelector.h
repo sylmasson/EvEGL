@@ -26,8 +26,11 @@
 
 class EvSelector : public EvObj
 {
+  protected:
+    EvSelector(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ);
+
   public:
-    ~EvSelector(void);
+    virtual       ~EvSelector(void);
 
     int16_t       Value(void);
     bool          SetValue(int16_t Value);
@@ -41,8 +44,6 @@ class EvSelector : public EvObj
     virtual void  SetDisplay(EvDisplay *Disp);
 
   protected:
-    EvSelector(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ);
-
     int16_t       mValue;
     uint16_t      mCount;
     int16_t       mNewVal;
@@ -93,14 +94,14 @@ class EvSelector : public EvObj
 
 class EvTab : public EvSelector
 {
+  protected:
+    EvTab(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ);
+
   public:
     void          SetTabLeftTop(void);
     void          SetTabRightBottom(void);
     void          SetOnTouch(void (*OnTouch)(EvTab *Sender, EvTouchEvent *Touch));
     void          SetOnChange(void (*OnChange)(EvTab *Sender, int32_t Value));
-
-  protected:
-    EvTab(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ);
 
   public:
     static EvTab  *Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ | FILTER_DIS_OBJ);

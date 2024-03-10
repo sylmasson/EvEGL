@@ -6,6 +6,9 @@
 
 class EvSideBar : public EvPanel
 {
+  protected:
+    EvSideBar(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag = nullptr, uint16_t State = VISIBLE_DIS_OBJ);
+
   public:
     void          Open(void);
     void          Close(void);
@@ -16,8 +19,6 @@ class EvSideBar : public EvPanel
     void          Setup(int16_t PadX, int16_t PadY, uint8_t Type, bool OpenState = false, uint16_t Period = 220);
 
   protected:
-    EvSideBar(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag = nullptr, uint16_t State = VISIBLE_DIS_OBJ);
-
     bool          mOpen;
     uint8_t       mType;
     int16_t       mPadX;

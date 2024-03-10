@@ -16,7 +16,7 @@ EvSmeter::EvSmeter(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, E
   mNeedle = (EvNeedle *)TryCreate(new EvNeedle(0, 0, 0, 0, Disp, "SmeterNeedle"), this);
 
   if (!mBG || !mNeedle || !mBG->Load(&sSmeter, OPT_MEDIAFIFO) || !mNeedle->Load(&sSmeterNeedle))
-    Abort();
+    abortCreate();
   else
   {
     mValue = 0;
@@ -72,7 +72,7 @@ void        EvSmeter::resizeEvent(void)
 void        EvSmeter::touchEvent(EvTouchEvent *Touch)
 {
   if (mOnTouch != nullptr)
-    (*mOnTouch)(this, Touch);
+    mOnTouch(this, Touch);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

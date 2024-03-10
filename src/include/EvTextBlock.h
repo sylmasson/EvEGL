@@ -12,6 +12,9 @@ class EvTextBlock : public EvScrollBox
     uint16_t      to;
   };
 
+  protected:
+    EvTextBlock(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ);
+
   public:
     bool          WrapText(void);
     bool          WrapText(bool Wrap);
@@ -27,11 +30,8 @@ class EvTextBlock : public EvScrollBox
 
     virtual size_t  write(uint8_t C);
     virtual size_t  write(const uint8_t *Buffer, size_t Count);
-//    virtual int     availableForWrite(void) { return 1; };
 
   protected:
-    EvTextBlock(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ);
-
     const int8_t  mMinLineHeight = 5;
 
     bool          mWrapText;

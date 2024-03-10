@@ -23,7 +23,7 @@ EvMalloc::EvMalloc(void)
   }
 
   BufferPNG = Malloc(42 * 1024, "PNG decoding process buffer");   // Allocate at 0xF5800
-  BufferDMA = Malloc(64 * 1024, "DMA buffer used by MEDIAFIFO");  // Allocate at 0xF0000
+  BufferDMA = Malloc(64 * 1024, "DMA buffer used by MEDIAFIFO");  // Allocate at 0xE5800
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

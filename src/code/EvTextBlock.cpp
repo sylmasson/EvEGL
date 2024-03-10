@@ -201,7 +201,7 @@ void        EvTextBlock::refreshEvent(void)
 void        EvTextBlock::touchEvent(EvTouchEvent *Touch)
 {
   if (mOnTouch != nullptr)
-    (*mOnTouch)(this, Touch);
+    mOnTouch(this, Touch);
 
   EvScrollBox::touchEvent(Touch);
 }
