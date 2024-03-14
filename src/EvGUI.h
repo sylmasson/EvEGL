@@ -170,6 +170,8 @@ class       EvVuBar;
 
 #include    <SD.h>
 #include    <Arduino.h>
+
+#include    <include/system/EvSerial.h>
 #include    <include/system/EvEVE.h>
 #include  	<include/system/EvDMA.h>
 #include    <include/system/EvSysFont.h>
@@ -183,6 +185,7 @@ class       EvVuBar;
 #include    <include/system/EvScrollBox.h>
 #include    <include/system/EvTouchCal.h>
 #include    <include/system/EvKbd.h>
+#include    <include/system/EvShell.h>
 
 #include    <include/EvLabel.h>
 #include    <include/EvNumLabel.h>
@@ -214,8 +217,6 @@ extern const char *CloseEditor(void);
 extern void       EditorToFront(void);
 extern void       SetEditObj(EvObj *Obj);
 extern void       SetEditObjDestroyed(EvObj *Obj);
-extern void       ShellInput(const char C);
-extern void       ShellInput(const char *Str);
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 

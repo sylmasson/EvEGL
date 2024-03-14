@@ -51,7 +51,7 @@ EvEVE::EvEVE(const uint32_t *Config, uint8_t CS, uint8_t RST, SPIClass *Spi, uin
   ChipID = 0x800 + rd8(0xC0001);
   CapacitiveTouchEngine = !(rd16(REG_TOUCH_CONFIG) & 0x8000);
   snprintf(str, sizeof(str), "ChipID = %cT%03X", ChipID < 0x815 ? 'F' : 'B', ChipID);
-  Serial.println(str);
+  EvOut->println(str);
 
   while ((reg = *Config++) != 0)
     wr32(reg, *Config++);
@@ -158,7 +158,7 @@ const EvMem *EvEVE::LoadBmp(const EvBmp *Bmp, uint32_t Options)
 
   if (Bmp->Layout > L2 || ((Options & OPT_FLASH) != 0 && ChipID < 0x815))
   {
-    Serial.println("LoadBmp: Options not supported");
+    EvOut->println("LoadBmp: Options not supported");
     return nullptr;
   }
 
@@ -664,7 +664,7 @@ void        EvEVE::Return(void)
 void        EvEVE::RestoreContext(void)
 {
   if (--mStackContextCount < 0)
-    Serial.println("EvEVE RestoreContext Error: 4-Level Context Stack Underflow");
+    EvOut->println("EvEVE RestoreContext Error: 4-Level Context Stack Underflow");
 
   if ((uint16_t)mStackContextCount <= 3)
     mActiveContext = mStackContext[mStackContextCount];
@@ -680,7 +680,7 @@ void        EvEVE::SaveContext(void)
     mStackContext[mStackContextCount] = mActiveContext;
 
   if (++mStackContextCount > 3)
-    Serial.println("EvEVE SaveContext Error: 4-Level Context Stack Overflow");
+    EvOut->println("EvEVE SaveContext Error: 4-Level Context Stack Overflow");
 
   wrCmdBufDL(EV_SAVE_CONTEXT());
 }
@@ -856,7 +856,7 @@ void        EvEVE::CmdGradient(int16_t X0, int16_t Y0, uint32_t Color0, int16_t 
 void        EvEVE::CmdGradientA(int16_t X0, int16_t Y0, uint32_t Color0, int16_t X1, int16_t Y1, uint32_t Color1)
 {
   if (ChipID < 0x815)
-    Serial.println("CMD_GRADIENTA not supported");
+    EvOut->println("CMD_GRADIENTA not supported");
   else
   {
     wrCmdBuf32(CMD_GRADIENTA);
@@ -883,7 +883,7 @@ void        EvEVE::CmdInflate(uint32_t Addr)
 void        EvEVE::CmdInflate2(uint32_t Addr, uint32_t Options)
 {
   if (ChipID < 0x815)
-    Serial.println("CMD_INFLATE2 not supported");
+    EvOut->println("CMD_INFLATE2 not supported");
   else
   {
     wrCmdBuf32(CMD_INFLATE2);
@@ -1058,7 +1058,7 @@ void        EvEVE::CmdSwap(void)
 void        EvEVE::CmdSync(void)
 {
   if (ChipID < 0x817)
-    Serial.println("CMD_SYNC not supported");
+    EvOut->println("CMD_SYNC not supported");
   else
     wrCmdBuf32(CMD_SYNC);
 }

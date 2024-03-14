@@ -1,3 +1,15 @@
+commit 104e9d80bc903774c5146dd78fa89dee03262b5e
+Author: Sylvain Masson <sylvainmasson@Sylvains-Mac-mini.local>
+Date:   Sun Mar 10 14:13:45 2024 -0400
+
+    EvPanel, EvObj: Small change to support deleting visual objects directly by the C++ delete keyword
+    
+    Global: Change all function calls using a function pointer by FunctionName(...) vs (*FunctionName)(...)
+    
+    Global: Replace public function EvObj::Abort() by protected EvObj::abortCreate() function
+    
+    Global: Move the object constructor declaration to the beginning of its class definition
+
 commit 5170ad50b20c6800529a740166dfc77dfcccbe2c
 Author: Sylvain Masson <sylvainmasson@Sylvains-Mac-mini.local>
 Date:   Thu Mar 7 18:43:07 2024 -0500

@@ -60,7 +60,7 @@ void        EvTaskDMA::Update(void)
 
       if (mInProgress->Status == EvDMA::ABORT)
       {
-        Serial.println("EvDMA ABORT");
+        EvOut->println("EvDMA ABORT");
         delete mInProgress;
         mInProgress = nullptr;
       }
@@ -76,7 +76,7 @@ void        EvTaskDMA::Update(void)
   { // transfer to MEDIAFIFO
     if ((free = mInProgress->Disp->MediaFifoFree(dst)) == 0)
     {
-      Serial.println("Mediafifo FULL");
+      EvOut->println("Mediafifo FULL");
       return;
     }
 
@@ -86,7 +86,7 @@ void        EvTaskDMA::Update(void)
 
   mCnt = (cnt > 4096) ? 4096 : cnt;
   mInProgress->Status = EvDMA::LOADING;
-//  Serial.printf("dst=%08x src=%08x cnt=%u  %08x\n", dst, src, mCnt, mInProgress->Disp->rd32(REG_MEDIAFIFO_READ));
+//  EvOut->printf("dst=%08x src=%08x cnt=%u  %08x\n", dst, src, mCnt, mInProgress->Disp->rd32(REG_MEDIAFIFO_READ));
   mInProgress->Disp->wrDataDMA(dst, src, mCnt, mEvent);
 }
 

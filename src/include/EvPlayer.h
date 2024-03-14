@@ -20,7 +20,6 @@ class EvPlayer : public EvPanel
 
   public:
     bool          Open(const char *FileName, SDClass &Dev = SD);
-    bool          IsRunning(void);
     void          Close(void);
     bool          Play(void);
     bool          Stop(void);
@@ -31,11 +30,16 @@ class EvPlayer : public EvPanel
     void          ScreenSize(void);
     void          FullScreen(void);
     void          SmallScreen(void);
+    bool          IsFullScreen(void);
+    bool          IsRunning(void);
+    bool          IsMovable(void);
+    void          SetMovable(bool Value);
     void          TouchInfo(EvTouchEvent *Touch);
 
   protected:
     bool          mRun;
     bool          mLock;
+    bool          mMovable;
     bool          mFullScreen;
     uint8_t       mSpeedIndex;
     uint8_t       mTouchCount;
@@ -54,10 +58,10 @@ class EvPlayer : public EvPanel
 
   public:
     EvVideo       *Video;
-    EvLabel       *TimeLapse;
-    EvSlider      *TimeLine;
     EvSideBar     *TopBar;
     EvSideBar     *BottomBar;
+    EvSlider      *TimeLine;
+    Button        *TimeLapse;
     Button        *PlayButton;
     Button        *FullButton;
     Button        *SpeedButton;

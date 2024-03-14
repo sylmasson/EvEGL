@@ -45,9 +45,9 @@ EvObj::~EvObj(void)
     char    str[32];
 
     snprintf(str, sizeof(str) - 1, "~EvObj: %p ", this);
-    Serial.print(str);
+    EvOut->print(str);
     DisplayTagList();
-    Serial.println();
+    EvOut->println();
   #endif
 
   if (IsOnKbdFocus())
@@ -671,9 +671,9 @@ void        EvObj::ToFront(bool AllOwner)
 
 void        EvObj::SetKbdFocus(uint8_t LayoutStart)
 {
-  if (Disp->Kbd != nullptr || (Disp->Kbd = EvKbd::Create(0, 0, 0, 0, Disp, "KbdSystem", SYSTEM_OBJ)) != nullptr)
+  if (Disp->mKbd != nullptr || (Disp->mKbd = EvKbd::Create(0, 0, 0, 0, Disp, "KbdSystem", SYSTEM_OBJ)) != nullptr)
   {
-    EvKbd   *kbd = Disp->Kbd;
+    EvKbd   *kbd = Disp->mKbd;
 
     if (kbd->FocusObj != this)
     {
@@ -698,7 +698,7 @@ void        EvObj::SetKbdFocus(uint8_t LayoutStart)
 
 void        EvObj::LostKbdFocus(void)
 {
-  EvKbd     *kbd = Disp->Kbd;
+  EvKbd     *kbd = Disp->mKbd;
 
   if (kbd != nullptr && kbd->FocusObj != nullptr)
   {
@@ -720,7 +720,7 @@ void        EvObj::LostKbdFocus(void)
 
 EvObj       *EvObj::GetKbdFocus(void)
 {
-  return (Disp->Kbd == nullptr) ? nullptr : Disp->Kbd->FocusObj;
+  return (Disp->mKbd == nullptr) ? nullptr : Disp->mKbd->FocusObj;
 }
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -1284,7 +1284,7 @@ void        EvObj::EndFunction(uint16_t Label, uint16_t CmdSize)
 {
   if (!(mStatus & FUNCT_USED_OBJ))
   {
-    Serial.print("\nEndFunction() Error: BeginFunction() was not called in ");
+    EvOut->print("\nEndFunction() Error: BeginFunction() was not called in ");
     DisplayTagList();
   }
   else
@@ -1300,7 +1300,7 @@ void        EvObj::EndFunction(uint16_t Label, uint16_t CmdSize)
       char    str[80];
 
       snprintf(str, sizeof(str) - 1, "\nEndFunction() Error: CmdSize Expected=%u, Generated=%u in ", CmdSize, size);
-      Serial.print(str);
+      EvOut->print(str);
       DisplayTagList();
     }
   }
@@ -1318,7 +1318,7 @@ void        EvObj::DisplayTagList(void)
   if ((obj->Tag) != nullptr)
   {
     snprintf(str, sizeof(str) - 1, "\"%s\"", obj->Tag);
-    Serial.print(str);
+    EvOut->print(str);
 
     for (tagCount = 0;  tagCount < 8 && (obj = obj->mOwner) != nullptr; tagCount++)
       tag[tagCount] = obj->Tag;
@@ -1326,12 +1326,12 @@ void        EvObj::DisplayTagList(void)
     if (tagCount-- > 0)
     {
       snprintf(str, sizeof(str) - 1, " from [%s]", tag[tagCount] == nullptr ? "nullptr" : tag[tagCount]);
-      Serial.print(str);
+      EvOut->print(str);
 
       while (tagCount-- > 0)
       {
         snprintf(str, sizeof(str) - 1, "->[%s]", tag[tagCount] == nullptr ? "nullptr" : tag[tagCount]);
-        Serial.print(str);
+        EvOut->print(str);
       }
     }
   }
@@ -1378,9 +1378,9 @@ void        EvObj::TouchUpdate(EvTouchEvent *Touch)
       char    str[80];
 
       snprintf(str, sizeof(str) - 1, "\n[%s] (%5lums) %3d  TP%u  TOUCH_%-7s", Disp->Tag, Touch->timer, Touch->tag, Touch->id, nameEvent[Touch->event-1]);
-      Serial.print(str);
+      EvOut->print(str);
       snprintf(str, sizeof(str) - 1, "xy(%3d,%3d)  abs(%3u,%4u)  move(%3d,%3d)  ", Touch->x, Touch->y, Touch->abs.x, Touch->abs.y, Touch->move.x, Touch->move.y);
-      Serial.print(str);
+      EvOut->print(str);
       DisplayTagList();
     }
 
@@ -1562,7 +1562,7 @@ void        EvObj::Draw(void)
         char    str[80];
 
         snprintf(str, sizeof(str) - 1, "\n[%s] Modified object (%3u bytes) ", Disp->Tag, sizeDL);
-        Serial.print(str);
+        EvOut->print(str);
         DisplayTagList();
       }
     }
@@ -1581,26 +1581,26 @@ void        EvObj::abortCreate(void)
 EvObj       *EvObj::TryCreate(EvObj *Obj, EvPanel *Dest)
 {
   if (Dest == nullptr)
-    Serial.println("TryCreate: Dest is nullptr");
+    EvOut->println("TryCreate: Dest is nullptr");
   else if (Obj != nullptr)
   {
     #ifdef VERBOSE
       char    str[80];
 
       snprintf(str, sizeof(str) - 1, "TryCreate: %p \"%s\"", Obj, Obj->Tag);
-      Serial.print(str);
+      EvOut->print(str);
     #endif
 
     if (!(Obj->mStatus & ABORT_OBJ) && Dest->AddObj(Obj) != nullptr)
     {
       #ifdef VERBOSE
-        Serial.println(" Ok");
+        EvOut->println(" Ok");
       #endif
       return Obj;
     }
 
     #ifdef VERBOSE
-      Serial.println(" Abort");
+      EvOut->println(" Abort");
     #endif
 
     delete Obj;

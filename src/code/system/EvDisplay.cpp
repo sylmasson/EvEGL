@@ -6,8 +6,8 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 uint16_t    EvDisplay::sDispCount = 0;
-uint32_t    EvDisplay::sFrameNumber = 0;
 uint16_t    EvDisplay::sTraceFlags = 0;
+uint32_t    EvDisplay::sFrameNumber = 0;
 uint32_t    EvDisplay::sSecondTimer = 0;
 uint32_t    EvDisplay::sUpdateTimer = 0;
 EvDisplay   *EvDisplay::sDispList[DISP_MAX];
@@ -19,23 +19,23 @@ EvEVE(Config, CS, RST, Spi, Baudrate), EvPanel(0, 0, Width, Height, this, Tag, V
 {
   if (sDispCount >= 3)
   {
-    Serial.println("Error: Too many instances of the EvDisplay class");
+    EvOut->println("Error: Too many instances of the EvDisplay class");
     exit(0);
   }
 
   #if defined(ESP32)
     if ((mMutex = xSemaphoreCreateRecursiveMutex()) == nullptr)
     {
-      Serial.println("Error: Cannot create mutex");
+      EvOut->println("Error: Cannot create mutex");
       exit(0);
     }
   #endif
 
   sDispList[sDispCount++] = this;
-  Kbd = nullptr;
   memset(&mTouch, 0, sizeof(mTouch));
+  mKbd = nullptr;
   mTimeUsed = 0;
-  MaxDL = 0;
+  mMaxDL = 0;
 
 #ifdef DEBUG
   pinMode(28, OUTPUT);   // debug Disp1 update
@@ -89,14 +89,21 @@ bool        EvDisplay::TryLock(void)
 
 void        EvDisplay::KbdDelete(void)
 {
-  if (Kbd != nullptr)
+  if (mKbd != nullptr)
   {
-    if (Kbd->FocusObj != nullptr)
-      Kbd->FocusObj->LostKbdFocus();
+    if (mKbd->FocusObj != nullptr)
+      mKbd->FocusObj->LostKbdFocus();
 
-    Kbd->Delete();
-    Kbd = nullptr;
+    mKbd->Delete();
+    mKbd = nullptr;
   }
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+uint32_t    EvDisplay::FrameNumber(void)
+{
+  return sFrameNumber;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -115,8 +122,8 @@ void        EvDisplay::Rotate(uint8_t Orientation)
   else
     ReSize(w, h);
 
-  if (Kbd != nullptr)
-    Kbd->SetKeyboard((mOrientation & 2) ? 1 : 0, Kbd->IsOpen());
+  if (mKbd != nullptr)
+    mKbd->SetKeyboard((mOrientation & 2) ? 1 : 0, mKbd->IsOpen());
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -152,16 +159,16 @@ bool        EvDisplay::Update(void)
         float   timeUsed = disp->mTimeUsed / 1000.0;
 
         snprintf(str, sizeof(str) - 1, "\n[%s] %u FPS", disp->Tag, disp->mFrameCount);
-        Serial.print(str);
+        EvOut->print(str);
         snprintf(str, sizeof(str) - 1, " using %.2f msec/frame (%4.1f%%)", timeUsed / disp->mFrameCount, timeUsed / 10);
-        Serial.print(str);
-        snprintf(str, sizeof(str) - 1, " with %4u bytes of DL (%4.1f%%)", disp->MaxDL, (disp->MaxDL * 100.0) / 8192.0);
-        Serial.print(str);
+        EvOut->print(str);
+        snprintf(str, sizeof(str) - 1, " with %4u bytes of DL (%4.1f%%)", disp->mMaxDL, (disp->mMaxDL * 100.0) / 8192.0);
+        EvOut->print(str);
       }
 
       disp->mFrameCount = 0;
       disp->mTimeUsed = 0;
-      disp->MaxDL = 0;
+      disp->mMaxDL = 0;
     }
 
     sSecondTimer += 1000000L;
@@ -173,7 +180,7 @@ bool        EvDisplay::Update(void)
   for (i = 0; i < sDispCount; i++)
     if (!sDispList[i]->wrCmdBufEmpty())
     {
-//      Serial.println("Delayed by 1ms");
+//      EvOut->println("Delayed by 1ms");
       sUpdateTimer += 1000;
       return false;
     }
@@ -207,14 +214,14 @@ void        EvDisplay::update(void)
   touchUpdate();
   Refresh();
 
-  if (Kbd)
-    Kbd->ToFront();
+  if (mKbd)
+    mKbd->ToFront();
 
   EditorToFront();
   dispUpdate();
 
-  if ((SizeDL = ReadDL()) > MaxDL)
-    MaxDL = SizeDL;
+  if ((mSizeDL = ReadDL()) > mMaxDL)
+    mMaxDL = mSizeDL;
 
   if (mOnUpdate)
     mOnUpdate(this);
@@ -390,3 +397,5 @@ void        EvDisplay::touchUpdate(EvTouchEvent *Touch, EvTouchPos TouchPos, uin
       Touch->owner->TouchUpdate(Touch);
   }
 }
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

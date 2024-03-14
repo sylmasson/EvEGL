@@ -113,7 +113,7 @@ const EvBmp *EvImage::Load(const char *Filename, SDClass &Dev, uint32_t Options)
   if (!Dev.mediaPresent() || !(file = Dev.open(Filename)))
   {
     #ifdef  VERBOSE
-      Serial.printf("\nDevice or file %s not found\n", Filename);
+      EvOut->printf("\nDevice or file %s not found\n", Filename);
     #endif
     return nullptr;
   }
@@ -127,16 +127,16 @@ const EvBmp *EvImage::Load(const char *Filename, SDClass &Dev, uint32_t Options)
       file.close();
 
       #ifdef  VERBOSE
-        Serial.printf("\nReading file %s in %lu msec\n", Filename, millis() - msec);
+        EvOut->printf("\nReading file %s in %lu msec\n", Filename, millis() - msec);
       #endif
 
       if (IsValidJPEG(data, fileSize, bmp, Filename) || IsValidPNG(data, fileSize, bmp, Filename))
       {
         #ifdef  VERBOSE
-          Serial.printf("Width = %u Height = %u\n", bmp->Width, bmp->Height);
-          Serial.printf("Layout = %u PalSize = %u\n", bmp->Layout, bmp->PalSize);
-          Serial.printf("DataSize = %u BmpSize = %u\n", bmp->DataSize, bmp->BmpSize);
-          Serial.printf("%s is valid image format\n", bmp->Tag);
+          EvOut->printf("Width = %u Height = %u\n", bmp->Width, bmp->Height);
+          EvOut->printf("Layout = %u PalSize = %u\n", bmp->Layout, bmp->PalSize);
+          EvOut->printf("DataSize = %u BmpSize = %u\n", bmp->DataSize, bmp->BmpSize);
+          EvOut->printf("%s is valid image format\n", bmp->Tag);
         #endif
 
         bmp->Format |= BMP_MALLOC;
@@ -147,7 +147,7 @@ const EvBmp *EvImage::Load(const char *Filename, SDClass &Dev, uint32_t Options)
       else
       {
         #ifdef  VERBOSE
-          Serial.printf("%s is not valid image format\n", Filename);
+          EvOut->printf("%s is not valid image format\n", Filename);
         #endif
       }
 
@@ -417,8 +417,8 @@ void        EvImage::refreshEvent(void)
 
 //  --> mCoeff[2] and mCoeff[5] valid only when mScaleX equal mScaleY
 
-//  Serial.printf("coeffC = %d - ((%d + %.3f) * %.3f) - ((%d + %.3f) * %.3f) = %.3f\n", mPivotX, mPivotX, offsetX, mCosA, mPivotY, offsetY, mSinA, (float)(mCoeff[2]) / 65536.0);
-//  Serial.printf("coeffF = %d - ((%d + %.3f) * %.3f) - ((%d + %.3f) * %.3f) = %.3f\n", mPivotY, mPivotX, offsetX, -mSinA, mPivotY, offsetY, mCosA, (float)(mCoeff[5]) / 65536.0);
+//  EvOut->printf("coeffC = %d - ((%d + %.3f) * %.3f) - ((%d + %.3f) * %.3f) = %.3f\n", mPivotX, mPivotX, offsetX, mCosA, mPivotY, offsetY, mSinA, (float)(mCoeff[2]) / 65536.0);
+//  EvOut->printf("coeffF = %d - ((%d + %.3f) * %.3f) - ((%d + %.3f) * %.3f) = %.3f\n", mPivotY, mPivotX, offsetX, -mSinA, mPivotY, offsetY, mCosA, (float)(mCoeff[5]) / 65536.0);
 
     mRefreshCoeff = false;
     Modified();
@@ -492,7 +492,7 @@ bool        IsValidJPEG(const uint8_t *Data, uint32_t DataSize, EvBmp *Bmp, cons
   if (Data[0] == 0xFF && Data[1] == 0xD8) // Check SOI
   {
     #ifdef  VERBOSE
-      Serial.print("JPEG file signature found");
+      EvOut->print("JPEG file signature found");
     #endif
 
     for (i = total = 2; Data[i++] == 0xFF && i < DataSize; i += length)
@@ -501,7 +501,7 @@ bool        IsValidJPEG(const uint8_t *Data, uint32_t DataSize, EvBmp *Bmp, cons
       marker = Data[i++];
 
       #ifdef  VERBOSE
-        Serial.printf("\nMarker FF %02X", marker);
+        EvOut->printf("\nMarker FF %02X", marker);
       #endif
 
       while (marker == 0xDA && i < DataSize)  // can have several SOS
@@ -514,7 +514,7 @@ bool        IsValidJPEG(const uint8_t *Data, uint32_t DataSize, EvBmp *Bmp, cons
         total += length;
 
         #ifdef  VERBOSE
-          Serial.printf(" %u bytes\nMarker FF %02X", length, marker);
+          EvOut->printf(" %u bytes\nMarker FF %02X", length, marker);
         #endif
       }
 
@@ -537,7 +537,7 @@ bool        IsValidJPEG(const uint8_t *Data, uint32_t DataSize, EvBmp *Bmp, cons
         }
 
         #ifdef  VERBOSE
-          Serial.printf("\nTotal length = %u bytes\n", total);
+          EvOut->printf("\nTotal length = %u bytes\n", total);
         #endif
 
         return true;
@@ -554,7 +554,7 @@ bool        IsValidJPEG(const uint8_t *Data, uint32_t DataSize, EvBmp *Bmp, cons
       total += length;
 
       #ifdef  VERBOSE
-        Serial.printf(" %u bytes", length + 2);
+        EvOut->printf(" %u bytes", length + 2);
       #endif
     }
   }
@@ -577,7 +577,7 @@ bool        IsValidPNG(const uint8_t *Data, uint32_t DataSize, EvBmp *Bmp, const
   if (DataSize >= sizeof(signature) && memcmp(Data, signature, sizeof(signature)) == 0) // Check signature
   {
     #ifdef  VERBOSE
-      Serial.print("PNG file signature found\n");
+      EvOut->print("PNG file signature found\n");
     #endif
 
     for (i = total = sizeof(signature); i + 12 <= DataSize; i += length + 4)
@@ -588,7 +588,7 @@ bool        IsValidPNG(const uint8_t *Data, uint32_t DataSize, EvBmp *Bmp, const
       i += 8;
 
       #ifdef  VERBOSE
-        Serial.printf("Chunk %s %u bytes\n", chunk, length + 12);
+        EvOut->printf("Chunk %s %u bytes\n", chunk, length + 12);
       #endif
 
       if (strcmp(chunk, "IHDR") == 0)
@@ -647,7 +647,7 @@ bool        IsValidPNG(const uint8_t *Data, uint32_t DataSize, EvBmp *Bmp, const
         }
 
         #ifdef  VERBOSE
-          Serial.printf("Total length = %u bytes\n", total);
+          EvOut->printf("Total length = %u bytes\n", total);
         #endif
 
         return true;

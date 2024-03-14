@@ -180,7 +180,7 @@ void        EvSPI::wrCmdBuf16(uint16_t Data)
     wrCmdBufFreeSpace(2);
 
   if (wrPtr & 1)
-    Serial.println("wrCmdBuf16: Misalignment");
+    EvOut->println("wrCmdBuf16: Misalignment");
   else
   {
     wr16(RAM_CMD + wrPtr, Data);
@@ -197,7 +197,7 @@ void        EvSPI::wrCmdBuf32(uint32_t Data)
     wrCmdBufFreeSpace(4);
 
   if (wrPtr & 3)
-    Serial.println("wrCmdBuf32: Misalignment");
+    EvOut->println("wrCmdBuf32: Misalignment");
   else
   {
     wr32(RAM_CMD + wrPtr, Data);

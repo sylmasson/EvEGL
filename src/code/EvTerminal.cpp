@@ -4,6 +4,10 @@
 #define     TEXT_COLOR      RGB555(  0,   0,   0)
 #define     BG_COLOR        RGB555(255, 255, 255)
 
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+extern const EvFont         *Menio20;
+
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
  * @brief      Create a new instance of the standard Terminal.
@@ -32,19 +36,23 @@ EvTerminal  *EvTerminal::Create(int16_t Left, int16_t Top, uint16_t Width, uint1
 
 EvTerminal::EvTerminal(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) : EvTextBlock(Left, Top, Width, Height, Disp, Tag, State)
 {
-  MaxBufferSize = 1024;
+  MaxBufferSize = 4096;
   mScrolling = 0;
   WrapText(false);
-  TextFont(26);
+  TextFont(17);
   TextPadding(7, 5);
   TextAlign(LEFT_CENTER);
   TextColor(TEXT_COLOR);
   BgColor(BG_COLOR);
 
-  if ((Cursor = EvTextCursor::Create(0, 0, 0, 0, this, nullptr, VISIBLE_DIS_OBJ)) == nullptr)
+  if (!(Cursor = EvTextCursor::Create(0, 0, 0, 0, this, nullptr, VISIBLE_DIS_OBJ)))
     abortCreate();
   else
+  {
+    Disp->UnloadFont(17);
+    Disp->LoadFont(Menio20, 17);
     Cursor->Style(CURSOR_SMOOTH);
+  }
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -108,3 +116,6 @@ void        EvTerminal::touchEvent(EvTouchEvent *Touch)
 
   EvTextBlock::touchEvent(Touch);
 }
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+

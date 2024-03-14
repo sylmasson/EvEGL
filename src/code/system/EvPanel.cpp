@@ -49,9 +49,9 @@ EvPanel::~EvPanel(void)
     char    str[32];
 
     snprintf(str, sizeof(str) - 1, "~EvPanel: %p ", this);
-    Serial.print(str);
+    EvOut->print(str);
     DisplayTagList();
-    Serial.println();
+    EvOut->println();
   #endif
 
   for (node = mFirst; node != nullptr; node = next)

@@ -15,18 +15,19 @@
 #define     PLAYBUTTON      0
 #define     FULLBUTTON      1
 #define     SPEEDBUTTON     2
+#define     TIMELAPSE       3
 
 #define     BG_COLOR        RGB555(20, 20, 20)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-static void OnLoadFrame(EvVideo *Sender, uint32_t FrameNbr);
-static void OnChangeTimeLine(EvSlider *Sender, int32_t Value);
-static void OnTouchTimeLine(EvSlider *Sender, EvTouchEvent *Touch);
-static void OnTouchTimeLapse(EvLabel *Sender, EvTouchEvent *Touch);
-static void OnTouchPlayButton(EvLabel *Sender, EvTouchEvent *Touch);
-static void OnTouchFullButton(EvLabel *Sender, EvTouchEvent *Touch);
-static void OnTouchSpeedButton(EvLabel *Sender, EvTouchEvent *Touch);
+static void sOnLoadFrame(EvVideo *Sender, uint32_t FrameNbr);
+static void sOnChangeTimeLine(EvSlider *Sender, int32_t Value);
+static void sOnTouchTimeLine(EvSlider *Sender, EvTouchEvent *Touch);
+static void sOnTouchTimeLapse(EvLabel *Sender, EvTouchEvent *Touch);
+static void sOnTouchPlayButton(EvLabel *Sender, EvTouchEvent *Touch);
+static void sOnTouchFullButton(EvLabel *Sender, EvTouchEvent *Touch);
+static void sOnTouchSpeedButton(EvLabel *Sender, EvTouchEvent *Touch);
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
@@ -42,8 +43,8 @@ EvPlayer::EvPlayer(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, E
   if (!(Video = EvVideo::Create(0, 0, mWidth, mHeight, this, "VideoFrame", VISIBLE_DIS_OBJ)) ||
       !(TopBar = EvSideBar::Create(0, 0, mWidth, SIDEBAR_HEIGHT, this, "TopBar", DISABLED_OBJ)) ||
       !(BottomBar = EvSideBar::Create(0, 0, mWidth, SIDEBAR_HEIGHT, this, "BottomBar", DISABLED_OBJ)) ||
-      !(TimeLapse = EvLabel::Create(0, 0, mWidth, SIDEBAR_HEIGHT, TopBar, "TimeLapse", VISIBLE_OBJ)) ||
       !(TimeLine = EvSlider::Create(0, 0, mWidth - 20, SIDEBAR_HEIGHT - 16, BottomBar, "TimeLine", VISIBLE_OBJ)) ||
+      !(TimeLapse = (Button *)TryCreate(new Button(mWidth, SIDEBAR_HEIGHT, Disp, "TimeLapse"), TopBar)) ||
       !(PlayButton = (Button *)TryCreate(new Button(110, 110, Disp, "PlayButton"), this)) ||
       !(FullButton = (Button *)TryCreate(new Button(60, SIDEBAR_HEIGHT, Disp, "FullButton"), BottomBar)) ||
       !(SpeedButton = (Button *)TryCreate(new Button(60, SIDEBAR_HEIGHT, Disp, "SpeedButton"), BottomBar)))
@@ -58,7 +59,7 @@ EvPlayer::EvPlayer(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, E
   mSpeedIndex = 0;
   mTimerHide = 0;
   mTouchCount = 0;
-  Video->SetOnLoadFrame(OnLoadFrame);
+  Video->SetOnLoadFrame(sOnLoadFrame);
 
   TopBar->BgColor(RGB555(0, 0, 0), 128);
   TopBar->OwnerAlign(CENTER_TOP);
@@ -68,32 +69,33 @@ EvPlayer::EvPlayer(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, E
   BottomBar->OwnerAlign(CENTER_BOTTOM);
   BottomBar->Setup(SIDEBAR_BOTTOM);
 
+  TimeLine->SetColor(TIMELINE_LOWER, TIMELINE_UPPER, TIMELINE_KNOB);
+  TimeLine->BdShape(RATIO_CORNERS);
+  TimeLine->SetOnChange(sOnChangeTimeLine);
+  TimeLine->SetOnTouch(sOnTouchTimeLine);
+  TimeLine->SetRange(0, 1);
+  TimeLine->SetDelay(0);
+
   TimeLapse->TextFont(26);
   TimeLapse->TextLabel("");
   TimeLapse->TextAlign(CENTER);
   TimeLapse->TextColor(TIMELINE_KNOB);
-  TimeLapse->SetOnTouch(OnTouchTimeLapse);
-
-  TimeLine->SetColor(TIMELINE_LOWER, TIMELINE_UPPER, TIMELINE_KNOB);
-  TimeLine->BdShape(RATIO_CORNERS);
-  TimeLine->SetOnChange(OnChangeTimeLine);
-  TimeLine->SetOnTouch(OnTouchTimeLine);
-  TimeLine->SetRange(0, 1);
-  TimeLine->SetDelay(0);
+  TimeLapse->SetOnTouch(sOnTouchTimeLapse);
+  TimeLapse->TagId = TIMELAPSE;
 
   PlayButton->Hide();
   PlayButton->BdShape(ROUND_CORNERS);
-  PlayButton->SetOnTouch(OnTouchPlayButton);
+  PlayButton->SetOnTouch(sOnTouchPlayButton);
   PlayButton->TagId = PLAYBUTTON;
 
-  FullButton->SetOnTouch(OnTouchFullButton);
+  FullButton->SetOnTouch(sOnTouchFullButton);
   FullButton->TagId = FULLBUTTON;
 
   SpeedButton->TextFont(25);
   SpeedButton->TextLabel("1 X");
   SpeedButton->TextAlign(CENTER);
   SpeedButton->TextColor(TIMELINE_KNOB);
-  SpeedButton->SetOnTouch(OnTouchSpeedButton);
+  SpeedButton->SetOnTouch(sOnTouchSpeedButton);
   SpeedButton->TagId = SPEEDBUTTON;
 
   BgColor(BG_COLOR);
@@ -111,13 +113,6 @@ bool        EvPlayer::Open(const char *FileName, SDClass &Dev)
   TimeLine->SetValue(0);
   resize();
   return true;
-}
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-bool        EvPlayer::IsRunning(void)
-{
-  return Video->IsRunning();
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -198,6 +193,9 @@ void        EvPlayer::ScreenSize(void)
     FullScreen();
   else
     SmallScreen();
+
+  Video->SetOpacity(OPACITY_MAX);
+  BgColor(BG_COLOR);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -215,6 +213,7 @@ void        EvPlayer::FullScreen(void)
     ReSize(Disp->Width(), Disp->Height());
     FullButton->Modified();
     mFullScreen = true;
+    mMovable = false;
   }
 }
 
@@ -228,7 +227,36 @@ void        EvPlayer::SmallScreen(void)
     ReSize(mSmallWidth, mSmallHeight);
     FullButton->Modified();
     mFullScreen = false;
+    mMovable = false;
   }
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+bool        EvPlayer::IsFullScreen(void)
+{
+  return mFullScreen;
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+bool        EvPlayer::IsRunning(void)
+{
+  return Video->IsRunning();
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+bool        EvPlayer::IsMovable(void)
+{
+  return mMovable;
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+void        EvPlayer::SetMovable(bool Value)
+{
+  mMovable = Value;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -305,6 +333,7 @@ void        EvPlayer::Button::drawEvent(void)
 
   switch (TagId)
   {
+    case TIMELAPSE:
     case SPEEDBUTTON:
       EvLabel::drawEvent();
       break;
@@ -433,7 +462,7 @@ void        EvPlayer::resize(void)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-static void OnLoadFrame(EvVideo *Sender, uint32_t FrameNbr)
+static void sOnLoadFrame(EvVideo *Sender, uint32_t FrameNbr)
 {
   EvPlayer  *player = (EvPlayer *)Sender->GetOwner();
   float     FrameRate = player->Video->AviInfo.FrameRate;
@@ -455,7 +484,7 @@ static void OnLoadFrame(EvVideo *Sender, uint32_t FrameNbr)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-static void OnChangeTimeLine(EvSlider *Sender, int32_t Value)
+static void sOnChangeTimeLine(EvSlider *Sender, int32_t Value)
 {
   EvPlayer  *player = (EvPlayer *)Sender->GetOwner(2);
 
@@ -464,7 +493,7 @@ static void OnChangeTimeLine(EvSlider *Sender, int32_t Value)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-static void OnTouchTimeLine(EvSlider *Sender, EvTouchEvent *Touch)
+static void sOnTouchTimeLine(EvSlider *Sender, EvTouchEvent *Touch)
 {
   EvPlayer  *player = (EvPlayer *)Sender->GetOwner(2);
 
@@ -473,33 +502,36 @@ static void OnTouchTimeLine(EvSlider *Sender, EvTouchEvent *Touch)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-static void OnTouchTimeLapse(EvLabel *Sender, EvTouchEvent *Touch)
+static void sOnTouchTimeLapse(EvLabel *Sender, EvTouchEvent *Touch)
 {
   EvPlayer  *player = (EvPlayer *)Sender->GetOwner(2);
 
-  switch (Touch->event)
-  {
-    case TOUCH_START:
-      player->BgColor(BG_COLOR, 64);
-      player->Video->SetOpacity(128);
-      break;
+  if (player->IsFullScreen() == false)
+    switch (Touch->event)
+    {
+      case TOUCH_START:
+        player->Video->SetOpacity(128);
+        player->BgColor(BG_COLOR, 64);
+        player->SetMovable(true);
+        break;
 
-    case TOUCH_END:
-      player->BgColor(BG_COLOR);
-      player->Video->SetOpacity(OPACITY_MAX);
-      break;
+      case TOUCH_END:
+        player->Video->SetOpacity(OPACITY_MAX);
+        player->BgColor(BG_COLOR);
+        break;
 
-    case TOUCH_MOVE:
-      player->MoveRel(Touch->move.x, Touch->move.y);
-      break;
-  }
+      case TOUCH_MOVE:
+        if (player->IsMovable())
+          player->MoveRel(Touch->move.x, Touch->move.y);
+        break;
+    }
 
   player->TouchInfo(Touch);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-static void OnTouchPlayButton(EvLabel *Sender, EvTouchEvent *Touch)
+static void sOnTouchPlayButton(EvLabel *Sender, EvTouchEvent *Touch)
 {
   EvPlayer  *player = (EvPlayer *)Sender->GetOwner();
 
@@ -523,7 +555,7 @@ static void OnTouchPlayButton(EvLabel *Sender, EvTouchEvent *Touch)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-static void OnTouchFullButton(EvLabel *Sender, EvTouchEvent *Touch)
+static void sOnTouchFullButton(EvLabel *Sender, EvTouchEvent *Touch)
 {
   EvPlayer  *player = (EvPlayer *)Sender->GetOwner(2);
 
@@ -535,7 +567,7 @@ static void OnTouchFullButton(EvLabel *Sender, EvTouchEvent *Touch)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-static void OnTouchSpeedButton(EvLabel *Sender, EvTouchEvent *Touch)
+static void sOnTouchSpeedButton(EvLabel *Sender, EvTouchEvent *Touch)
 {
   EvPlayer  *player = (EvPlayer *)Sender->GetOwner(2);
 

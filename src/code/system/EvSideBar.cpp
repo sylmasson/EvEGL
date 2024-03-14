@@ -52,7 +52,7 @@ void        EvSideBar::Open(void)
 
     #ifdef SIDEBAR_DEBUG
       if (mType == SIDEBAR_DEBUG)
-        Serial.printf("SideBar Open: pixel = %d\n", pixel);
+        EvOut->printf("SideBar Open: pixel = %d\n", pixel);
     #endif
 
     mKinMotion.Start(pixel);
@@ -79,7 +79,7 @@ void        EvSideBar::Close(void)
 
     #ifdef SIDEBAR_DEBUG
       if (mType == SIDEBAR_DEBUG)
-        Serial.printf("SideBar Close: pixel = %d\n", pixel);
+        EvOut->printf("SideBar Close: pixel = %d\n", pixel);
     #endif
 
     mKinMotion.Start(pixel);
@@ -138,7 +138,7 @@ void        EvSideBar::SetPosition(void)
 
   #ifdef SIDEBAR_DEBUG
     if (mType == SIDEBAR_DEBUG)
-      Serial.printf("SideBar SetPosition: left = %d top = %d\n", left, top);
+      EvOut->printf("SideBar SetPosition: left = %d top = %d\n", left, top);
   #endif
 
   MoveTo(left, top);

@@ -25,7 +25,7 @@
 
 #define     FOURCC(str)             (*(uint32_t *)str)
 
-#define     printFmt                Serial.printf
+#define     printFmt                EvOut->printf
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
@@ -346,7 +346,7 @@ void        EvVideo::SetOnLoadFrame(void (*OnLoadFrame)(EvVideo *Sender, uint32_
 
 void        EvVideo::refreshEvent(void)
 {
-  if ((Disp->sFrameNumber & 1) == mFrameSync)
+  if ((Disp->FrameNumber() & 1) == mFrameSync)
   {
     if (mSkip)
       mSkip--;

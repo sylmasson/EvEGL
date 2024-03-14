@@ -1,14 +1,15 @@
 
 #include    <EvGUI.h>
-#include    <include/system/EvShell.h>
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-static EvShell  sShell;
+static void sOnSaveTouchCalibration(EvTouchCal *Sender, bool Save);
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 static EvCmd    sCmdList[] =
 {
-  {CD,       1,    "", "cd",       "cd [1-4|Name]         Change display"},
+  {DC,       1,    "", "dc",       "dc [1-4|Name]         Display Change"},
   {LIST,     1,   "l", "list",     "l, list [DL|#Id|Tag]  List display memory"},
   {DUMP,     1,   "d", "dump",     "d, dump [0x|#Id|Tag]  Dump display memory"},
   {RADIX,    1,   "r", "radix",    "r, radix [b|w|d]      Change radix"},
@@ -26,89 +27,52 @@ static EvCmd    sCmdList[] =
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-static void sOnSaveTouchCalibration(EvTouchCal *Sender, bool Save)
-{
-  if (!Save)
-    Serial.println("\nCanceling touchscreen calibration");
-  else    
-  {
-    char    str[32];
-
-    Serial.println("\nTouchscreen calibration factors");
-
-    for (int i = 0; i < 6; i++)
-    {
-      snprintf(str, sizeof(str)-1, "%c =%9.3f", 'A' + i, Sender->Matrix[i] / 65536.0);
-      Serial.println(str);
-    }
-  }
-
-  sShell.ShowPrompt();
-} 
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-void        ShellInput(const char C)
-{
-  sShell.Input(C);
-}
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-void        ShellInput(const char *Str)
-{
-  while (*Str)
-    sShell.Input(*Str++);
-}
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-EvShell::EvShell(void)
+EvShell::EvShell(Stream &SerialMonitor, SDClass *SDCard)
 {
   mAddr = 0;
   mSize = EV_MALLOC_SIZE;
   mRadix = 0;
   mActDisp = 0;
   mBufCount = 0;
+  mSDCard = SDCard;
+  EvIn = &SerialMonitor;
+  EvOut = &SerialMonitor;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvShell::ShowPrompt(void)
+void        EvShell::Input(const char *Str)
 {
-  char      str[64];
-
-  snprintf(str, sizeof(str)-1, "[%s]-> ", EvDisplay::sDispList[mActDisp]->Tag);
-  Serial.print(str);
+  while (*Str)
+    Input(*Str++);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 void        EvShell::Input(const char C)
 {
-  char        c;
   uint32_t    size;
   EvCmd       *cmd;
   EvDisplay   *Disp;
   EvTouchCal  *tCal;
   int         i, argc;
-  char        str[64];
+  char        str[64], c = C;
   char        arg[4][sizeof(mBuffer)];
   const EvMem *ptr = nullptr;
   const char  *msg = nullptr;
   const char  *InvalidArg = "Invalid argument";
   const char  *radixName[] = {"byte", "word", "dword"};
 
-  if (C != 0x0A)
+  if (c != '\n')
   {
-    if (C >= ' ' && C <= '~' && mBufCount < sizeof(mBuffer) - 1)
-      mBuffer[mBufCount++] = C;
+    if (c >= ' ' && c <= '~' && mBufCount < sizeof(mBuffer) - 1)
+      mBuffer[mBufCount++] = c;
     return;
   }
 
   cmd = nullptr;
   mBuffer[mBufCount] = 0;
-  Serial.println(mBuffer);
+  EvOut->println(mBuffer);
   argc = sscanf(mBuffer, " %s %s %s %s", arg[0], arg[1], arg[2], arg[3]);
   Disp = EvDisplay::sDispList[mActDisp];
 
@@ -128,19 +92,19 @@ void        EvShell::Input(const char C)
     {
       switch (cmd->id)
       {
-        case CD:
-          msg = (argc == 1 && !ChangeDisplay(arg[1])) ? "Invalid display selection" : nullptr;
+        case DC:
+          msg = (argc == 1 && !displayChange(arg[1])) ? "Invalid display selection" : nullptr;
           break;
 
         case LIST:
           if (argc == 0)
-            DisplayMallocBlock(Disp);
+            displayMallocBlock(Disp);
           else if (stricmp(arg[1], "DL") == 0)
           {
-            size = Disp->SizeDL;
-            DisplayObjectRamG(Disp, RAM_DL, RAM_DL, size);
+            size = Disp->mSizeDL;
+            displayObjectRamG(Disp, RAM_DL, RAM_DL, size);
             snprintf(str, sizeof(str) - 1, "DL Size:%-4lu (%.1f%%)  ", size, (float)(size * 100) / 8192.0);
-            Serial.println(str);
+            EvOut->println(str);
           }
           else if (((ptr = Disp->RAM_G.FindByTag(arg[1], EV_OBJ)) == nullptr && (sscanf(arg[1], "#%d%c", &i, &c) != 1 || (ptr = Disp->RAM_G.FindById(i)) == nullptr)) || ptr->used == 0 || ptr->typeId != EV_OBJ)
           {
@@ -149,11 +113,11 @@ void        EvShell::Input(const char C)
           }
           else
           {
-            DisplayObjectRamG(Disp, ptr->addr, ptr->addr - ptr->startDL, ptr->used);
+            displayObjectRamG(Disp, ptr->addr, ptr->addr - ptr->startDL, ptr->used);
             snprintf(str, sizeof(str) - 1, "Size:%-4lu (%.1f%%)  ", ptr->used, (float)(ptr->used * 100) / 8192.0);
-            Serial.print(str);
+            EvOut->print(str);
             ((EvObj *)(ptr->owner))->DisplayTagList();
-            Serial.println();
+            EvOut->println();
           }
           msg = nullptr;
           break;
@@ -199,7 +163,7 @@ void        EvShell::Input(const char C)
             msg = "Select new address";
           else
           {
-            DumpEveMemory(Disp, mAddr, size, mRadix);
+            dumpEveMemory(Disp, mAddr, size, mRadix);
             mSize -= size;
             mAddr += size;
             msg = nullptr;
@@ -207,7 +171,7 @@ void        EvShell::Input(const char C)
           break;
 
         case RADIX:
-          msg = (argc == 1 && !SetRadix(arg[1])) ? InvalidArg : radixName[mRadix];
+          msg = (argc == 1 && !setRadix(arg[1])) ? InvalidArg : radixName[mRadix];
           break;
 
         case EDITOR:
@@ -219,7 +183,7 @@ void        EvShell::Input(const char C)
 
         case TRACE:
           if (argc)
-            msg = !SetTrace(arg[1], &Disp->sTraceFlags) ? InvalidArg : nullptr;
+            msg = !setTrace(arg[1], &Disp->sTraceFlags) ? InvalidArg : nullptr;
           break;
 
         case ROTATE:
@@ -246,42 +210,39 @@ void        EvShell::Input(const char C)
           break;
 
         case FONT:
-          DisplayFontMetrixBlock(Disp);
+          displayFontMetrixBlock(Disp);
           msg = nullptr;
           break;
 
         case ROMFONT:
-          DisplayRomFont(Disp);
+          displayRomFont(Disp);
           msg = nullptr;
           break;
 
         case LISTSD:
-          static bool  sdBegin = false;
-
-          if ((!sdBegin && !SD.begin(BUILTIN_SDCARD)) || !SD.mediaPresent())
-          {
-            Serial.println("SD card reading failed");
-            sdBegin = true;
-          }
+          if (!mSDCard)
+            msg = "No SD card reader specified";
+          else if (!mSDCard->mediaPresent())
+            msg = "SD card reading failed";
           else
           {
-            File root = SD.open("/");
-            ListDirectory(root, 0);
+            File root = mSDCard->open("/");
+            listDirectory(root);
+            msg = nullptr;
           }
-          msg = nullptr;
           break;
 
         case CLRCACHE:
           Disp->ClearCache();
-          DisplayMallocBlock(Disp);
+          displayMallocBlock(Disp);
           msg = nullptr;
           break;
 
         case HELP:
           for (uint i = 0; i < sizeof(sCmdList) / sizeof(sCmdList[0]); i++)
           {
-            Serial.print("  ");
-            Serial.println(sCmdList[i].help);
+            EvOut->print("  ");
+            EvOut->println(sCmdList[i].help);
           }
           msg = nullptr;
           break;
@@ -290,7 +251,7 @@ void        EvShell::Input(const char C)
   }
 
   if (msg)
-    Serial.println(msg);
+    EvOut->println(msg);
 
   mBufCount = 0;
   ShowPrompt();
@@ -298,7 +259,17 @@ void        EvShell::Input(const char C)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvShell::DumpEveMemory(EvDisplay *Disp, uint32_t Addr, int32_t Count, uint16_t Radix)
+void        EvShell::ShowPrompt(void)
+{
+  char      str[64];
+
+  snprintf(str, sizeof(str)-1, "[%s]-> ", EvDisplay::sDispList[mActDisp]->Tag);
+  EvOut->print(str);
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+void        EvShell::dumpEveMemory(EvDisplay *Disp, uint32_t Addr, int32_t Count, uint16_t Radix)
 {
   char      str[16];
   int16_t   i, j, count;
@@ -312,7 +283,7 @@ void        EvShell::DumpEveMemory(EvDisplay *Disp, uint32_t Addr, int32_t Count
   while (Radix < 3 && Count > 0)
   {
     snprintf(str, sizeof(str) - 1, "0x%05lX:", Addr);
-    Serial.print(str);
+    EvOut->print(str);
 
     count = (Count > 16) ? 16 : Count;
 
@@ -326,7 +297,7 @@ void        EvShell::DumpEveMemory(EvDisplay *Disp, uint32_t Addr, int32_t Count
         case 0:
           if ((i & 7) == 0)
           {
-            Serial.print(' ');
+            EvOut->print(' ');
             j++;
           }
 
@@ -336,7 +307,7 @@ void        EvShell::DumpEveMemory(EvDisplay *Disp, uint32_t Addr, int32_t Count
 
         case 1:
           if (i == 0)
-            Serial.print(' ');
+            EvOut->print(' ');
 
           snprintf(str, sizeof(str) - 1, " %04X", w[i >> 1]);
           i += 2;
@@ -348,24 +319,24 @@ void        EvShell::DumpEveMemory(EvDisplay *Disp, uint32_t Addr, int32_t Count
           break;
       }
 
-      Serial.print(str);
+      EvOut->print(str);
     }
 
     if (Radix == 0)
     {
       for (; j < 52; j++)
-        Serial.print(' ');
+        EvOut->print(' ');
 
       for (i = 0; i < count; i++)
       {
         if (i == 8)
-          Serial.print(' ');
+          EvOut->print(' ');
 
-        Serial.print((b[i] >= ' ' && b[i] <= '~') ? (char)b[i] : '.');
+        EvOut->print((b[i] >= ' ' && b[i] <= '~') ? (char)b[i] : '.');
       }
     }
 
-    Serial.println();
+    EvOut->println();
     Count -= count;
     Addr += count;
   }
@@ -373,15 +344,15 @@ void        EvShell::DumpEveMemory(EvDisplay *Disp, uint32_t Addr, int32_t Count
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvShell::DisplayObjectRamG(EvDisplay *Disp, uint32_t Addr, uint32_t RamDL, int32_t Count)
+void        EvShell::displayObjectRamG(EvDisplay *Disp, uint32_t Addr, uint32_t RamDL, int32_t Count)
 {
   for (mSp = 0, mVt.fmt = 4; Count > 0; Addr += 4, Count -= 4)
-    DisplayListCommand(Disp, Addr, RamDL);
+    displayListCommand(Disp, Addr, RamDL);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvShell::DisplayListCommand(EvDisplay *Disp, uint32_t Addr, uint32_t RamDL)
+void        EvShell::displayListCommand(EvDisplay *Disp, uint32_t Addr, uint32_t RamDL)
 {
   char        cmd, fmt, addr[32], tab[20], param[80], comment[80];
   uint16_t    commentLen, mask = 0xFF;
@@ -596,15 +567,15 @@ void        EvShell::DisplayListCommand(EvDisplay *Disp, uint32_t Addr, uint32_t
   }
 
   sprintf(addr, "0x%05lX:  %08lX  %s", Addr, d, tab);
-  Serial.print(addr);
-  Serial.print(name);
-  Serial.print(param);
-  Serial.println(comment);
+  EvOut->print(addr);
+  EvOut->print(name);
+  EvOut->print(param);
+  EvOut->println(comment);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvShell::DisplayMallocBlock(EvDisplay *Disp)
+void        EvShell::displayMallocBlock(EvDisplay *Disp)
 {
   EvMem       *ptr;
   const char  *tag;
@@ -617,15 +588,15 @@ void        EvShell::DisplayMallocBlock(EvDisplay *Disp)
   static char tagNull[] = "nullptr";
 
   if ((ptr = (EvMem *)Disp->RAM_G.FindFirst()) == nullptr)
-    Serial.println("No list avaible");
+    EvOut->println("No list avaible");
   else
   {
     for (cnt = cntFree = 0; ptr != nullptr; ptr = ptr->next)
     {
       snprintf(str, sizeof(str) - 1, "0x%05lX:%7lu bytes", ptr->addr, ptr->size);
-      Serial.print(str);
+      EvOut->print(str);
       snprintf(str, sizeof(str) - 1, ptr->used == 0 ? "   free" : " %6lu used %5u ", ptr->used, ptr->id);
-      Serial.print(str);
+      EvOut->print(str);
 
       if ((owner = ptr->owner) != nullptr)
       {
@@ -635,34 +606,34 @@ void        EvShell::DisplayMallocBlock(EvDisplay *Disp)
           case EV_UNDEFINED:
             tag = (char *)owner;
             snprintf(str, sizeof(str) - 1, " %s \"%s\"", ptr->typeId == EV_VIDEO ? "VDO" : "UND", !tag ? tagNull : tag);
-            Serial.print(str);
+            EvOut->print(str);
             break;
 
           case EV_FONT:
             tag = ((const EvFont *)owner)->Tag;
             snprintf(str, sizeof(str) - 1, " FNT \"%s\" used by %u System Font", !tag ? tagNull : tag, ptr->count);
-            Serial.print(str);
+            EvOut->print(str);
             if (ptr->count > 1)
-              Serial.print('s');
+              EvOut->print('s');
             break;
 
           case EV_BMP:
             tag = ((const EvBmp *)owner)->Tag;
             snprintf(str, sizeof(str) - 1, " BMP \"%s\" used by %u Object", !tag ? tagNull : tag, ptr->count);
-            Serial.print(str);
+            EvOut->print(str);
             if (ptr->count > 1)
-              Serial.print('s');
+              EvOut->print('s');
             break;
 
           case EV_OBJ:
-            Serial.print(" OBJ ");
+            EvOut->print(" OBJ ");
             if (((EvObj *)owner)->Tag != nullptr)
               ((EvObj *)owner)->DisplayTagList();
             break;
         }
       }
 
-      Serial.println();
+      EvOut->println();
 
       if (ptr->used == 0)
       {
@@ -678,28 +649,28 @@ void        EvShell::DisplayMallocBlock(EvDisplay *Disp)
     }
 
     snprintf(str, sizeof(str) - 1, "Malloc: %7lu bytes %6lu used in %u blocks", sumMalloc, sumUsed, cnt);
-    Serial.println(str);
+    EvOut->println(str);
     snprintf(str, sizeof(str) - 1, "Free:   %7lu bytes (%.1f%%) in %u blocks", sumFree, sumFree * (100.0 / EV_MALLOC_SIZE), cntFree);
-    Serial.println(str);
+    EvOut->println(str);
   }
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvShell::DisplayFontMetrixBlock(EvDisplay *Disp)
+void        EvShell::displayFontMetrixBlock(EvDisplay *Disp)
 {
   int           font;
   const EvFont  *fnt;
 
-  Serial.print("FNT  ");
+  EvOut->print("FNT  ");
 
   for (int i = ' '; i < 128; i++)
   {
-    Serial.print((char)i);
-    Serial.print("  ");
+    EvOut->print((char)i);
+    EvOut->print("  ");
   }
 
-  Serial.println("LOUT LS   W   H  CW BEG CNT    ADDR        TAG");
+  EvOut->println("LOUT LS   W   H  CW BEG CNT    ADDR        TAG");
 
   for (font = 1; font <= LAST_FONT; font++)
     if ((fnt = Disp->SystemFont[font]) != nullptr)
@@ -708,37 +679,37 @@ void        EvShell::DisplayFontMetrixBlock(EvDisplay *Disp)
       uint32_t  addr = (fnt->RomFont == 0) ? Disp->RAM_G.FindByOwner(fnt)->addr + FMB_SIZE : fnt->Addr;
 
       snprintf(str, sizeof(str) - 1, "%2u:", font);
-      Serial.print(str);
+      EvOut->print(str);
 
       for (int i = ' '; i < 128; i++)
       {
         snprintf(str, sizeof(str) - 1, "%3u", fnt->Width[i]);
-        Serial.print(str);
+        EvOut->print(str);
       }
 
       snprintf(str, sizeof(str) - 1, " %3lu %3lu %3lu %3lu", fnt->Layout, fnt->Stride, fnt->WidthMax, fnt->Height);
-      Serial.print(str);
+      EvOut->print(str);
       snprintf(str, sizeof(str) - 1, " %3u %3u %3u  0x%06lx", fnt->CurWidth, fnt->CharBeg, fnt->CharCnt, addr);
-      Serial.print(str);
+      EvOut->print(str);
       snprintf(str, sizeof(str) - 1, "  \"%s\"", (!fnt->Tag) ? "" : fnt->Tag);
-      Serial.println(str);
+      EvOut->println(str);
     }
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvShell::DisplayRomFont(EvDisplay *Disp)
+void        EvShell::displayRomFont(EvDisplay *Disp)
 {
   char      str[64];
   uint32_t  addr = Disp->rd32(FONT_ROOT);
   int       i, j, romFont, begChar, curWidth = 0;
 
-  Serial.println("\n#include    <EvGUI.h>");
+  EvOut->println("\n#include    <EvGUI.h>");
 
   for (romFont = FIRST_ROM_FONT; romFont <= LAST_ROM_FONT; romFont++, addr += 148)
   {
     snprintf(str, sizeof(str), "\nstatic const EvFont    sEvRomFont%u =\n{", romFont);
-    Serial.println(str);
+    EvOut->println(str);
 
     for (i = 0, begChar = -1; i < 128; )
     {
@@ -754,40 +725,40 @@ void        EvShell::DisplayRomFont(EvDisplay *Disp)
           begChar = i + j;
 
         snprintf(str, sizeof(str) - 1, (i + j) == 0 ? "  {%2u," : "%4u%c", byte, (i + j) == 127 ? '}' : ',');
-        Serial.print(str);
+        EvOut->print(str);
         data >>= 8;
       }
 
       if (((i += 4) & 0x0F) == 0)
-        Serial.print(i == 128 ? ",\n" : "\n ");
+        EvOut->print(i == 128 ? ",\n" : "\n ");
     }
 
     for (i = 128; i < 144; i += 4)
     {
       snprintf(str, sizeof(str) - 1, (i == 128) ? "%5lu," : "%4lu,", Disp->rd32(addr + i));
-      Serial.print(str);
+      EvOut->print(str);
     }
 
     snprintf(str, sizeof(str) - 1, "%9p,%4u,%4u,%4u,%4u", (void *)Disp->rd32(addr + 144), romFont, curWidth, begChar, 128 - begChar);
-    Serial.print(str);
+    EvOut->print(str);
     snprintf(str, sizeof(str) - 1, ",   0,   0,   0, \"RomFont%u\"\n};", romFont);
-    Serial.println(str);
+    EvOut->println(str);
   }
 
-  Serial.println("\nconst EvFont   *sEvRomFont[19] =\n{");
+  EvOut->println("\nconst EvFont   *sEvRomFont[19] =\n{");
 
   for (romFont = FIRST_ROM_FONT; romFont <= LAST_ROM_FONT; romFont++)
   {
     snprintf(str, sizeof(str) - 1, "  &sEvRomFont%u,", romFont);
-    Serial.println(str);
+    EvOut->println(str);
   }
 
-  Serial.println("};\n");
+  EvOut->println("};\n");
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-bool        EvShell::ChangeDisplay(char *Str)
+bool        EvShell::displayChange(char *Str)
 {
   uint      i;
   char      c;
@@ -810,7 +781,7 @@ bool        EvShell::ChangeDisplay(char *Str)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-bool        EvShell::SetTrace(char *Str, uint16_t *Flags)
+bool        EvShell::setTrace(char *Str, uint16_t *Flags)
 {
   if (stricmp(Str, "modif") == 0)
     *Flags = TRACE_MODIFIED;
@@ -828,7 +799,7 @@ bool        EvShell::SetTrace(char *Str, uint16_t *Flags)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-bool        EvShell::SetRadix(char *Str)
+bool        EvShell::setRadix(char *Str)
 {
   if (stricmp(Str, "b") == 0)
     mRadix = 0;
@@ -844,7 +815,7 @@ bool        EvShell::SetRadix(char *Str)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvShell::ListDirectory(File Dir, int16_t SpacesCnt)
+void        EvShell::listDirectory(File Dir, int16_t SpacesCnt)
 {
   const char months[13][4] = {"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec","???"};
 
@@ -863,24 +834,45 @@ void        EvShell::ListDirectory(File Dir, int16_t SpacesCnt)
       if (entry.getModifyTime(tm))
         snprintf(info, sizeof(info), "%s %2u %4u %02u:%02u", months[tm.mon < 12 ? tm.mon : 12], tm.mday, tm.year + 1900, tm.hour, tm.min);
 
-      Serial.print(info);
+      EvOut->print(info);
       snprintf(info, sizeof(info), "%12llu  ", entry.size());
-      Serial.print(info);
+      EvOut->print(info);
 
       for (int i = 0; i < SpacesCnt; i++)
-        Serial.print(' ');
+        EvOut->print(' ');
 
-      Serial.print(entry.name());
+      EvOut->print(entry.name());
 
       if (!entry.isDirectory())
-        Serial.println();
+        EvOut->println();
       else
       {
-        Serial.println("/");
-        ListDirectory(entry, SpacesCnt + 2);
+        EvOut->println("/");
+        listDirectory(entry, SpacesCnt + 2);
       }
     }
 
     entry.close();
   }
 }
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+static void sOnSaveTouchCalibration(EvTouchCal *Sender, bool Save)
+{
+  if (!Save)
+    EvOut->println("\nCanceling touchscreen calibration");
+  else    
+  {
+    char    str[32];
+
+    EvOut->println("\nTouchscreen calibration factors");
+
+    for (int i = 0; i < 6; i++)
+    {
+      snprintf(str, sizeof(str)-1, "%c =%9.3f", 'A' + i, Sender->Matrix[i] / 65536.0);
+      EvOut->println(str);
+    }
+  }
+} 
+

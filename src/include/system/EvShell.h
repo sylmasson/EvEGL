@@ -2,13 +2,13 @@
 #ifndef     _EV_SHELL_H_
 #define     _EV_SHELL_H_
 
-#define     DL_STACK_SIZE   8
+#define     DL_STACK_SIZE   4
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 enum CmdId : uint8_t
 {
-  CD, DUMP, LIST, EDITOR, RADIX, TRACE, ROTATE, CALIB, INFO, FONT, ROMFONT, LISTSD, CLRCACHE, HELP
+  DC, DUMP, LIST, EDITOR, RADIX, TRACE, ROTATE, CALIB, INFO, FONT, ROMFONT, LISTSD, CLRCACHE, HELP
 };
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -34,22 +34,23 @@ class EvShell
   };
 
   public:
-    EvShell(void);
+    EvShell(Stream &SerialMonitor, SDClass *SDCard = nullptr);
 
-    void          ShowPrompt(void);
+    void          Input(const char *Str);
     void          Input(const char C);
+    void          ShowPrompt(void);
 
   protected:
-    void          DumpEveMemory(EvDisplay *Disp, uint32_t Addr, int32_t Count, uint16_t Radix);
-    void          DisplayObjectRamG(EvDisplay *Disp, uint32_t Addr, uint32_t RamDL, int32_t Count);
-    void          DisplayListCommand(EvDisplay *Disp, uint32_t Addr, uint32_t RamDL);
-    void          DisplayMallocBlock(EvDisplay *Disp);
-    void          DisplayFontMetrixBlock(EvDisplay *Disp);
-    void          DisplayRomFont(EvDisplay *Disp);
-    bool          ChangeDisplay(char *Str);
-    bool          SetTrace(char *Str, uint16_t *Flags);
-    bool          SetRadix(char *Str);
-    void          ListDirectory(File Dir, int16_t SpacesCnt);
+    void          dumpEveMemory(EvDisplay *Disp, uint32_t Addr, int32_t Count, uint16_t Radix);
+    void          displayObjectRamG(EvDisplay *Disp, uint32_t Addr, uint32_t RamDL, int32_t Count);
+    void          displayListCommand(EvDisplay *Disp, uint32_t Addr, uint32_t RamDL);
+    void          displayMallocBlock(EvDisplay *Disp);
+    void          displayFontMetrixBlock(EvDisplay *Disp);
+    void          displayRomFont(EvDisplay *Disp);
+    bool          displayChange(char *Str);
+    bool          setTrace(char *Str, uint16_t *Flags);
+    bool          setRadix(char *Str);
+    void          listDirectory(File Dir, int16_t SpacesCnt = 0);
 
     uint32_t      mAddr;
     uint32_t      mSize;
@@ -61,6 +62,8 @@ class EvShell
     int8_t        mSp;
     Vertex        mVt;
     Vertex        mStack[DL_STACK_SIZE];
+
+    SDClass       *mSDCard;
 };
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

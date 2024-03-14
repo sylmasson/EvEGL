@@ -6,6 +6,9 @@
 
 class EvDisplay : public EvEVE, public EvPanel, public EvSysFont
 {
+    friend class  EvObj;
+    friend class  EvShell;
+
   public:
     EvDisplay(uint16_t Width, uint16_t Height, const char *Tag, const uint32_t *Config, uint8_t CS, uint8_t RST = 255, SPIClass *Spi = nullptr, uint32_t Baudrate = 30000000);
 
@@ -13,6 +16,7 @@ class EvDisplay : public EvEVE, public EvPanel, public EvSysFont
     bool          Unlock(void);
     bool          TryLock(void);
     void          KbdDelete(void);
+    uint32_t      FrameNumber(void);
     void          Rotate(uint8_t Orientation);
     void          SetOnUpdate(void (*OnUpdate)(EvDisplay *Disp));
     void          SetOnTouch(void (*OnTouch)(EvObj *Obj, EvTouchEvent *Touch));
@@ -28,6 +32,10 @@ class EvDisplay : public EvEVE, public EvPanel, public EvSysFont
     uint8_t       mOrientation;
     uint8_t       mFrameCount;
     uint32_t      mTimeUsed;
+    uint16_t      mSizeDL;
+    uint16_t      mMaxDL;
+    EvKbd         *mKbd;
+
     EvTouchEvent  mTouch[5];
 
   #if defined(ESP32)
@@ -39,14 +47,12 @@ class EvDisplay : public EvEVE, public EvPanel, public EvSysFont
     void          (*mOnTouch)(EvObj *Obj, EvTouchEvent *Touch);
 
   public:
-    uint16_t      SizeDL;
-    uint16_t      MaxDL;
-    EvKbd         *Kbd;
     const uint8_t &Orientation = mOrientation;
 
+  protected:
     static uint16_t   sDispCount;
-    static uint32_t   sFrameNumber;
     static uint16_t   sTraceFlags;
+    static uint32_t   sFrameNumber;
     static uint32_t   sSecondTimer;
     static uint32_t   sUpdateTimer;
     static EvDisplay  *sDispList[DISP_MAX];

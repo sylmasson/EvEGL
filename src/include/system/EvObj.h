@@ -99,7 +99,7 @@ struct EvTextStyle
  * 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-class EvObj : public Print
+class EvObj : public Stream
 {
   friend class EvPanel;
 
@@ -150,8 +150,12 @@ class EvObj : public Print
     virtual void    SetOpacity(uint16_t Opacity);
     virtual void    ModifiedAll(void) { Modified(); };
     virtual size_t  WriteKey(uint8_t Key, uint8_t Layout, uint8_t ShiftKey, bool DoubleTouch) { write(Key); return -1; };
+
+    // Pure virtual Stream functions
+    virtual int     available(void) { return 0; };
+    virtual int     peek(void) { return -1; };
+    virtual int     read(void) { return -1; };
     virtual size_t  write(uint8_t C) { return 1; };
-    virtual size_t  write(const uint8_t *Buffer, size_t Count) { return Count; };
     virtual int     availableForWrite(void) { return 1; };
 
     // Text functions
