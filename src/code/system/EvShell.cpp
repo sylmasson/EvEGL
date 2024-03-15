@@ -176,9 +176,14 @@ void        EvShell::Input(const char C)
 
         case EDITOR:
           if (argc == 0)
-            msg = OpenEditor(Disp);
+          {
+            if (EvEditor::IsAlreadyOpen())
+              msg = "Editor is already open";
+            else
+              msg = EvEditor::Open(Disp) ? "Editor is open" : "Unable to open editor";
+          }
           else if (stricmp(arg[1], "close") == 0)
-            msg = CloseEditor();
+            msg = EvEditor::Close() ? "Editor is closed" : "Editor is already closed";
           break;
 
         case TRACE:
@@ -202,7 +207,7 @@ void        EvShell::Input(const char C)
             msg = "Touchscreen calibration is started";
             tCal->SetOnExit(sOnSaveTouchCalibration);
             tCal->BdWidth(2 << 4);
-            SetEditObj(nullptr);
+            EvEditor::SelectObj(nullptr);
           }
           break;
 

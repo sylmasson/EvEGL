@@ -1,3 +1,21 @@
+commit 87fd8e6803916080afa94959ee8d5cb0a1b6bb9a
+Author: Sylvain Masson <sylvainmasson@Sylvains-Mac-mini.local>
+Date:   Thu Mar 14 13:15:00 2024 -0400
+
+    EvDisplay: Redefine public variables as protected. Only EvObj and EvShell have access as a friend class
+    
+    EvShell: Edit constructor to assign a Stream and SDCard to use. Replace 'cd' with 'dc' for display change command
+    
+    EvSerial: Creation of the DummySerial class defined by default for EvIn and Evout
+    
+    EvPlayer: Fix to prevent the object from moving at the same time as resizing it
+    
+    EvObj: All EvObj now inherit from the Stream class instead of the Print class
+    
+    EvTerminal, EvMenio20: Replace font number 17 with mono space font Menio20
+    
+    Global: Change all output 'Serial.' at new output 'EvOut->'
+
 commit 104e9d80bc903774c5146dd78fa89dee03262b5e
 Author: Sylvain Masson <sylvainmasson@Sylvains-Mac-mini.local>
 Date:   Sun Mar 10 14:13:45 2024 -0400

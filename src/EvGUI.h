@@ -185,6 +185,7 @@ class       EvVuBar;
 #include    <include/system/EvScrollBox.h>
 #include    <include/system/EvTouchCal.h>
 #include    <include/system/EvKbd.h>
+#include    <include/system/EvEditor.h>
 #include    <include/system/EvShell.h>
 
 #include    <include/EvLabel.h>
@@ -211,12 +212,6 @@ class       EvVuBar;
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 extern EvTaskDMA  TaskDMA;
-
-extern const char *OpenEditor(EvDisplay *Disp);
-extern const char *CloseEditor(void);
-extern void       EditorToFront(void);
-extern void       SetEditObj(EvObj *Obj);
-extern void       SetEditObjDestroyed(EvObj *Obj);
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 

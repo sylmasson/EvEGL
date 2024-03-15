@@ -56,7 +56,7 @@ EvObj::~EvObj(void)
   if (mOwner != nullptr)
     mOwner->RemoveObj(this);
 
-  SetEditObjDestroyed(this);
+  EvEditor::DestroyedObj(this);
 
   if (mCache != nullptr)
     Disp->RAM_G.Free(mCache);
@@ -1385,7 +1385,7 @@ void        EvObj::TouchUpdate(EvTouchEvent *Touch)
     }
 
     if (Touch->event == TOUCH_DOUBLE && !(mStatus & SYSTEM_OBJ))
-      SetEditObj(this);
+      EvEditor::SelectObj(this);
 
     if (IsEnabled())
       touchEvent(Touch);

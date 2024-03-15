@@ -1,6 +1,27 @@
 
 #include    <EvGUI.h>
-#include    <include/system/EvEditor.h>
+
+#define     BG_COLOR        RGB555(245, 245, 245)
+#define     PANEL_COLOR     RGB555(210, 210, 210)
+#define     NUM_COLOR       RGB555(255, 255, 255)
+#define     DOT_COLOR       RGB555(255,   0,   0)
+#define     TEXT_COLOR      RGB555(  0,   0,   0)
+#define     TEXT_ERROR      RGB555(255,   0,   0)
+#define     TEXT_SELECT     RGB555(255, 255, 255)
+
+#define     COLOR_SELNONE   RGB555(255, 255, 255)
+#define     COLOR_SELECT    RGB555(  0,   0, 160)
+#define     COLOR_SELNEW    RGB555(160, 160, 210)
+#define     COLOR_ICONS     RGB555(140, 140, 140)
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+int16_t     EvEditProp::sLeft = 0;
+int16_t     EvEditProp::sTop = 0;
+
+static EvEditor   *editor = nullptr;
+static EvObj      *editObj = nullptr;
+static EvEditProp *property = nullptr;
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
@@ -64,65 +85,139 @@ static const EvBmp    sShapeIcons  = {ZIP_DATA, PALETTED4444, 128, 32, 32, 4096,
 static const EvBmp    sAlignIconsX = {ZIP_DATA, PALETTED4444, 128, 32, 22, 4096, 130, sAlignIconsX_data, "AlignIconsX"};
 static const EvBmp    sAlignIconsY = {ZIP_DATA, PALETTED4444, 128, 32, 32, 4096, 303, sAlignIconsY_data, "AlignIconsY"};
 
-const EvBmp       *ShapeIcons = &sShapeIcons;
-const EvBmp       *AlignIconsX = &sAlignIconsX;
-const EvBmp       *AlignIconsY = &sAlignIconsY;
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+static void OnChangeMinimize(EvButton *Sender, int32_t Value);
+static void OnChangeEdit(EvToggle *Sender, int32_t Value);
+static void OnChangeTab(EvTab *Sender, int32_t Value);
+static void OnChangeLeft(EvNumInt *Sender, int32_t Value);
+static void OnChangeTop(EvNumInt *Sender, int32_t Value);
+static void OnChangeWidth(EvNumInt *Sender, int32_t Value);
+static void OnChangeHeight(EvNumInt *Sender, int32_t Value);
+static void OnChangeShape(EvSelector *Sender, int32_t Value);
+static void OnChangeFont(EvNumInt *Sender, int32_t Value);
+static void OnChangePadX(EvNumInt *Sender, int32_t Value);
+static void OnChangePadY(EvNumInt *Sender, int32_t Value);
+static void OnChangeAlignX(EvSelector *Sender, int32_t Value);
+static void OnChangeAlignY(EvSelector *Sender, int32_t Value);
+static void OnTouchDotMove(EvEditDot *Sender, EvTouchEvent *Touch);
+static void OnTouchDotReSize(EvEditDot *Sender, EvTouchEvent *Touch);
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-static EvEditor   *editor = nullptr;
-static EvObj      *editObj = nullptr;
-static EvProperty *property = nullptr;
-
-static int16_t    propLeft = 0;
-static int16_t    propTop = 0;
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-const char  *OpenEditor(EvDisplay *Disp)
+EvEditor::EvEditor(EvDisplay *Disp, const char *Tag) : EvPanel(0, 0, Disp->Width(), Disp->Height(), Disp, Tag, VISIBLE_DIS_OBJ | SYSTEM_OBJ)
 {
-  if (editor != nullptr)
-    return "Editor already open";
-
-  if ((editor = (EvEditor *)EvObj::TryCreate(new EvEditor(Disp, "Editor"), Disp)) == nullptr ||
-      (property = (EvProperty *)EvObj::TryCreate(new EvProperty(Disp, "Property"), Disp)) == nullptr)
-    {
-      if (editor != nullptr)
-        editor->Delete();
-
-      return "Cannot open editor";
-    }
-
-  SetEditObj(editObj);
-  return "Editor is open";
+  if (!(DotMove = (EvEditDot *)TryCreate(new EvEditDot(50, OnTouchDotMove, Disp, "DotMove"), this)) ||
+      !(DotReSize = (EvEditDot *)TryCreate(new EvEditDot(50, OnTouchDotReSize, Disp, "DotReSize"), this)))
+    abortCreate();
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-const char  *CloseEditor(void)
+EvEditor::~EvEditor(void)
 {
-  if (editor == nullptr)
-    return "Editor already closed";
-
-  editor->Delete();
-  property->Delete();
-  return "Editor is closed";
+  editor = nullptr;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EditorToFront(void)
+void        EvEditor::drawEvent(void)
 {
-  if (editor != nullptr)
+  if (editObj != nullptr)
   {
-    editor->ToFront();
-    property->ToFront();
+    int16_t x1, x2, y1, y2;
+
+    x1 = editObj->View.ox;
+    y1 = editObj->View.oy;
+    x2 = x1 + editObj->Width() - 1;
+    y2 = y1 + editObj->Height() - 1;
+
+    Disp->LineWidth(8);
+    Disp->Begin(LINES);
+    Disp->ColorA(255);
+    Disp->ColorRGB(DOT_COLOR);
+    Disp->Vertex2i(x1, 0);
+    Disp->Vertex2i(x1, mHeight);
+    Disp->Vertex2i(x2, 0);
+    Disp->Vertex2i(x2, mHeight);
+    Disp->Vertex2i(0, y1);
+    Disp->Vertex2i(mWidth, y1);
+    Disp->Vertex2i(0, y2);
+    Disp->Vertex2i(mWidth, y2);
   }
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        SetEditObj(EvObj *Obj)
+void        EvEditor::refreshEvent(void)
+{
+  if (editObj != nullptr)
+  {
+    int16_t x = editObj->View.ox - (DotMove->Width() / 2);
+    int16_t y = editObj->View.oy - (DotMove->Height() / 2);
+
+    if (x != DotMove->Left() || y != DotMove->Top())
+    {
+      DotMove->MoveTo(x, y);
+      DotMove->Modified();
+      Modified();
+    }
+
+    x += editObj->Width();
+    y += editObj->Height();
+
+    if (x != DotReSize->Left() || y != DotReSize->Top())
+    {
+      DotReSize->MoveTo(x, y);
+      DotReSize->Modified();
+      Modified();
+    }
+  }
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+bool        EvEditor::Close(void)
+{
+  if (editor == nullptr)
+    return false;
+
+  editor->Delete();
+  property->Delete();
+  return true;
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+bool        EvEditor::Open(EvDisplay *Disp)
+{
+  if (editor == nullptr)
+  {
+    if ((editor = (EvEditor *)EvObj::TryCreate(new EvEditor(Disp, "Editor"), Disp)) == nullptr ||
+        (property = (EvEditProp *)EvObj::TryCreate(new EvEditProp(Disp, "EditProp"), Disp)) == nullptr)
+      {
+        if (editor != nullptr)
+          editor->Delete();
+
+        return false;
+      }
+
+    SelectObj(editObj);
+  }
+
+  return true;
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+bool        EvEditor::IsAlreadyOpen(void)
+{
+  return editor;
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+void        EvEditor::SelectObj(EvObj *Obj)
 {
   editObj = Obj;
 
@@ -207,206 +302,38 @@ void        SetEditObj(EvObj *Obj)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        SetEditObjDestroyed(EvObj *Obj)
+void        EvEditor::DestroyedObj(EvObj *Obj)
 {
   if (editObj == Obj)
   {
     editObj = nullptr;
 
     if (editor != nullptr)
-      SetEditObj(editObj);
+      SelectObj(editObj);
   }
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-static void OnChangeMinimize(EvButton *Sender, int32_t Value)
+void        EvEditor::AlwaysToFront(void)
 {
-  if (Value == true)
-    return;
-
-  if ((property->Minimized = !property->Minimized) == true)
+  if (editor != nullptr)
   {
-    property->ReSize(150, 36);
-    property->BtnMinimize->TextLabel("+");
-    property->BtnMinimize->TextPadding(4, -6);
-  }
-  else
-  {
-    property->ReSize(150, 310);
-    property->BtnMinimize->TextLabel("_");
-    property->BtnMinimize->TextPadding(5, -17);
+    editor->ToFront();
+    property->ToFront();
   }
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-static void OnChangeEdit(EvToggle *Sender, int32_t Value)
-{
-  SetEditObj(editObj);
-}
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-static void OnChangeTab(EvTab *Sender, int32_t Value)
-{
-  switch (Value)
-  {
-    case 0:
-      property->PanObj->Show();
-      property->PanText->Hide();
-      break;
-
-    case 1:
-      property->PanObj->Hide();
-      property->PanText->Show();
-      break;
-  }
-}
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-static void OnChangeLeft(EvNumInt *Sender, int32_t Value)
-{
-  if (editObj != nullptr)
-    editObj->MoveTo(Value, editObj->Top());
-}
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-static void OnChangeTop(EvNumInt *Sender, int32_t Value)
-{
-  if (editObj != nullptr)
-    editObj->MoveTo(editObj->Left(), Value);
-}
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-static void OnChangeWidth(EvNumInt *Sender, int32_t Value)
-{
-  if (editObj != nullptr)
-    editObj->ReSize(Value, editObj->Height());
-}
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-static void OnChangeHeight(EvNumInt *Sender, int32_t Value)
-{
-  if (editObj != nullptr)
-    editObj->ReSize(editObj->Width(), Value);
-}
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-static void OnChangeShape(EvSelector *Sender, int32_t Value)
-{
-  if (editObj != nullptr)
-    editObj->BdShape((editObj->Shape() & ~7) | Value);
-}
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-static void OnChangeFont(EvNumInt *Sender, int32_t Value)
-{
-  if (editObj != nullptr)
-  {
-    Sender->TextColor(editObj->Disp->SystemFont[Value] == 0 ? TEXT_ERROR : TEXT_COLOR);
-    editObj->TextFont(Value);
-  }
-}
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-static void OnChangePadX(EvNumInt *Sender, int32_t Value)
-{
-  if (editObj != nullptr)
-    editObj->TextPadding(Value, editObj->Style.padY);
-}
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-static void OnChangePadY(EvNumInt *Sender, int32_t Value)
-{
-  if (editObj != nullptr)
-    editObj->TextPadding(editObj->Style.padX, Value);
-}
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-static void OnChangeAlignX(EvSelector *Sender, int32_t Value)
-{
-  if (editObj != nullptr)
-    editObj->TextAlign((editObj->Style.align & ~3) | Value);
-}
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-static void OnChangeAlignY(EvSelector *Sender, int32_t Value)
-{
-  if (editObj != nullptr)
-    editObj->TextAlign((editObj->Style.align & ~0x0C) | (Value << 2));
-}
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-static void OnTouchDotMove(EvDot *Sender, EvTouchEvent *Touch)
-{
-  int16_t   x, y;
-
-  switch (Touch->event)
-  {
-    case TOUCH_START:
-      Sender->X = editObj->Left();
-      Sender->Y = editObj->Top();
-      Touch->event = 0;
-      break;
-
-    case TOUCH_MOVE:
-      Sender->X += Touch->move.x;
-      Sender->Y += Touch->move.y;
-      x = (((Sender->X << 1) + 5) / 10) * 5;
-      y = (((Sender->Y << 1) + 5) / 10) * 5;
-      editObj->MoveTo(x, y);
-      Touch->event = 0;
-      break;
-  }
-}
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-static void OnTouchDotReSize(EvDot *Sender, EvTouchEvent *Touch)
-{
-  int16_t   w, h;
-
-  switch (Touch->event)
-  {
-    case TOUCH_START:
-      Sender->X = editObj->Left() + editObj->Width();
-      Sender->Y = editObj->Top() + editObj->Height();
-      Touch->event = 0;
-      break;
-
-    case TOUCH_MOVE:
-      Sender->X += Touch->move.x;
-      Sender->Y += Touch->move.y;
-      w = ((((Sender->X - editObj->Left()) << 1) + 5) / 10) * 5;
-      h = ((((Sender->Y - editObj->Top()) << 1) + 5) / 10) * 5;
-      editObj->ReSize(w < 0 ? 0 : w, h < 0 ? 0 : h);
-      Touch->event = 0;
-      break;
-  }
-}
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-EvDot::EvDot(uint16_t Size, void (*OnTouch)(EvDot *Sender, EvTouchEvent *Touch), EvDisplay *Disp, const char *Tag) : EvObj(0, 0, Size, Size, Disp, Tag, VISIBLE_OBJ | SYSTEM_OBJ)
+EvEditDot::EvEditDot(uint16_t Size, void (*OnTouch)(EvEditDot *Sender, EvTouchEvent *Touch), EvDisplay *Disp, const char *Tag) : EvObj(0, 0, Size, Size, Disp, Tag, VISIBLE_OBJ | SYSTEM_OBJ)
 {
   mOnTouch = OnTouch;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvDot::drawEvent(void)
+void        EvEditDot::drawEvent(void)
 {
   int16_t   radius = mWidth << 3;
 
@@ -415,7 +342,7 @@ void        EvDot::drawEvent(void)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvDot::touchEvent(EvTouchEvent *Touch)
+void        EvEditDot::touchEvent(EvTouchEvent *Touch)
 {
   if (mOnTouch)
     mOnTouch(this, Touch);
@@ -423,78 +350,7 @@ void        EvDot::touchEvent(EvTouchEvent *Touch)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-EvEditor::EvEditor(EvDisplay *Disp, const char *Tag) : EvPanel(0, 0, Disp->Width(), Disp->Height(), Disp, Tag, VISIBLE_DIS_OBJ | SYSTEM_OBJ)
-{
-  if (!(DotMove = (EvDot *)TryCreate(new EvDot(50, OnTouchDotMove, Disp, "DotMove"), this)) ||
-      !(DotReSize = (EvDot *)TryCreate(new EvDot(50, OnTouchDotReSize, Disp, "DotReSize"), this)))
-    abortCreate();
-}
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-EvEditor::~EvEditor(void)
-{
-  editor = nullptr;
-}
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-void        EvEditor::drawEvent(void)
-{
-  if (editObj != nullptr)
-  {
-    int16_t x1, x2, y1, y2;
-
-    x1 = editObj->View.ox;
-    y1 = editObj->View.oy;
-    x2 = x1 + editObj->Width() - 1;
-    y2 = y1 + editObj->Height() - 1;
-
-    Disp->LineWidth(8);
-    Disp->Begin(LINES);
-    Disp->ColorA(255);
-    Disp->ColorRGB(DOT_COLOR);
-    Disp->Vertex2i(x1, 0);
-    Disp->Vertex2i(x1, mHeight);
-    Disp->Vertex2i(x2, 0);
-    Disp->Vertex2i(x2, mHeight);
-    Disp->Vertex2i(0, y1);
-    Disp->Vertex2i(mWidth, y1);
-    Disp->Vertex2i(0, y2);
-    Disp->Vertex2i(mWidth, y2);
-  }
-}
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-void        EvEditor::refreshEvent(void)
-{
-  if (editObj != nullptr)
-  {
-    int16_t x = editObj->View.ox - (DotMove->Width() / 2);
-    int16_t y = editObj->View.oy - (DotMove->Height() / 2);
-
-    if (x != DotMove->Left() || y != DotMove->Top())
-    {
-      DotMove->MoveTo(x, y);
-      DotMove->Modified();
-      Modified();
-    }
-
-    x += editObj->Width();
-    y += editObj->Height();
-
-    if (x != DotReSize->Left() || y != DotReSize->Top())
-    {
-      DotReSize->MoveTo(x, y);
-      DotReSize->Modified();
-      Modified();
-    }
-  }
-}
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-EvProperty::EvProperty(EvDisplay *Disp, const char *Tag) : EvPanel(0, 0, 150, 310, Disp, Tag, VISIBLE_OBJ | SYSTEM_OBJ)
+EvEditProp::EvEditProp(EvDisplay *Disp, const char *Tag) : EvPanel(0, 0, 150, 310, Disp, Tag, VISIBLE_OBJ | SYSTEM_OBJ)
 {
   if (property || !(LabTitle = EvLabel::Create(40, 0, 65, 36, this, nullptr, VISIBLE_DIS_OBJ | SYSTEM_OBJ)) ||
       !(BtnMinimize = EvButton::Create(6, 6, 25, 25, this, nullptr, VISIBLE_OBJ | SYSTEM_OBJ)) ||
@@ -520,7 +376,7 @@ EvProperty::EvProperty(EvDisplay *Disp, const char *Tag) : EvPanel(0, 0, 150, 31
       !(NumPadY = EvNumInt::Create(73, 90, 65, 32, PanText, nullptr, VISIBLE_OBJ | SYSTEM_OBJ | FILTER_DIS_OBJ)) ||
       !(SelAlignX = EvSelector::Create(10, 132, 128, 32, PanText, nullptr, VISIBLE_OBJ | SYSTEM_OBJ | FILTER_DIS_OBJ)) ||
       !(SelAlignY = EvSelector::Create(10, 172, 128, 32, PanText, nullptr, VISIBLE_OBJ | SYSTEM_OBJ | FILTER_DIS_OBJ)) ||
-      !SelShape->SetBmp(ShapeIcons, 4) || !SelAlignX->SetBmp(AlignIconsX, 4) || !SelAlignY->SetBmp(AlignIconsY, 3))
+      !SelShape->SetBmp(&sShapeIcons, 4) || !SelAlignX->SetBmp(&sAlignIconsX, 4) || !SelAlignY->SetBmp(&sAlignIconsY, 3))
     {
       abortCreate();
       return;
@@ -530,7 +386,7 @@ EvProperty::EvProperty(EvDisplay *Disp, const char *Tag) : EvPanel(0, 0, 150, 31
   Minimized = false;
   BgColor(BG_COLOR);
   BdShape(FIXED_CORNERS);
-  MoveTo(propLeft, propTop);
+  MoveTo(sLeft, sTop);
 
   LabTitle->TextLabel("Editor");
   LabTitle->TextColor(TEXT_COLOR);
@@ -647,14 +503,14 @@ EvProperty::EvProperty(EvDisplay *Disp, const char *Tag) : EvPanel(0, 0, 150, 31
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-EvProperty::~EvProperty(void)
+EvEditProp::~EvEditProp(void)
 {
   property = nullptr;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvProperty::refreshEvent(void)
+void        EvEditProp::refreshEvent(void)
 {
   if (editObj != nullptr)
   {
@@ -687,7 +543,7 @@ void        EvProperty::refreshEvent(void)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvProperty::touchEvent(EvTouchEvent *Touch)
+void        EvEditProp::touchEvent(EvTouchEvent *Touch)
 {
   switch (Touch->event)
   {
@@ -698,8 +554,8 @@ void        EvProperty::touchEvent(EvTouchEvent *Touch)
 
     case TOUCH_MOVE:
       MoveRel(Touch->move.x, Touch->move.y);
-      propLeft = Left();
-      propTop = Top();
+      sLeft = Left();
+      sTop = Top();
       Touch->event = 0;
       break;
 
@@ -709,3 +565,184 @@ void        EvProperty::touchEvent(EvTouchEvent *Touch)
       break;
   }
 }
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+static void OnChangeMinimize(EvButton *Sender, int32_t Value)
+{
+  if (Value == true)
+    return;
+
+  if ((property->Minimized = !property->Minimized) == true)
+  {
+    property->ReSize(150, 36);
+    property->BtnMinimize->TextLabel("+");
+    property->BtnMinimize->TextPadding(4, -6);
+  }
+  else
+  {
+    property->ReSize(150, 310);
+    property->BtnMinimize->TextLabel("_");
+    property->BtnMinimize->TextPadding(5, -17);
+  }
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+static void OnChangeEdit(EvToggle *Sender, int32_t Value)
+{
+  EvEditor::SelectObj(editObj);
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+static void OnChangeTab(EvTab *Sender, int32_t Value)
+{
+  switch (Value)
+  {
+    case 0:
+      property->PanObj->Show();
+      property->PanText->Hide();
+      break;
+
+    case 1:
+      property->PanObj->Hide();
+      property->PanText->Show();
+      break;
+  }
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+static void OnChangeLeft(EvNumInt *Sender, int32_t Value)
+{
+  if (editObj != nullptr)
+    editObj->MoveTo(Value, editObj->Top());
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+static void OnChangeTop(EvNumInt *Sender, int32_t Value)
+{
+  if (editObj != nullptr)
+    editObj->MoveTo(editObj->Left(), Value);
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+static void OnChangeWidth(EvNumInt *Sender, int32_t Value)
+{
+  if (editObj != nullptr)
+    editObj->ReSize(Value, editObj->Height());
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+static void OnChangeHeight(EvNumInt *Sender, int32_t Value)
+{
+  if (editObj != nullptr)
+    editObj->ReSize(editObj->Width(), Value);
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+static void OnChangeShape(EvSelector *Sender, int32_t Value)
+{
+  if (editObj != nullptr)
+    editObj->BdShape((editObj->Shape() & ~7) | Value);
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+static void OnChangeFont(EvNumInt *Sender, int32_t Value)
+{
+  if (editObj != nullptr)
+  {
+    Sender->TextColor(editObj->Disp->SystemFont[Value] == 0 ? TEXT_ERROR : TEXT_COLOR);
+    editObj->TextFont(Value);
+  }
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+static void OnChangePadX(EvNumInt *Sender, int32_t Value)
+{
+  if (editObj != nullptr)
+    editObj->TextPadding(Value, editObj->Style.padY);
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+static void OnChangePadY(EvNumInt *Sender, int32_t Value)
+{
+  if (editObj != nullptr)
+    editObj->TextPadding(editObj->Style.padX, Value);
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+static void OnChangeAlignX(EvSelector *Sender, int32_t Value)
+{
+  if (editObj != nullptr)
+    editObj->TextAlign((editObj->Style.align & ~3) | Value);
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+static void OnChangeAlignY(EvSelector *Sender, int32_t Value)
+{
+  if (editObj != nullptr)
+    editObj->TextAlign((editObj->Style.align & ~0x0C) | (Value << 2));
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+static void OnTouchDotMove(EvEditDot *Sender, EvTouchEvent *Touch)
+{
+  int16_t   x, y;
+
+  switch (Touch->event)
+  {
+    case TOUCH_START:
+      Sender->X = editObj->Left();
+      Sender->Y = editObj->Top();
+      Touch->event = 0;
+      break;
+
+    case TOUCH_MOVE:
+      Sender->X += Touch->move.x;
+      Sender->Y += Touch->move.y;
+      x = (((Sender->X << 1) + 5) / 10) * 5;
+      y = (((Sender->Y << 1) + 5) / 10) * 5;
+      editObj->MoveTo(x, y);
+      Touch->event = 0;
+      break;
+  }
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+static void OnTouchDotReSize(EvEditDot *Sender, EvTouchEvent *Touch)
+{
+  int16_t   w, h;
+
+  switch (Touch->event)
+  {
+    case TOUCH_START:
+      Sender->X = editObj->Left() + editObj->Width();
+      Sender->Y = editObj->Top() + editObj->Height();
+      Touch->event = 0;
+      break;
+
+    case TOUCH_MOVE:
+      Sender->X += Touch->move.x;
+      Sender->Y += Touch->move.y;
+      w = ((((Sender->X - editObj->Left()) << 1) + 5) / 10) * 5;
+      h = ((((Sender->Y - editObj->Top()) << 1) + 5) / 10) * 5;
+      editObj->ReSize(w < 0 ? 0 : w, h < 0 ? 0 : h);
+      Touch->event = 0;
+      break;
+  }
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

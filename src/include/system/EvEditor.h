@@ -2,26 +2,48 @@
 #ifndef     _EV_EDITOR_H_
 #define     _EV_EDITOR_H_
 
-#define     BG_COLOR        RGB555(245, 245, 245)
-#define     PANEL_COLOR     RGB555(210, 210, 210)
-#define     NUM_COLOR       RGB555(255, 255, 255)
-#define     DOT_COLOR       RGB555(255,   0,   0)
-#define     TEXT_COLOR      RGB555(  0,   0,   0)
-#define     TEXT_ERROR      RGB555(255,   0,   0)
-#define     TEXT_SELECT     RGB555(255, 255, 255)
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#define     COLOR_SELNONE   RGB555(255, 255, 255)
-#define     COLOR_SELECT    RGB555(  0,   0, 160)
-#define     COLOR_SELNEW    RGB555(160, 160, 210)
-#define     COLOR_ICONS     RGB555(140, 140, 140)
+class       EvEditor;
+class       EvEditDot;
+class       EvEditProp;
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-class EvDot : public EvObj
+class EvEditor : public EvPanel
 {
-  public:
-    EvDot(uint16_t Size, void (*OnTouch)(EvDot *Sender, EvTouchEvent *Touch), EvDisplay *Disp, const char *Tag);
+  protected:
+    EvEditor(EvDisplay *Disp, const char *Tag);
 
+  public:
+    virtual       ~EvEditor(void);
+
+    EvEditDot     *DotMove;
+    EvEditDot     *DotReSize;
+
+  protected:
+    virtual void  drawEvent(void);
+    virtual void  refreshEvent(void);
+
+  public:
+    static bool         Close(void);
+    static bool         Open(EvDisplay *Disp);
+    static bool         IsAlreadyOpen(void);
+    static void         SelectObj(EvObj *Obj);
+    static void         DestroyedObj(EvObj *Obj);
+    static void         AlwaysToFront(void);
+};
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+class EvEditDot : public EvObj
+{
+  friend class EvEditor;
+
+  protected:
+    EvEditDot(uint16_t Size, void (*OnTouch)(EvEditDot *Sender, EvTouchEvent *Touch), EvDisplay *Disp, const char *Tag);
+
+  public:
     int16_t       X, Y;
 
   protected:
@@ -29,32 +51,20 @@ class EvDot : public EvObj
     virtual void  touchEvent(EvTouchEvent *Touch);
 
   private:
-    void          (*mOnTouch)(EvDot *Sender, EvTouchEvent *Touch);
+    void          (*mOnTouch)(EvEditDot *Sender, EvTouchEvent *Touch);
 };
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-class EvEditor : public EvPanel
+class EvEditProp : public EvPanel
 {
-  public:
-    EvEditor(EvDisplay *Disp, const char *Tag);
-    virtual       ~EvEditor(void);
-
-    EvDot         *DotMove;
-    EvDot         *DotReSize;
+  friend class EvEditor;
 
   protected:
-    virtual void  drawEvent(void);
-    virtual void  refreshEvent(void);
-};
+    EvEditProp(EvDisplay *Disp, const char *Tag);
 
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-class EvProperty : public EvPanel
-{
   public:
-    EvProperty(EvDisplay *Disp, const char *Tag);
-    virtual       ~EvProperty(void);
+    virtual       ~EvEditProp(void);
 
     bool          Minimized;
 
@@ -75,6 +85,10 @@ class EvProperty : public EvPanel
   protected:
     virtual void  refreshEvent(void);
     virtual void  touchEvent(EvTouchEvent *Touch);
+
+  private:
+    static int16_t    sLeft;
+    static int16_t    sTop;
 };
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

@@ -217,7 +217,7 @@ void        EvDisplay::update(void)
   if (mKbd)
     mKbd->ToFront();
 
-  EditorToFront();
+  EvEditor::AlwaysToFront();
   dispUpdate();
 
   if ((mSizeDL = ReadDL()) > mMaxDL)
