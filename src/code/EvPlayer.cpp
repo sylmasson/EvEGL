@@ -209,6 +209,7 @@ void        EvPlayer::FullScreen(void)
     mSmallWidth = mWidth;
     mSmallHeight = mHeight;
 
+    ToFront();
     MoveTo(0, 0);
     ReSize(Disp->Width(), Disp->Height());
     FullButton->Modified();
@@ -513,6 +514,7 @@ static void sOnTouchTimeLapse(EvLabel *Sender, EvTouchEvent *Touch)
         player->Video->SetOpacity(128);
         player->BgColor(BG_COLOR, 64);
         player->SetMovable(true);
+        player->ToFront();
         break;
 
       case TOUCH_END:

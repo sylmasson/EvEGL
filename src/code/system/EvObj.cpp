@@ -56,6 +56,7 @@ EvObj::~EvObj(void)
   if (mOwner != nullptr)
     mOwner->RemoveObj(this);
 
+  Disp->Touch.WaitForRelease(this);
   EvEditor::DestroyedObj(this);
 
   if (mCache != nullptr)
@@ -663,13 +664,11 @@ void        EvObj::ToFront(bool AllOwner)
  * You can use any method of the Print class to send characters to the focused object.
  * For example, the keyboard sends the keys with the Print class method to the focused object.
  * 
- * @param[in]  LayoutStart  The Layout at the start.
- * 
  * @see        LostKbdFocus, GetKbdFocus, IsOnKbdFocus
  * 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvObj::SetKbdFocus(uint8_t LayoutStart)
+void        EvObj::SetKbdFocus(void)
 {
   if (Disp->mKbd != nullptr || (Disp->mKbd = EvKbd::Create(0, 0, 0, 0, Disp, "KbdSystem", SYSTEM_OBJ)) != nullptr)
   {
@@ -681,7 +680,7 @@ void        EvObj::SetKbdFocus(uint8_t LayoutStart)
         kbd->FocusObj->lostKbdFocusEvent();
 
       kbd->FocusObj = this;
-      kbd->SetLayout(LayoutStart);
+      kbd->SetLayout(LAYOUT_SHIFT);
       kbd->Open();
       setKbdFocusEvent();
     }

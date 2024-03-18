@@ -2,6 +2,57 @@
 #ifndef     _EV_OBJ_H_
 #define     _EV_OBJ_H_
 
+// Object Status Flags constant
+
+#define     VISIBLE_OBJ     (1 << 0)
+#define     MODIFIED_OBJ    (1 << 1)
+#define     DISABLED_OBJ    (1 << 2)
+#define     MOVED_OBJ       (1 << 3)
+#define     FIXED_OBJ       (1 << 4)
+#define     ABS_OBJ         (1 << 5)
+#define     FLOAT_OBJ       (1 << 6)
+#define     CONTROL_OBJ     (1 << 7)
+#define     MODIF_TEXT_OBJ  (1 << 8)
+#define     FUNCT_USED_OBJ  (1 << 9)
+#define     FILTER_DIS_OBJ  (1 << 13)
+#define     ABORT_OBJ       (1 << 14)
+#define     SYSTEM_OBJ      (1 << 15) // reserved for GUI System
+
+#define     VISIBLE_DIS_OBJ (VISIBLE_OBJ | DISABLED_OBJ)
+
+// Shape constant
+
+#define     ROUND_CORNERS   0
+#define     RATIO_CORNERS   1
+#define     FIXED_CORNERS   2
+#define     SQUARE_CORNERS  3
+#define     USER_CORNERS    4
+#define     SHADOW          (1 << 3)  // Additionnal shadow if supported
+
+// Alignment constant
+
+#define     LEFT_TOP        0
+#define     CENTER_TOP      1
+#define     RIGHT_TOP       2
+#define     JUSTIFY_TOP     3
+#define     LEFT_CENTER     4
+#define     CENTER_CENTER   5
+#define     RIGHT_CENTER    6
+#define     JUSTIFY_CENTER  7
+#define     LEFT_BOTTOM     8
+#define     CENTER_BOTTOM   9
+#define     RIGHT_BOTTOM    10
+#define     JUSTIFY_BOTTOM  11
+#define     CENTER          5
+
+#define     ALIGNMENT_LOCK  (1 << 7)
+
+// Trace flags constant
+
+#define     TRACE_MODIFIED  (1 << 0)
+#define     TRACE_TOUCH     (1 << 1)
+#define     TRACE_FPS       (1 << 2)
+
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
  * @brief     EvView is the informations struct of the partial View of the object.
@@ -25,56 +76,6 @@ struct EvView
   int16_t     y2;   ///< Vertial position of the lower right corner of the partial View of the object.
   int16_t     w;    ///< Width of the partial View of the object.
   int16_t     h;    ///< Height of the partial View of the object.
-};
-
-/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- *
- * @brief     EvTouchEvent is the struct that contains the information of the Touch Event.
- * 
- * @subsection  TOUCH_EVENT List of Touch Event
- *
- * @tableofcontents
- *    Event     |                    Description
- * ------------ | ----------------------------------------------------
- * TOUCH_DONE   | No event occurs
- * TOUCH_START  | Triggered immediately upon touching the object
- * TOUCH_END    | Triggered after releasing the active object
- * TOUCH_MOVE   | Triggered when moving the touch position
- * TOUCH_HOLD   | Triggered when the hold touch time has expired
- * TOUCH_REPEAT | Triggered when the repeat touch time has expired
- * TOUCH_DOUBLE | Triggered when the double touch event is encountered
- * TOUCH_CANCEL | Triggered to force the release of the object
- * 
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-union EvTouchPos
-{
-  uint32_t    xy;
-  struct
-  {
-    int16_t   y;
-    int16_t   x;
-  };
-};
-
-struct EvTouchEvent
-{
-  uint8_t     status;       ///< Status flags for the Touch Event process.
-  uint8_t     event;        ///< Current Touch Event. See @ref TOUCH_EVENT.
-  uint8_t     tag;          ///< Tag value provided by the display.
-  uint8_t     id;
-  int16_t     x;            ///< Horizontal relative touch position to the active object.
-  int16_t     y;            ///< Vertical relative touch position to the active object.
-  EvTouchPos  abs;          ///< Horizontal and vertical absolute touch position.
-  EvTouchPos  prev;         ///< Horizontal and vertical previous absolute touch position.
-  EvTouchPos  move;         ///< Horizontal and vertical moving touch position.
-  EvObj       *obj;
-  EvObj       *owner;
-  uint32_t    timer;        ///< Timer value in msec since the object was initially touched.
-  uint32_t    endTimer;     ///< Timestamp in msec when the finger is release.
-  uint32_t    startTimer;   ///< Timestamp in msec when the object was initially touched.
-  uint32_t    repeatTimer;  ///< Timestamp in msec used for the next TOUCH_HOLD or TOUCH_REPEAT events.
-  uint16_t    repeatDelay;  ///< Time in msec defined between TOUCH_REPEAT events.
 };
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -141,7 +142,7 @@ class EvObj : public Stream
     EvPanel       *GetOwner(uint16_t Level = 1);
     void          SetOwner(EvPanel *Owner);
     void          ToFront(bool AllOwner = true);
-    void          SetKbdFocus(uint8_t Layout = LAYOUT_SHIFT);
+    void          SetKbdFocus(void);
     void          LostKbdFocus(void);
     EvObj         *GetKbdFocus(void);
     bool          IsOnKbdFocus(void);

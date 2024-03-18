@@ -4,6 +4,13 @@
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+#define     CURSOR_NONE     0
+#define     CURSOR_SOLID    1
+#define     CURSOR_BLINK    2
+#define     CURSOR_SMOOTH   3
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
 class EvTextCursor : public EvObj
 {
   protected:

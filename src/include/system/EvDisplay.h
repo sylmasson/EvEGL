@@ -4,13 +4,22 @@
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+#define     DISP_MAX        4
+#define     FREQ_REFRESH    60
+#define     PERIOD_REFRESH  (1000000L / FREQ_REFRESH)   // usec
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
 class EvDisplay : public EvEVE, public EvPanel, public EvSysFont
 {
-    friend class  EvObj;
-    friend class  EvShell;
+  friend class  EvObj;
+  friend class  EvShell;
+
+  protected:
+    EvDisplay(uint16_t Width, uint16_t Height, const char *Tag, const uint32_t *Config, uint8_t CS, uint8_t RST = 255, SPIClass *Spi = nullptr, uint32_t Baudrate = 30000000);
 
   public:
-    EvDisplay(uint16_t Width, uint16_t Height, const char *Tag, const uint32_t *Config, uint8_t CS, uint8_t RST = 255, SPIClass *Spi = nullptr, uint32_t Baudrate = 30000000);
+    virtual       ~EvDisplay();
 
     bool          Lock(void);
     bool          Unlock(void);
@@ -25,9 +34,6 @@ class EvDisplay : public EvEVE, public EvPanel, public EvSysFont
 
   protected:
     void          update(void);
-    void          dispUpdate(void);
-    void          touchUpdate(void);
-    void          touchUpdate(EvTouchEvent *Touch, EvTouchPos TouchPos, uint32_t msec);
 
     uint8_t       mOrientation;
     uint8_t       mFrameCount;
@@ -36,17 +42,15 @@ class EvDisplay : public EvEVE, public EvPanel, public EvSysFont
     uint16_t      mMaxDL;
     EvKbd         *mKbd;
 
-    EvTouchEvent  mTouch[5];
-
   #if defined(ESP32)
     SemaphoreHandle_t   mMutex;
   #endif
 
   private:
     void          (*mOnUpdate)(EvDisplay *Disp);
-    void          (*mOnTouch)(EvObj *Obj, EvTouchEvent *Touch);
 
   public:
+    EvTouch       Touch;
     const uint8_t &Orientation = mOrientation;
 
   protected:
@@ -56,6 +60,9 @@ class EvDisplay : public EvEVE, public EvPanel, public EvSysFont
     static uint32_t   sSecondTimer;
     static uint32_t   sUpdateTimer;
     static EvDisplay  *sDispList[DISP_MAX];
+
+  public:
+    static EvDisplay  *Create(uint16_t Width, uint16_t Height, const char *Tag, const uint32_t *Config, uint8_t CS, uint8_t RST = 255, SPIClass *Spi = nullptr, uint32_t Baudrate = 30000000);
 };
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

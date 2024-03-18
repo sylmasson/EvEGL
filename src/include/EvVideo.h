@@ -2,6 +2,8 @@
 #ifndef     _EV_VIDEO_H_
 #define     _EV_VIDEO_H_
 
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
 #define     VIDEO_RUN       (1 << 0)
 #define     VIDEO_LOAD      (1 << 1)
 #define     VIDEO_REWIND    (1 << 2)

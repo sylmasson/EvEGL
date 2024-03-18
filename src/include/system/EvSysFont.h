@@ -4,6 +4,13 @@
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+#define     FIRST_ROM_FONT  16
+#define     LAST_ROM_FONT   34
+#define     LAST_FONT       31
+#define     FMB_SIZE        148
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
 struct EvFont
 {
 // Begin of Font Metrics Blocks

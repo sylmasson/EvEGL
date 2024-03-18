@@ -4,6 +4,13 @@
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+#define     SIDEBAR_LEFT    0
+#define     SIDEBAR_TOP     1
+#define     SIDEBAR_RIGHT   2
+#define     SIDEBAR_BOTTOM  3
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
 class EvSideBar : public EvPanel
 {
   protected:

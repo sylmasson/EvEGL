@@ -2,6 +2,8 @@
 #ifndef     _EV_IMAGE_H_
 #define     _EV_IMAGE_H_
 
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
 #define     RESIZE_NONE             0
 #define     RESIZE_PROPORTIONAL     1
 #define     RESIZE_STRETCH          2

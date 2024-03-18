@@ -2,6 +2,15 @@
 #ifndef     _EV_SCROLLBAR_H_
 #define     _EV_SCROLLBAR_H_
 
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+#define     SCROLL_BAR_OFF  0
+#define     SCROLL_BAR_ON   1
+#define     SCROLL_BAR_AUTO 2
+
+#define     SCROLL_MOVING   (1 << 0)
+#define     SCROLL_TIMER    (1 << 1)
+
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
  * @brief     EvScrollBar class is used to create a standard ScrollBar.

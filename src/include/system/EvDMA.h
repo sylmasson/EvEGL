@@ -6,10 +6,10 @@
 
 class EvDMA
 {
+  friend class    EvTaskDMA;
+
   public:
     enum {PENDING, BEGIN, LOADING, COMPLETED, ABORT};
-
-    friend class    EvTaskDMA;
 
     uint16_t        Priority;
     uint16_t        Status;

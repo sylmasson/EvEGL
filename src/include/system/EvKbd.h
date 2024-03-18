@@ -4,6 +4,15 @@
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+#define     LAYOUT_ALPHA    0
+#define     LAYOUT_NUM1     1
+#define     LAYOUT_NUM2     2
+#define     LAYOUT_KEYPAD   3
+#define     LAYOUT_SHIFT    (1 << 6)
+#define     LAYOUT_CAPS     (1 << 7)
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
 struct EvKeyStyle
 {
   uint16_t    width;

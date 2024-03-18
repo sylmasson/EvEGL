@@ -1,3 +1,11 @@
+commit 536b3709bb0dc1c7d62f41450285993ad34aa264
+Author: Sylvain Masson <sylvainmasson@Sylvains-Mac-mini.local>
+Date:   Fri Mar 15 10:32:25 2024 -0400
+
+    EvEditor: Global functions have been replaced by static EvEditor functions. General code cleanup
+    
+    EvDisplay, EvShell, EvObj: Modifications related to changes to EvEditor
+
 commit 87fd8e6803916080afa94959ee8d5cb0a1b6bb9a
 Author: Sylvain Masson <sylvainmasson@Sylvains-Mac-mini.local>
 Date:   Thu Mar 14 13:15:00 2024 -0400
