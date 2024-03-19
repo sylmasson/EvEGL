@@ -123,7 +123,7 @@ void        EvButton::SetColor(uint16_t ColorUp, uint16_t ColorDown)
  * 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvButton::SetOnTouch(void (*OnTouch)(EvButton *Sender, EvTouchEvent *Touch))
+void        EvButton::SetOnTouch(void (*OnTouch)(EvButton *Sender, const EvTouchEvent *Touch))
 {
   mOnTouch = OnTouch;
 }
@@ -180,7 +180,7 @@ void        EvButton::drawEvent(void)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvButton::touchEvent(EvTouchEvent *Touch)
+void        EvButton::touchEvent(const EvTouchEvent *Touch)
 {
   if (mOnTouch != nullptr)
     mOnTouch(this, Touch);

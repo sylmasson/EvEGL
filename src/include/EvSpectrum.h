@@ -15,7 +15,7 @@ class EvSpectrum : public EvObj
     void          RawData(uint16_t X, uint8_t Data);
     void          RawData(uint16_t X, uint8_t *Data, uint16_t Count);
     void          SetColor(uint16_t LineColor, uint16_t FillColor);
-    void          SetOnTouch(void (*OnTouch)(EvSpectrum *Sender, EvTouchEvent *Touch));
+    void          SetOnTouch(void (*OnTouch)(EvSpectrum *Sender, const EvTouchEvent *Touch));
 
   protected:
     uint8_t       *mData;
@@ -24,11 +24,11 @@ class EvSpectrum : public EvObj
     uint16_t      mFillColor;
 
     virtual void  drawEvent(void);
-    virtual void  touchEvent(EvTouchEvent *Touch);
+    virtual void  touchEvent(const EvTouchEvent *Touch);
     virtual void  dataScaling(uint16_t Ind, int16_t &X, int16_t &Y);
 
   private:
-    void          (*mOnTouch)(EvSpectrum *Sender, EvTouchEvent *Touch);
+    void          (*mOnTouch)(EvSpectrum *Sender, const EvTouchEvent *Touch);
 
   public:
     const uint16_t  &DataSize = mDataSize;

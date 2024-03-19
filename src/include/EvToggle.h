@@ -27,7 +27,7 @@ class EvToggle : public EvObj
     int16_t       Value(void);
     bool          SetValue(int16_t Value);
     void          SetColor(uint16_t ColorOn, uint16_t ColorOff, uint16_t ColorKnob);
-    void          SetOnTouch(void (*OnTouch)(EvToggle *Sender, EvTouchEvent *Touch));
+    void          SetOnTouch(void (*OnTouch)(EvToggle *Sender, const EvTouchEvent *Touch));
     void          SetOnChange(void (*OnChange)(EvToggle *Sender, int32_t Value));
 
   protected:
@@ -43,10 +43,10 @@ class EvToggle : public EvObj
 
     virtual void  drawEvent(void);
     virtual void  refreshEvent(void);
-    virtual void  touchEvent(EvTouchEvent *Touch);
+    virtual void  touchEvent(const EvTouchEvent *Touch);
 
   private:
-    void          (*mOnTouch)(EvToggle *Sender, EvTouchEvent *Touch);
+    void          (*mOnTouch)(EvToggle *Sender, const EvTouchEvent *Touch);
     void          (*mOnChange)(EvToggle *Sender, int32_t Value);
 
   public:

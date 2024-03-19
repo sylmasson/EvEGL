@@ -1,3 +1,13 @@
+commit c07ebdbac96a9038948c8fe5389c00b780d2b2e6
+Author: Sylvain Masson <sylvainmasson@Sylvains-Mac-mini.local>
+Date:   Mon Mar 18 11:01:04 2024 -0400
+
+    EvDisplay: Add static function Create to initilize a new display
+    
+    EvTouch, EvDisplay: New EvTouch class used only by EvDisplay class
+    
+    Global: Moving the constant from EvGUI to the respective class file
+
 commit 536b3709bb0dc1c7d62f41450285993ad34aa264
 Author: Sylvain Masson <sylvainmasson@Sylvains-Mac-mini.local>
 Date:   Fri Mar 15 10:32:25 2024 -0400

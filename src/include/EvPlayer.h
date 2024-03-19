@@ -34,7 +34,7 @@ class EvPlayer : public EvPanel
     bool          IsRunning(void);
     bool          IsMovable(void);
     void          SetMovable(bool Value);
-    void          TouchInfo(EvTouchEvent *Touch);
+    void          TouchInfo(const EvTouchEvent *Touch);
 
   protected:
     bool          mRun;
@@ -51,7 +51,7 @@ class EvPlayer : public EvPanel
 
     virtual void  resizeEvent(void);
     virtual void  refreshEvent(void);
-    virtual void  touchEvent(EvTouchEvent *Touch);
+    virtual void  touchEvent(const EvTouchEvent *Touch);
 
   private:
     void          resize(void);

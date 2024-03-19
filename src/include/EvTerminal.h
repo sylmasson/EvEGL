@@ -12,7 +12,7 @@ class EvTerminal : public EvTextBlock
     uint16_t      mScrolling;
 
     virtual void  refreshEvent(void);
-    virtual void  touchEvent(EvTouchEvent *Touch);
+    virtual void  touchEvent(const EvTouchEvent *Touch);
 
   public:
     EvTextCursor  *Cursor;

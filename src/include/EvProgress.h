@@ -28,7 +28,7 @@ class EvProgress : public EvObj
     bool          SetValue(int16_t Value);
     void          SetColor(uint16_t ColorLower, uint16_t ColorUpper);
     void          SetFormat(const char *Format, const float M = 0.1, const float B = 0.0);
-    void          SetOnTouch(void (*OnTouch)(EvProgress *Sender, EvTouchEvent *Touch));
+    void          SetOnTouch(void (*OnTouch)(EvProgress *Sender, const EvTouchEvent *Touch));
 
   protected:
     int16_t       mValue;
@@ -38,10 +38,10 @@ class EvProgress : public EvObj
     float         mM, mB;
 
     virtual void  drawEvent(void);
-    virtual void  touchEvent(EvTouchEvent *Touch);
+    virtual void  touchEvent(const EvTouchEvent *Touch);
 
   private:
-    void          (*mOnTouch)(EvProgress *Sender, EvTouchEvent *Touch);
+    void          (*mOnTouch)(EvProgress *Sender, const EvTouchEvent *Touch);
 
   public:
     static EvProgress *Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ);

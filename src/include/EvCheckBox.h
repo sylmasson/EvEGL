@@ -26,7 +26,7 @@ class EvCheckBox : public EvObj
     int16_t       Value(void);
     bool          SetValue(int16_t Value);
     void          SetColor(uint16_t ColorCheck, uint16_t ColorUncheck, uint16_t ColorBorder);
-    void          SetOnTouch(void (*OnTouch)(EvCheckBox *Sender, EvTouchEvent *Touch));
+    void          SetOnTouch(void (*OnTouch)(EvCheckBox *Sender, const EvTouchEvent *Touch));
     void          SetOnChange(void (*OnChange)(EvCheckBox *Sender, int32_t Value));
 
   protected:
@@ -37,10 +37,10 @@ class EvCheckBox : public EvObj
     bool          mTouchFlag;
 
     virtual void  drawEvent(void);
-    virtual void  touchEvent(EvTouchEvent *Touch);
+    virtual void  touchEvent(const EvTouchEvent *Touch);
 
   private:
-    void          (*mOnTouch)(EvCheckBox *Sender, EvTouchEvent *Touch);
+    void          (*mOnTouch)(EvCheckBox *Sender, const EvTouchEvent *Touch);
     void          (*mOnChange)(EvCheckBox *Sender, int32_t Value);
 
   public:

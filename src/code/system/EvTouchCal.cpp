@@ -137,7 +137,7 @@ void        EvTouchCal::refreshEvent(void)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvTouchCal::touchEvent(EvTouchEvent *Touch)
+void        EvTouchCal::touchEvent(const EvTouchEvent *Touch)
 {
   int32_t   mX, mY, oX, oY;
 

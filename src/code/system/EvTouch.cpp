@@ -39,155 +39,153 @@ void        EvTouch::update(EvDisplay *Disp)
 
   if (Disp->CapacitiveTouchEngine && !Disp->rd8(REG_CTOUCH_EXTENDED))
   {
-    mTouchEvent[1].id = 1;
     touchPos.xy = Disp->rd32(REG_CTOUCH_TOUCH1_XY);
     mTouchEvent[1].tag = ((touchPos.xy & 0x80008000) ? 0 : Disp->rd8(REG_CTOUCH_TAG1));
-    update(Disp, &mTouchEvent[1], touchPos, msec);
+    update(Disp, 1, touchPos, msec);
 
-    mTouchEvent[2].id = 2;
     touchPos.xy = Disp->rd32(REG_CTOUCH_TOUCH2_XY);
     mTouchEvent[2].tag = ((touchPos.xy & 0x80008000) ? 0 : Disp->rd8(REG_CTOUCH_TAG2));
-    update(Disp, &mTouchEvent[2], touchPos, msec);
+    update(Disp, 2, touchPos, msec);
 
-    mTouchEvent[3].id = 3;
     touchPos.xy = Disp->rd32(REG_CTOUCH_TOUCH3_XY);
     mTouchEvent[3].tag = ((touchPos.xy & 0x80008000) ? 0 : Disp->rd8(REG_CTOUCH_TAG3));
-    update(Disp, &mTouchEvent[3], touchPos, msec);
+    update(Disp, 3, touchPos, msec);
 
-    mTouchEvent[4].id = 4;
     touchPos.x = Disp->rd16(REG_CTOUCH_TOUCH4_X);
     touchPos.y = Disp->rd16(REG_CTOUCH_TOUCH4_Y);
     mTouchEvent[4].tag = ((touchPos.xy & 0x80008000) ? 0 : Disp->rd8(REG_CTOUCH_TAG4));
-    update(Disp, &mTouchEvent[4], touchPos, msec);
+    update(Disp, 4, touchPos, msec);
   }
 
-  mTouchEvent[0].id = 0;
   touchPos.xy = Disp->rd32(REG_TOUCH_SCREEN_XY);
   mTouchEvent[0].tag = ((touchPos.xy & 0x80008000) ? 0 : Disp->rd8(REG_TOUCH_TAG));
-  update(Disp, &mTouchEvent[0], touchPos, msec);
+  update(Disp, 0, touchPos, msec);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvTouch::update(EvDisplay *Disp, EvTouchEvent *Touch, EvTouchPos TouchPos, uint32_t msec)
+void        EvTouch::update(EvDisplay *Disp, uint8_t Id, EvTouchPos TouchPos, uint32_t msec)
 {
-  if (Touch->status & TOUCH_RELEASE)
+  EvTouchEvent  *touch = &mTouchEvent[Id];
+
+  if (touch->status & TOUCH_RELEASE)
   {
-    if (!Touch->tag)
-      Touch->status = 0;
+    if (!touch->tag)
+      touch->status = 0;
     return;
   }
 
-  Touch->event = 0;
-  Touch->timer = msec - Touch->startTimer;
+  touch->id = Id;
+  touch->event = 0;
+  touch->timer = msec - touch->startTimer;
 
-  if (!Touch->tag)
+  if (!touch->tag)
   {
-    if ((Touch->status & TOUCHING_FLAG) != 0 && Touch->owner != nullptr)
+    if ((touch->status & TOUCHING_FLAG) != 0 && touch->owner != nullptr)
     { // end & double event
-      if (Touch->timer > DOUBLE_DELAY)
-        Touch->status = 0;
+      if (touch->timer > DOUBLE_DELAY)
+        touch->status = 0;
       else
       {
-        Touch->status &= ~(TOUCHING_FLAG | REPEAT_FLAG);
-        Touch->status += DOUBLE_COUNT;
+        touch->status &= ~(TOUCHING_FLAG | REPEAT_FLAG);
+        touch->status += DOUBLE_COUNT;
 
-        if (Touch->status & DOUBLE_FLAG)
+        if (touch->status & DOUBLE_FLAG)
         {
-          Touch->event = TOUCH_DOUBLE;
+          touch->event = TOUCH_DOUBLE;
 
           if (mOnTouch != nullptr)
-            mOnTouch(Touch->owner, Touch);
+            mOnTouch(touch->owner, touch);
 
-          if (Touch->event)
-            Touch->owner->TouchUpdate(Touch);
+          if (touch->event)
+            touch->owner->TouchUpdate(touch);
 
-          Touch->status = 0;
+          touch->status = 0;
         }
       }
 
-      Touch->endTimer = msec;
-      Touch->event = TOUCH_END;
-      Touch->owner->TouchEnd();
+      touch->endTimer = msec;
+      touch->event = TOUCH_END;
+      touch->owner->TouchEnd();
     }
-    else if (Touch->status == 0 || Touch->timer > DOUBLE_DELAY)
-      Touch->status = 0;
+    else if (touch->status == 0 || touch->timer > DOUBLE_DELAY)
+      touch->status = 0;
   }
   else
   {
-    Touch->abs.xy = TouchPos.xy;
+    touch->abs.xy = TouchPos.xy;
 
-    if ((Touch->status & TOUCHING_FLAG) == 0)
+    if ((touch->status & TOUCHING_FLAG) == 0)
     { // start event
       EvObj   *owner;
 
-      Touch->obj = nullptr;
-      Touch->owner = nullptr;
+      touch->obj = nullptr;
+      touch->owner = nullptr;
 
-      if ((owner = Disp->Touching(Touch)) != nullptr)
+      if ((owner = Disp->Touching(touch)) != nullptr)
       {
-        if (Touch->timer > (DOUBLE_DELAY * 2))
-          Touch->status &= ~(DOUBLE_COUNT | DOUBLE_FLAG);
+        if (touch->timer > (DOUBLE_DELAY * 2))
+          touch->status &= ~(DOUBLE_COUNT | DOUBLE_FLAG);
 
-        Touch->status |= TOUCHING_FLAG;
+        touch->status |= TOUCHING_FLAG;
 
         if (!owner->TouchStart())
-          Touch->owner = nullptr;
+          touch->owner = nullptr;
         else
         {
-          Touch->owner = owner;
-          Touch->event = TOUCH_START;
-          Touch->x = Touch->abs.x - Touch->owner->View.ox;
-          Touch->y = Touch->abs.y - Touch->owner->View.oy;
-          Touch->prev.xy = Touch->abs.xy;
-          Touch->move.xy = 0;
-          Touch->repeatDelay = REPEAT_DELAY;
-          Touch->repeatTimer = HOLD_DELAY;
-          Touch->startTimer = msec;
-          Touch->timer = 0;
+          touch->owner = owner;
+          touch->event = TOUCH_START;
+          touch->x = touch->abs.x - touch->owner->View.ox;
+          touch->y = touch->abs.y - touch->owner->View.oy;
+          touch->prev.xy = touch->abs.xy;
+          touch->move.xy = 0;
+          touch->repeatDelay = REPEAT_DELAY;
+          touch->repeatTimer = HOLD_DELAY;
+          touch->startTimer = msec;
+          touch->timer = 0;
         }
       }
     }
-    else if (Touch->owner != nullptr)
+    else if (touch->owner != nullptr)
     { // hold, repeat and move event
-      Touch->x = Touch->abs.x - Touch->owner->View.ox;
-      Touch->y = Touch->abs.y - Touch->owner->View.oy;
+      touch->x = touch->abs.x - touch->owner->View.ox;
+      touch->y = touch->abs.y - touch->owner->View.oy;
 
-      if (Touch->timer >= Touch->repeatTimer)
+      if (touch->timer >= touch->repeatTimer)
       {
-        Touch->event = (Touch->status & REPEAT_FLAG) ? TOUCH_REPEAT : TOUCH_HOLD;
-        Touch->repeatTimer += Touch->repeatDelay;
-        Touch->status |= REPEAT_FLAG;
+        touch->event = (touch->status & REPEAT_FLAG) ? TOUCH_REPEAT : TOUCH_HOLD;
+        touch->repeatTimer += touch->repeatDelay;
+        touch->status |= REPEAT_FLAG;
       }
       else
       {
-        Touch->move.x = Touch->abs.x - Touch->prev.x;
-        Touch->move.y = Touch->abs.y - Touch->prev.y;
+        touch->move.x = touch->abs.x - touch->prev.x;
+        touch->move.y = touch->abs.y - touch->prev.y;
 
-        if (Touch->status & MOVE_FLAG)
+        if (touch->status & MOVE_FLAG)
         {
-          Touch->prev.xy = Touch->abs.xy;
+          touch->prev.xy = touch->abs.xy;
 
-          if (Touch->move.xy != 0)
-            Touch->event = TOUCH_MOVE;
+          if (touch->move.xy != 0)
+            touch->event = TOUCH_MOVE;
         }
-        else if (abs(Touch->move.x) > 3 || abs(Touch->move.y) > 3)
+        else if (abs(touch->move.x) > 3 || abs(touch->move.y) > 3)
         {
-          Touch->prev.xy = Touch->abs.xy;
-          Touch->status |= MOVE_FLAG;
-          Touch->event = TOUCH_MOVE;
+          touch->prev.xy = touch->abs.xy;
+          touch->status |= MOVE_FLAG;
+          touch->event = TOUCH_MOVE;
         }
       }
     }
   }
 
-  if (Touch->event)
+  if (touch->event)
   {
     if (mOnTouch != nullptr)
-      mOnTouch(Touch->owner, Touch);
+      mOnTouch(touch->owner, touch);
 
-    if (Touch->event)
-      Touch->owner->TouchUpdate(Touch);
+    if (touch->event)
+      touch->owner->TouchUpdate(touch);
   }
 }
 

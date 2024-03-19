@@ -143,7 +143,7 @@ void        EvTextBox::SetMaxLength(uint16_t MaxLength)
 
 /// @copydoc EvButton::SetOnTouch()
 
-void        EvTextBox::SetOnTouch(void (*OnTouch)(EvTextBox *Sender, EvTouchEvent *Touch))
+void        EvTextBox::SetOnTouch(void (*OnTouch)(EvTextBox *Sender, const EvTouchEvent *Touch))
 {
   mOnTouch = OnTouch;
 }
@@ -322,7 +322,7 @@ size_t      EvTextBox::write(const uint8_t *Buffer, size_t Count)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvTextBox::selectWord(EvTouchEvent *Touch)
+void        EvTextBox::selectWord(const EvTouchEvent *Touch)
 {
   int16_t   c, x = textLeft() + mOffsetX;
   uint16_t  ind = 0, length = mLabel.length();
@@ -359,7 +359,7 @@ void        EvTextBox::selectWord(EvTouchEvent *Touch)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvTextBox::moveToWord(EvTouchEvent *Touch)
+void        EvTextBox::moveToWord(const EvTouchEvent *Touch)
 {
   int16_t   c, x = textLeft() + mOffsetX;
   uint16_t  ind = 0, length = mLabel.length();
@@ -390,7 +390,7 @@ void        EvTextBox::moveToWord(EvTouchEvent *Touch)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvTextBox::moveToChar(EvTouchEvent *Touch)
+void        EvTextBox::moveToChar(const EvTouchEvent *Touch)
 {
   int16_t   x = textLeft() + mOffsetX;
   uint16_t  length = mLabel.length();
@@ -555,7 +555,7 @@ void        EvTextBox::lostKbdFocusEvent(void)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvTextBox::touchEvent(EvTouchEvent *Touch)
+void        EvTextBox::touchEvent(const EvTouchEvent *Touch)
 {
   if (mOnTouch != nullptr)
     mOnTouch(this, Touch);

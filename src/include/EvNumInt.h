@@ -30,7 +30,7 @@ class EvNumInt : public EvObj
     bool          SetValue(int32_t Value);
     void          SetFormat(const char *Format);
     void          SetRange(int32_t Min, int32_t Max);
-    void          SetOnTouch(void (*OnTouch)(EvNumInt *Sender, EvTouchEvent *Touch));
+    void          SetOnTouch(void (*OnTouch)(EvNumInt *Sender, const EvTouchEvent *Touch));
     void          SetOnChange(void (*OnChange)(EvNumInt *Sender, int32_t Value));
 
   protected:
@@ -42,10 +42,10 @@ class EvNumInt : public EvObj
     const char    *mFormat;
 
     virtual void  drawEvent(void);
-    virtual void  touchEvent(EvTouchEvent *Touch);
+    virtual void  touchEvent(const EvTouchEvent *Touch);
 
   private:
-    void          (*mOnTouch)(EvNumInt *Sender, EvTouchEvent *Touch);
+    void          (*mOnTouch)(EvNumInt *Sender, const EvTouchEvent *Touch);
     void          (*mOnChange)(EvNumInt *Sender, int32_t Value);
 
   public:

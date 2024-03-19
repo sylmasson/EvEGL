@@ -24,7 +24,7 @@ class EvButton : public EvObj
     int16_t       Value(void);
     bool          SetValue(int16_t Value);
     void          SetColor(uint16_t ColorUp, uint16_t ColorDown);
-    void          SetOnTouch(void (*OnTouch)(EvButton *Sender, EvTouchEvent *Touch));
+    void          SetOnTouch(void (*OnTouch)(EvButton *Sender, const EvTouchEvent *Touch));
     void          SetOnChange(void (*OnChange)(EvButton *Sender, int32_t Value));
 
   protected:
@@ -34,10 +34,10 @@ class EvButton : public EvObj
     bool          mTouchFlag;
 
     virtual void  drawEvent(void);
-    virtual void  touchEvent(EvTouchEvent *Touch);
+    virtual void  touchEvent(const EvTouchEvent *Touch);
 
   private:
-    void          (*mOnTouch)(EvButton *Sender, EvTouchEvent *Touch);
+    void          (*mOnTouch)(EvButton *Sender, const EvTouchEvent *Touch);
     void          (*mOnChange)(EvButton *Sender, int32_t Value);
 
   public:

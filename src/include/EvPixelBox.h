@@ -16,7 +16,7 @@ class EvPixelBox : public EvObj
     void          ScrollDown(void);
     void          SetPixel(uint16_t X, uint16_t Y, uint8_t Color);
     void          SetPixel(uint16_t X, uint16_t Y, uint8_t *Color, uint16_t Count);
-    void          SetOnTouch(void (*OnTouch)(EvPixelBox *Sender, EvTouchEvent *Touch));
+    void          SetOnTouch(void (*OnTouch)(EvPixelBox *Sender, const EvTouchEvent *Touch));
 
   protected:
     uint16_t      mBufInd;
@@ -24,10 +24,10 @@ class EvPixelBox : public EvObj
     const EvMem   *mDest;
 
     virtual void  drawEvent(void);
-    virtual void  touchEvent(EvTouchEvent *Touch);
+    virtual void  touchEvent(const EvTouchEvent *Touch);
 
   private:
-    void          (*mOnTouch)(EvPixelBox *Sender, EvTouchEvent *Touch);
+    void          (*mOnTouch)(EvPixelBox *Sender, const EvTouchEvent *Touch);
 
   public:
     static EvPixelBox  *Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ);

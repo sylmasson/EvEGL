@@ -23,11 +23,11 @@
 
 static void sOnLoadFrame(EvVideo *Sender, uint32_t FrameNbr);
 static void sOnChangeTimeLine(EvSlider *Sender, int32_t Value);
-static void sOnTouchTimeLine(EvSlider *Sender, EvTouchEvent *Touch);
-static void sOnTouchTimeLapse(EvLabel *Sender, EvTouchEvent *Touch);
-static void sOnTouchPlayButton(EvLabel *Sender, EvTouchEvent *Touch);
-static void sOnTouchFullButton(EvLabel *Sender, EvTouchEvent *Touch);
-static void sOnTouchSpeedButton(EvLabel *Sender, EvTouchEvent *Touch);
+static void sOnTouchTimeLine(EvSlider *Sender, const EvTouchEvent *Touch);
+static void sOnTouchTimeLapse(EvLabel *Sender, const EvTouchEvent *Touch);
+static void sOnTouchPlayButton(EvLabel *Sender, const EvTouchEvent *Touch);
+static void sOnTouchFullButton(EvLabel *Sender, const EvTouchEvent *Touch);
+static void sOnTouchSpeedButton(EvLabel *Sender, const EvTouchEvent *Touch);
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
@@ -262,7 +262,7 @@ void        EvPlayer::SetMovable(bool Value)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvPlayer::TouchInfo(EvTouchEvent *Touch)
+void        EvPlayer::TouchInfo(const EvTouchEvent *Touch)
 {
   switch (Touch->event)
   {
@@ -316,7 +316,7 @@ void        EvPlayer::refreshEvent(void)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvPlayer::touchEvent(EvTouchEvent *Touch)
+void        EvPlayer::touchEvent(const EvTouchEvent *Touch)
 {
   if (Touch->event == TOUCH_END && PlayButton->IsVisible() && mTouchCount <= 1)
     HideInfo();
@@ -494,7 +494,7 @@ static void sOnChangeTimeLine(EvSlider *Sender, int32_t Value)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-static void sOnTouchTimeLine(EvSlider *Sender, EvTouchEvent *Touch)
+static void sOnTouchTimeLine(EvSlider *Sender, const EvTouchEvent *Touch)
 {
   EvPlayer  *player = (EvPlayer *)Sender->GetOwner(2);
 
@@ -503,7 +503,7 @@ static void sOnTouchTimeLine(EvSlider *Sender, EvTouchEvent *Touch)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-static void sOnTouchTimeLapse(EvLabel *Sender, EvTouchEvent *Touch)
+static void sOnTouchTimeLapse(EvLabel *Sender, const EvTouchEvent *Touch)
 {
   EvPlayer  *player = (EvPlayer *)Sender->GetOwner(2);
 
@@ -533,7 +533,7 @@ static void sOnTouchTimeLapse(EvLabel *Sender, EvTouchEvent *Touch)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-static void sOnTouchPlayButton(EvLabel *Sender, EvTouchEvent *Touch)
+static void sOnTouchPlayButton(EvLabel *Sender, const EvTouchEvent *Touch)
 {
   EvPlayer  *player = (EvPlayer *)Sender->GetOwner();
 
@@ -557,7 +557,7 @@ static void sOnTouchPlayButton(EvLabel *Sender, EvTouchEvent *Touch)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-static void sOnTouchFullButton(EvLabel *Sender, EvTouchEvent *Touch)
+static void sOnTouchFullButton(EvLabel *Sender, const EvTouchEvent *Touch)
 {
   EvPlayer  *player = (EvPlayer *)Sender->GetOwner(2);
 
@@ -569,7 +569,7 @@ static void sOnTouchFullButton(EvLabel *Sender, EvTouchEvent *Touch)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-static void sOnTouchSpeedButton(EvLabel *Sender, EvTouchEvent *Touch)
+static void sOnTouchSpeedButton(EvLabel *Sender, const EvTouchEvent *Touch)
 {
   EvPlayer  *player = (EvPlayer *)Sender->GetOwner(2);
 

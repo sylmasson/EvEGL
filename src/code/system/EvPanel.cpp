@@ -244,7 +244,7 @@ void        EvPanel::SetToFront(EvObj *Obj, bool AllOwner)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-EvObj       *EvPanel::Touching(EvTouchEvent *Touch)
+EvObj       *EvPanel::Touching(const EvTouchEvent *Touch)
 {
   EvObj     *obj, *touchObj;
 

@@ -44,7 +44,7 @@ bool        EvSmeter::SetValue(int32_t Value)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvSmeter::SetOnTouch(void (*OnTouch)(EvSmeter *Sender, EvTouchEvent *Touch))
+void        EvSmeter::SetOnTouch(void (*OnTouch)(EvSmeter *Sender, const EvTouchEvent *Touch))
 {
   mOnTouch = OnTouch;
 }
@@ -69,7 +69,7 @@ void        EvSmeter::resizeEvent(void)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvSmeter::touchEvent(EvTouchEvent *Touch)
+void        EvSmeter::touchEvent(const EvTouchEvent *Touch)
 {
   if (mOnTouch != nullptr)
     mOnTouch(this, Touch);

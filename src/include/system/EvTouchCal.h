@@ -30,7 +30,7 @@ class EvTouchCal : public EvObj
 
     virtual void  drawEvent(void);
     virtual void  refreshEvent(void);
-    virtual void  touchEvent(EvTouchEvent *Touch);
+    virtual void  touchEvent(const EvTouchEvent *Touch);
 
   private:
     void          (*mOnExit)(EvTouchCal *Sender, bool Save);

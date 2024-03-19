@@ -16,7 +16,7 @@ class EvTextBox : public EvPanel
     void          TextLabel(const char *Label);
     void          TextLabel(const String &Label);
     void          SetMaxLength(uint16_t MaxLength);
-    void          SetOnTouch(void (*OnTouch)(EvTextBox *Sender, EvTouchEvent *Touch));
+    void          SetOnTouch(void (*OnTouch)(EvTextBox *Sender, const EvTouchEvent *Touch));
     void          SetOnChange(void (*OnChange)(EvTextBox *Sender, const String &Str));
     void          SetOnReturn(void (*OnChange)(EvTextBox *Sender, const String &Str));
     void          SetOnFilter(int (*OnFilter)(EvTextBox *Sender, const uint8_t C));
@@ -31,9 +31,9 @@ class EvTextBox : public EvPanel
     virtual size_t  write(const uint8_t *Buffer, size_t Count);
 
   protected:
-    void          selectWord(EvTouchEvent *Touch);
-    void          moveToWord(EvTouchEvent *Touch);
-    void          moveToChar(EvTouchEvent *Touch);
+    void          selectWord(const EvTouchEvent *Touch);
+    void          moveToWord(const EvTouchEvent *Touch);
+    void          moveToChar(const EvTouchEvent *Touch);
     void          moveCursor(void);
     int16_t       textLeft(void);
     int16_t       textTop(void);
@@ -44,7 +44,7 @@ class EvTextBox : public EvPanel
     virtual void  refreshEvent(void);
     virtual void  setKbdFocusEvent(void);
     virtual void  lostKbdFocusEvent(void);
-    virtual void  touchEvent(EvTouchEvent *Touch);
+    virtual void  touchEvent(const EvTouchEvent *Touch);
 
     uint8_t       mFlags;
     uint8_t       mAlign;
@@ -54,7 +54,7 @@ class EvTextBox : public EvPanel
     int16_t       mSelectCount;
 
   private:
-    void          (*mOnTouch)(EvTextBox *Sender, EvTouchEvent *Touch);
+    void          (*mOnTouch)(EvTextBox *Sender, const EvTouchEvent *Touch);
     void          (*mOnChange)(EvTextBox *Sender, const String &Str);
     void          (*mOnReturn)(EvTextBox *Sender, const String &Str);
     int           (*mOnFilter)(EvTextBox *Sender, const uint8_t C);

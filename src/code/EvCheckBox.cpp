@@ -115,7 +115,7 @@ void        EvCheckBox::SetColor(uint16_t ColorCheck, uint16_t ColorUncheck, uin
 
 /// @copydoc EvButton::SetOnTouch()
 
-void        EvCheckBox::SetOnTouch(void (*OnTouch)(EvCheckBox *Sender, EvTouchEvent *Touch))
+void        EvCheckBox::SetOnTouch(void (*OnTouch)(EvCheckBox *Sender, const EvTouchEvent *Touch))
 {
   mOnTouch = OnTouch;
 }
@@ -167,7 +167,7 @@ void        EvCheckBox::drawEvent(void)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvCheckBox::touchEvent(EvTouchEvent *Touch)
+void        EvCheckBox::touchEvent(const EvTouchEvent *Touch)
 {
   if (mOnTouch != nullptr)
     mOnTouch(this, Touch);

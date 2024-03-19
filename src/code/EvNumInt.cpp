@@ -132,7 +132,7 @@ void        EvNumInt::SetRange(int32_t Min, int32_t Max)
 
 /// @copydoc EvButton::SetOnTouch()
 
-void        EvNumInt::SetOnTouch(void (*OnTouch)(EvNumInt *Sender, EvTouchEvent *Touch))
+void        EvNumInt::SetOnTouch(void (*OnTouch)(EvNumInt *Sender, const EvTouchEvent *Touch))
 {
   mOnTouch = OnTouch;
 }
@@ -153,7 +153,7 @@ void        EvNumInt::drawEvent(void)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvNumInt::touchEvent(EvTouchEvent *Touch)
+void        EvNumInt::touchEvent(const EvTouchEvent *Touch)
 {
   uint16_t  delta;
   uint16_t  bdColor;

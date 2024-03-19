@@ -1366,7 +1366,7 @@ void        EvObj::TouchMax(uint8_t Max)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvObj::TouchUpdate(EvTouchEvent *Touch)
+void        EvObj::TouchUpdate(const EvTouchEvent *Touch)
 {
   static const char   *nameEvent[7] = {"START", "END", "MOVE", "HOLD", "REPEAT", "DOUBLE", "CANCEL"};
 
@@ -1393,7 +1393,7 @@ void        EvObj::TouchUpdate(EvTouchEvent *Touch)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-EvObj       *EvObj::Touching(EvTouchEvent *Touch)
+EvObj       *EvObj::Touching(const EvTouchEvent *Touch)
 {
   int16_t   x, y, pad = 12;
 

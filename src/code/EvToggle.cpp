@@ -126,7 +126,7 @@ void        EvToggle::SetColor(uint16_t ColorOn, uint16_t ColorOff, uint16_t Col
 
 /// @copydoc EvButton::SetOnTouch()
 
-void        EvToggle::SetOnTouch(void (*OnTouch)(EvToggle *Sender, EvTouchEvent *Touch))
+void        EvToggle::SetOnTouch(void (*OnTouch)(EvToggle *Sender, const EvTouchEvent *Touch))
 {
   mOnTouch = OnTouch;
 }
@@ -188,7 +188,7 @@ void        EvToggle::refreshEvent(void)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvToggle::touchEvent(EvTouchEvent *Touch)
+void        EvToggle::touchEvent(const EvTouchEvent *Touch)
 {
   int16_t   pos, toogleSize;
 

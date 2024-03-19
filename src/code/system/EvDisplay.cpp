@@ -148,7 +148,7 @@ void        EvDisplay::SetOnUpdate(void (*OnUpdate)(EvDisplay *Disp))
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvDisplay::SetOnTouch(void (*OnTouch)(EvObj *Obj, EvTouchEvent *Touch))
+void        EvDisplay::SetOnTouch(void (*OnTouch)(EvObj *Obj, const EvTouchEvent *Touch))
 {
   Touch.mOnTouch = OnTouch;
 }

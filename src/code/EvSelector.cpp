@@ -76,9 +76,9 @@ void        EvTab::SetTabRightBottom(void)
 
 /// @copydoc EvButton::SetOnTouch()
 
-void        EvTab::SetOnTouch(void (*OnTouch)(EvTab *Sender, EvTouchEvent *Touch))
+void        EvTab::SetOnTouch(void (*OnTouch)(EvTab *Sender, const EvTouchEvent *Touch))
 {
-  EvSelector::SetOnTouch((void (*)(EvSelector *Sender, EvTouchEvent *Touch))OnTouch);
+  EvSelector::SetOnTouch((void (*)(EvSelector *Sender, const EvTouchEvent *Touch))OnTouch);
 }
 
 /// @copydoc EvButton::SetOnChange()
@@ -270,7 +270,7 @@ void        EvSelector::SetColor(uint16_t ColorNone, uint16_t ColorSelect, uint1
 
 /// @copydoc EvButton::SetOnTouch()
 
-void        EvSelector::SetOnTouch(void (*OnTouch)(EvSelector *Sender, EvTouchEvent *Touch))
+void        EvSelector::SetOnTouch(void (*OnTouch)(EvSelector *Sender, const EvTouchEvent *Touch))
 {
   mOnTouch = OnTouch;
 }
@@ -392,7 +392,7 @@ void        EvSelector::drawEvent(void)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvSelector::touchEvent(EvTouchEvent *Touch)
+void        EvSelector::touchEvent(const EvTouchEvent *Touch)
 {
   int16_t   value;
 

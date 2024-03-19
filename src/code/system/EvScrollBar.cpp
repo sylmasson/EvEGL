@@ -378,7 +378,7 @@ void        EvScrollBar::refreshEvent(void)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvScrollBar::touchEvent(EvTouchEvent *Touch)
+void        EvScrollBar::touchEvent(const EvTouchEvent *Touch)
 {
   int16_t   len;
 

@@ -30,7 +30,7 @@ class EvScrollBox : public EvPanel
     void          SetBarColor(uint16_t ColorKnob, uint16_t ColorTouch, uint8_t Opacity = 128);
     void          SetBarStyle(uint8_t Mode, uint8_t Thickness = 8, uint8_t Padding = 6, uint16_t Delay = 1500);
 
-    virtual EvObj *Touching(EvTouchEvent *Touch);
+    virtual EvObj *Touching(const EvTouchEvent *Touch);
     virtual void  Draw(void);
 
   protected:
@@ -48,7 +48,7 @@ class EvScrollBox : public EvPanel
 
     virtual void  resizeEvent(void);
     virtual void  refreshEvent(void);
-    virtual void  touchEvent(EvTouchEvent *Touch);
+    virtual void  touchEvent(const EvTouchEvent *Touch);
 
   private:
     void          resize(void);

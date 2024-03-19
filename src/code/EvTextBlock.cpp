@@ -114,7 +114,7 @@ String      EvTextBlock::GetLine(uint16_t Line)
 
 /// @copydoc EvButton::SetOnTouch()
 
-void        EvTextBlock::SetOnTouch(void (*OnTouch)(EvTextBlock *Sender, EvTouchEvent *Touch))
+void        EvTextBlock::SetOnTouch(void (*OnTouch)(EvTextBlock *Sender, const EvTouchEvent *Touch))
 {
   mOnTouch = OnTouch;
 }
@@ -198,7 +198,7 @@ void        EvTextBlock::refreshEvent(void)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvTextBlock::touchEvent(EvTouchEvent *Touch)
+void        EvTextBlock::touchEvent(const EvTouchEvent *Touch)
 {
   if (mOnTouch != nullptr)
     mOnTouch(this, Touch);

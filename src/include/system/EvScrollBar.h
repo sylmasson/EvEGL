@@ -70,7 +70,7 @@ class EvScrollBar : public EvObj
     virtual void  drawEvent(void);
     virtual void  resizeEvent(void);
     virtual void  refreshEvent(void);
-    virtual void  touchEvent(EvTouchEvent *Touch);
+    virtual void  touchEvent(const EvTouchEvent *Touch);
 
   private:
     void          (*mOnChange)(EvScrollBar *Sender, int32_t Value);

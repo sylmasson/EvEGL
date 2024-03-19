@@ -41,7 +41,7 @@ EvLabel::EvLabel(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvD
 
 /// @copydoc EvButton::SetOnTouch()
 
-void        EvLabel::SetOnTouch(void (*OnTouch)(EvLabel *Sender, EvTouchEvent *Touch))
+void        EvLabel::SetOnTouch(void (*OnTouch)(EvLabel *Sender, const EvTouchEvent *Touch))
 {
   mOnTouch = OnTouch;
 }
@@ -55,7 +55,7 @@ void        EvLabel::drawEvent(void)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvLabel::touchEvent(EvTouchEvent *Touch)
+void        EvLabel::touchEvent(const EvTouchEvent *Touch)
 {
   if (mOnTouch != nullptr)
     mOnTouch(this, Touch);

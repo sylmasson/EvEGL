@@ -118,7 +118,7 @@ void        EvKbd::SetKeyboard(EvKeyboard *Keyboard, bool OpenState)
 
 /// @copydoc EvButton::SetOnTouch()
 
-void        EvKbd::SetOnTouch(void (*OnTouch)(EvKbd *Sender, EvTouchEvent *Touch))
+void        EvKbd::SetOnTouch(void (*OnTouch)(EvKbd *Sender, const EvTouchEvent *Touch))
 {
   mOnTouch = OnTouch;
 }
@@ -184,7 +184,7 @@ void        EvKbd::drawEvent(void)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvKbd::touchEvent(EvTouchEvent *Touch)
+void        EvKbd::touchEvent(const EvTouchEvent *Touch)
 {
   if (mOnTouch != nullptr)
     mOnTouch(this, Touch);

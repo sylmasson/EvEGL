@@ -100,8 +100,8 @@ static void OnChangePadX(EvNumInt *Sender, int32_t Value);
 static void OnChangePadY(EvNumInt *Sender, int32_t Value);
 static void OnChangeAlignX(EvSelector *Sender, int32_t Value);
 static void OnChangeAlignY(EvSelector *Sender, int32_t Value);
-static void OnTouchDotMove(EvEditDot *Sender, EvTouchEvent *Touch);
-static void OnTouchDotReSize(EvEditDot *Sender, EvTouchEvent *Touch);
+static void OnTouchDotMove(EvEditDot *Sender, const EvTouchEvent *Touch);
+static void OnTouchDotReSize(EvEditDot *Sender, const EvTouchEvent *Touch);
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
@@ -326,7 +326,7 @@ void        EvEditor::AlwaysToFront(void)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-EvEditDot::EvEditDot(uint16_t Size, void (*OnTouch)(EvEditDot *Sender, EvTouchEvent *Touch), EvDisplay *Disp, const char *Tag) : EvObj(0, 0, Size, Size, Disp, Tag, VISIBLE_OBJ | SYSTEM_OBJ)
+EvEditDot::EvEditDot(uint16_t Size, void (*OnTouch)(EvEditDot *Sender, const EvTouchEvent *Touch), EvDisplay *Disp, const char *Tag) : EvObj(0, 0, Size, Size, Disp, Tag, VISIBLE_OBJ | SYSTEM_OBJ)
 {
   mOnTouch = OnTouch;
 }
@@ -342,7 +342,7 @@ void        EvEditDot::drawEvent(void)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvEditDot::touchEvent(EvTouchEvent *Touch)
+void        EvEditDot::touchEvent(const EvTouchEvent *Touch)
 {
   if (mOnTouch)
     mOnTouch(this, Touch);
@@ -543,7 +543,7 @@ void        EvEditProp::refreshEvent(void)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvEditProp::touchEvent(EvTouchEvent *Touch)
+void        EvEditProp::touchEvent(const EvTouchEvent *Touch)
 {
   switch (Touch->event)
   {
@@ -697,7 +697,7 @@ static void OnChangeAlignY(EvSelector *Sender, int32_t Value)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-static void OnTouchDotMove(EvEditDot *Sender, EvTouchEvent *Touch)
+static void OnTouchDotMove(EvEditDot *Sender, const EvTouchEvent *Touch)
 {
   int16_t   x, y;
 
@@ -722,7 +722,7 @@ static void OnTouchDotMove(EvEditDot *Sender, EvTouchEvent *Touch)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-static void OnTouchDotReSize(EvEditDot *Sender, EvTouchEvent *Touch)
+static void OnTouchDotReSize(EvEditDot *Sender, const EvTouchEvent *Touch)
 {
   int16_t   w, h;
 

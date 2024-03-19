@@ -22,7 +22,7 @@ class EvTextBlock : public EvScrollBox
     int16_t       LineSpacing(int Pixel);
     int16_t       LineSpacing(float Ratio);
     String        GetLine(uint16_t Line);
-    void          SetOnTouch(void (*OnTouch)(EvTextBlock *Sender, EvTouchEvent *Touch));
+    void          SetOnTouch(void (*OnTouch)(EvTextBlock *Sender, const EvTouchEvent *Touch));
 
     EvTextBlock   &operator+=(const char C);
     EvTextBlock   &operator+=(const char *Str);
@@ -43,13 +43,13 @@ class EvTextBlock : public EvScrollBox
     virtual void  drawEvent(void);
     virtual void  resizeEvent(void);
     virtual void  refreshEvent(void);
-    virtual void  touchEvent(EvTouchEvent *Touch);
+    virtual void  touchEvent(const EvTouchEvent *Touch);
 
     bool          parseTextAsLines(void);
     String        getLine(uint16_t Line);
 
   private:
-    void          (*mOnTouch)(EvTextBlock *Sender, EvTouchEvent *Touch);
+    void          (*mOnTouch)(EvTextBlock *Sender, const EvTouchEvent *Touch);
 
   public:
     const String    &Text = mLabel;

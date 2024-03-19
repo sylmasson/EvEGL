@@ -75,7 +75,7 @@ class EvKbd : public EvSideBar
     void          SetLayout(uint8_t Layout);
     void          SetKeyboard(int Keyboard, bool OpenState = false);
     void          SetKeyboard(EvKeyboard *Keyboard, bool OpenState = false);
-    void          SetOnTouch(void (*OnTouch)(EvKbd *Sender, EvTouchEvent *Touch));
+    void          SetOnTouch(void (*OnTouch)(EvKbd *Sender, const EvTouchEvent *Touch));
 
   protected:
     uint8_t       mKey;
@@ -88,10 +88,10 @@ class EvKbd : public EvSideBar
     EvKeyboard    *mKb;
 
     virtual void  drawEvent(void);
-    virtual void  touchEvent(EvTouchEvent *Touch);
+    virtual void  touchEvent(const EvTouchEvent *Touch);
 
   private:
-    void          (*mOnTouch)(EvKbd *Sender, EvTouchEvent *Touch);
+    void          (*mOnTouch)(EvKbd *Sender, const EvTouchEvent *Touch);
 
     void          writeKey(uint8_t Key);
 

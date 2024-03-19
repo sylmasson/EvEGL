@@ -38,7 +38,7 @@ class EvSelector : public EvObj
     void          HideDelimiter(void);
     bool          SetBmp(const EvBmp *Bmp, uint16_t Count);
     void          SetColor(uint16_t ColorNone, uint16_t ColorSelect, uint16_t ColorNew);
-    void          SetOnTouch(void (*OnTouch)(EvSelector *Sender, EvTouchEvent *Touch));
+    void          SetOnTouch(void (*OnTouch)(EvSelector *Sender, const EvTouchEvent *Touch));
     void          SetOnChange(void (*OnChange)(EvSelector *Sender, int32_t Value));
 
     virtual void  SetDisplay(EvDisplay *Disp);
@@ -55,10 +55,10 @@ class EvSelector : public EvObj
     const EvBmp   *mBmp;
 
     virtual void  drawEvent(void);
-    virtual void  touchEvent(EvTouchEvent *Touch);
+    virtual void  touchEvent(const EvTouchEvent *Touch);
 
   private:
-    void          (*mOnTouch)(EvSelector *Sender, EvTouchEvent *Touch);
+    void          (*mOnTouch)(EvSelector *Sender, const EvTouchEvent *Touch);
     void          (*mOnChange)(EvSelector *Sender, int32_t Value);
 
     void          setNewVal(int16_t Value);
@@ -100,7 +100,7 @@ class EvTab : public EvSelector
   public:
     void          SetTabLeftTop(void);
     void          SetTabRightBottom(void);
-    void          SetOnTouch(void (*OnTouch)(EvTab *Sender, EvTouchEvent *Touch));
+    void          SetOnTouch(void (*OnTouch)(EvTab *Sender, const EvTouchEvent *Touch));
     void          SetOnChange(void (*OnChange)(EvTab *Sender, int32_t Value));
 
   public:

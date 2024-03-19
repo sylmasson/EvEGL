@@ -137,7 +137,7 @@ void        EvProgress::SetFormat(const char *Format, const float M, const float
 
 /// @copydoc EvButton::SetOnTouch()
 
-void        EvProgress::SetOnTouch(void (*OnTouch)(EvProgress *Sender, EvTouchEvent *Touch))
+void        EvProgress::SetOnTouch(void (*OnTouch)(EvProgress *Sender, const EvTouchEvent *Touch))
 {
   mOnTouch = OnTouch;
 }
@@ -172,7 +172,7 @@ void        EvProgress::drawEvent(void)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvProgress::touchEvent(EvTouchEvent *Touch)
+void        EvProgress::touchEvent(const EvTouchEvent *Touch)
 {
   if (mOnTouch != nullptr)
     mOnTouch(this, Touch);

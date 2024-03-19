@@ -109,7 +109,7 @@ void        EvTerminal::refreshEvent(void)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvTerminal::touchEvent(EvTouchEvent *Touch)
+void        EvTerminal::touchEvent(const EvTouchEvent *Touch)
 {
   if (Touch->event == TOUCH_MOVE)
     mScrolling = 2;

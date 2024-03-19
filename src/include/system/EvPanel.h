@@ -61,7 +61,7 @@ class EvPanel : public EvObj
 
   public:         // Public functions reserved for the system
     void          SetToFront(EvObj *Obj, bool AllOwner = true);
-    virtual EvObj *Touching(EvTouchEvent *Touch);
+    virtual EvObj *Touching(const EvTouchEvent *Touch);
     virtual void  SetDisplay(EvDisplay *Disp);
     virtual void  SetView(void);
     virtual void  Refresh(void);

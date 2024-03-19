@@ -41,7 +41,7 @@ class EvImage : public EvObj
     void          RotateAround(int16_t X, int16_t Y);
     void          RotateAround(int16_t X, int16_t Y, float A, float ScaleXY);
     void          SetMode(uint8_t ResizeMode, uint8_t FilterMode = NEAREST);
-    void          SetOnTouch(void (*OnTouch)(EvImage *Sender, EvTouchEvent *Touch));
+    void          SetOnTouch(void (*OnTouch)(EvImage *Sender, const EvTouchEvent *Touch));
 
   protected:
     void          resize(void);
@@ -49,7 +49,7 @@ class EvImage : public EvObj
     virtual void  drawEvent(void);
     virtual void  resizeEvent(void);
     virtual void  refreshEvent(void);
-    virtual void  touchEvent(EvTouchEvent *Touch);
+    virtual void  touchEvent(const EvTouchEvent *Touch);
 
     bool          mRefreshCoeff;
     bool          mResizeLock;
@@ -71,7 +71,7 @@ class EvImage : public EvObj
     const EvBmp   *mBmp;
 
   private:
-    void          (*mOnTouch)(EvImage *Sender, EvTouchEvent *Touch);
+    void          (*mOnTouch)(EvImage *Sender, const EvTouchEvent *Touch);
 
     static void   onLoading(EvDMA *Data);
 

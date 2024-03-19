@@ -41,17 +41,17 @@ class EvEditDot : public EvObj
   friend class EvEditor;
 
   protected:
-    EvEditDot(uint16_t Size, void (*OnTouch)(EvEditDot *Sender, EvTouchEvent *Touch), EvDisplay *Disp, const char *Tag);
+    EvEditDot(uint16_t Size, void (*OnTouch)(EvEditDot *Sender, const EvTouchEvent *Touch), EvDisplay *Disp, const char *Tag);
 
   public:
     int16_t       X, Y;
 
   protected:
     virtual void  drawEvent(void);
-    virtual void  touchEvent(EvTouchEvent *Touch);
+    virtual void  touchEvent(const EvTouchEvent *Touch);
 
   private:
-    void          (*mOnTouch)(EvEditDot *Sender, EvTouchEvent *Touch);
+    void          (*mOnTouch)(EvEditDot *Sender, const EvTouchEvent *Touch);
 };
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -84,7 +84,7 @@ class EvEditProp : public EvPanel
 
   protected:
     virtual void  refreshEvent(void);
-    virtual void  touchEvent(EvTouchEvent *Touch);
+    virtual void  touchEvent(const EvTouchEvent *Touch);
 
   private:
     static int16_t    sLeft;

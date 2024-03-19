@@ -154,14 +154,15 @@ void        EvScrollBox::SetBarStyle(uint8_t Mode, uint8_t Thickness, uint8_t Pa
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-EvObj       *EvScrollBox::Touching(EvTouchEvent *Touch)
+EvObj       *EvScrollBox::Touching(const EvTouchEvent *Touch)
 {
-  EvObj     *obj = EvPanel::Touching(Touch);
+  EvObj         *obj = EvPanel::Touching(Touch);
+  EvTouchEvent  *touch = (EvTouchEvent *)Touch;
 
-  if (obj != nullptr && Touch->owner == nullptr)
+  if (obj != nullptr && touch->owner == nullptr)
   {
-    Touch->obj = (obj->IsControlObj() || obj == this) ? nullptr : obj;
-    Touch->owner = obj = this;
+    touch->obj = (obj->IsControlObj() || obj == this) ? nullptr : obj;
+    touch->owner = obj = this;
   }
 
   return obj;
@@ -201,56 +202,58 @@ void        EvScrollBox::refreshEvent(void)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvScrollBox::touchEvent(EvTouchEvent *Touch)
+void        EvScrollBox::touchEvent(const EvTouchEvent *Touch)
 {
-  if (Touch->obj != nullptr)
-  {
-    Touch->x = Touch->abs.x - Touch->obj->View.ox;
-    Touch->y = Touch->abs.y - Touch->obj->View.oy;
+  EvTouchEvent  *touch = (EvTouchEvent *)Touch;
 
-    if (Touch->obj == mScrollBarX || Touch->obj == mScrollBarY)
+  if (touch->obj != nullptr)
+  {
+    touch->x = touch->abs.x - touch->obj->View.ox;
+    touch->y = touch->abs.y - touch->obj->View.oy;
+
+    if (touch->obj == mScrollBarX || touch->obj == mScrollBarY)
       mScrollBarX->WakeUp();
   }
 
-  if (Touch->event != TOUCH_MOVE || (!SCROLLX && !SCROLLY))
+  if (touch->event != TOUCH_MOVE || (!SCROLLX && !SCROLLY))
   {
-    if (Touch->obj != nullptr)
-      Touch->obj->TouchUpdate(Touch);
-    else if (Touch->event == TOUCH_START)
+    if (touch->obj != nullptr)
+      touch->obj->TouchUpdate(Touch);
+    else if (touch->event == TOUCH_START)
     {
       mKinScrollX.Stop();
       mKinScrollY.Stop();
       mSpeedX = 0;
       mSpeedY = 0;
     }
-    else if (Touch->event == TOUCH_END)
+    else if (touch->event == TOUCH_END)
     {
       mKinScrollX.Start(mSpeedX);
       mKinScrollY.Start(mSpeedY);
       mTouchFlag = false;
-      Touch->obj = nullptr;
+      touch->obj = nullptr;
     }
   }
   else
   {
-    if (Touch->obj == nullptr)
+    if (touch->obj == nullptr)
       mTouchFlag = true;
     else
     {
-      Touch->obj->TouchUpdate(Touch);
+      touch->obj->TouchUpdate(Touch);
 
-      if (Touch->event == 0)
+      if (touch->event == 0)
         return;
 
-      Touch->event = TOUCH_CANCEL;
-      Touch->obj->TouchUpdate(Touch);
-      Touch->obj = nullptr;
+      touch->event = TOUCH_CANCEL;
+      touch->obj->TouchUpdate(Touch);
+      touch->obj = nullptr;
     }
 
-    mSpeedX = (mSpeedX >> 2) + (Touch->move.x * 3 << 2);
-    mSpeedY = (mSpeedY >> 2) + (Touch->move.y * 3 << 2);
-    scrollX(Touch->move.x);
-    scrollY(Touch->move.y);
+    mSpeedX = (mSpeedX >> 2) + (touch->move.x * 3 << 2);
+    mSpeedY = (mSpeedY >> 2) + (touch->move.y * 3 << 2);
+    scrollX(touch->move.x);
+    scrollY(touch->move.y);
   }
 }
 

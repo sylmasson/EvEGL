@@ -195,8 +195,8 @@ class EvObj : public Stream
     bool          TouchStart(void);
     void          TouchEnd(void);
     void          TouchMax(uint8_t Max);
-    void          TouchUpdate(EvTouchEvent *Touch);
-    virtual EvObj *Touching(EvTouchEvent *Touch);
+    void          TouchUpdate(const EvTouchEvent *Touch);
+    virtual EvObj *Touching(const EvTouchEvent *Touch);
     virtual void  SetDisplay(EvDisplay *Disp);
     virtual void  SetView(void);
     virtual void  Refresh(void);
@@ -208,7 +208,7 @@ class EvObj : public Stream
     virtual void  refreshEvent(void) {};
     virtual void  setKbdFocusEvent(void) {};
     virtual void  lostKbdFocusEvent(void) {};
-    virtual void  touchEvent(EvTouchEvent *Touch) {};
+    virtual void  touchEvent(const EvTouchEvent *Touch) {};
 
     uint16_t      mStatus;
     uint16_t      mOpacity;

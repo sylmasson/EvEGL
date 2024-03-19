@@ -260,7 +260,7 @@ void        EvImage::SetMode(uint8_t ResizeMode, uint8_t FilterMode)
 
 /// @copydoc EvButton::SetOnTouch()
 
-void        EvImage::SetOnTouch(void (*OnTouch)(EvImage *Sender, EvTouchEvent *Touch))
+void        EvImage::SetOnTouch(void (*OnTouch)(EvImage *Sender, const EvTouchEvent *Touch))
 {
   mOnTouch = OnTouch;
 }
@@ -427,7 +427,7 @@ void        EvImage::refreshEvent(void)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvImage::touchEvent(EvTouchEvent *Touch)
+void        EvImage::touchEvent(const EvTouchEvent *Touch)
 {
   if (mOnTouch != nullptr)
     mOnTouch(this, Touch);

@@ -166,7 +166,7 @@ void          EvPixelBox::SetPixel(uint16_t X, uint16_t Y, uint8_t *Color, uint1
 
 /// @copydoc EvButton::SetOnTouch()
 
-void        EvPixelBox::SetOnTouch(void (*OnTouch)(EvPixelBox *Sender, EvTouchEvent *Touch))
+void        EvPixelBox::SetOnTouch(void (*OnTouch)(EvPixelBox *Sender, const EvTouchEvent *Touch))
 {
   mOnTouch = OnTouch;
 }
@@ -195,7 +195,7 @@ void        EvPixelBox::drawEvent(void)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvPixelBox::touchEvent(EvTouchEvent *Touch)
+void        EvPixelBox::touchEvent(const EvTouchEvent *Touch)
 {
   if (mOnTouch != nullptr)
     mOnTouch(this, Touch);

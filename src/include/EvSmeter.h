@@ -21,7 +21,7 @@ class EvSmeter : public EvPanel
 
   public:
     bool          SetValue(int32_t Value);
-    void          SetOnTouch(void (*OnTouch)(EvSmeter *Sender, EvTouchEvent *Touch));
+    void          SetOnTouch(void (*OnTouch)(EvSmeter *Sender, const EvTouchEvent *Touch));
 
   protected:
     bool          mLock;
@@ -33,10 +33,10 @@ class EvSmeter : public EvPanel
     EvNeedle      *mNeedle;
 
     virtual void  resizeEvent(void);
-    virtual void  touchEvent(EvTouchEvent *Touch);
+    virtual void  touchEvent(const EvTouchEvent *Touch);
 
   private:
-    void          (*mOnTouch)(EvSmeter *Sender, EvTouchEvent *Touch);
+    void          (*mOnTouch)(EvSmeter *Sender, const EvTouchEvent *Touch);
 
   public:
     const int16_t &Value = mValue;

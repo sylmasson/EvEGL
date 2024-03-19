@@ -96,7 +96,7 @@ void          EvSpectrum::SetColor(uint16_t LineColor, uint16_t FillColor)
 
 /// @copydoc EvButton::SetOnTouch()
 
-void        EvSpectrum::SetOnTouch(void (*OnTouch)(EvSpectrum *Sender, EvTouchEvent *Touch))
+void        EvSpectrum::SetOnTouch(void (*OnTouch)(EvSpectrum *Sender, const EvTouchEvent *Touch))
 {
   mOnTouch = OnTouch;
 }
@@ -170,7 +170,7 @@ void        EvSpectrum::drawEvent(void)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvSpectrum::touchEvent(EvTouchEvent *Touch)
+void        EvSpectrum::touchEvent(const EvTouchEvent *Touch)
 {
   if (mOnTouch != nullptr)
     mOnTouch(this, Touch);

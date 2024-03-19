@@ -28,7 +28,7 @@ class EvDisplay : public EvEVE, public EvPanel, public EvSysFont
     uint32_t      FrameNumber(void);
     void          Rotate(uint8_t Orientation);
     void          SetOnUpdate(void (*OnUpdate)(EvDisplay *Disp));
-    void          SetOnTouch(void (*OnTouch)(EvObj *Obj, EvTouchEvent *Touch));
+    void          SetOnTouch(void (*OnTouch)(EvObj *Obj, const EvTouchEvent *Touch));
 
     static bool   Update(void);
 

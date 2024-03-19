@@ -137,7 +137,7 @@ void        EvSlider::SetRange(int32_t Min, int32_t Max)
 
 /// @copydoc EvButton::SetOnTouch()
 
-void        EvSlider::SetOnTouch(void (*OnTouch)(EvSlider *Sender, EvTouchEvent *Touch))
+void        EvSlider::SetOnTouch(void (*OnTouch)(EvSlider *Sender, const EvTouchEvent *Touch))
 {
   mOnTouch = OnTouch;
 }
@@ -233,7 +233,7 @@ void        EvSlider::refreshEvent(void)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvSlider::touchEvent(EvTouchEvent *Touch)
+void        EvSlider::touchEvent(const EvTouchEvent *Touch)
 {
   int32_t   value, knobPos, sliderRange;
 

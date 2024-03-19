@@ -24,16 +24,16 @@ class EvLabel : public EvObj
     EvLabel(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ);
 
   public:
-    void          SetOnTouch(void (*OnTouch)(EvLabel *Sender, EvTouchEvent *Touch));
+    void          SetOnTouch(void (*OnTouch)(EvLabel *Sender, const EvTouchEvent *Touch));
 
   protected:
     bool          mTouchFlag;
 
     virtual void  drawEvent(void);
-    virtual void  touchEvent(EvTouchEvent *Touch);
+    virtual void  touchEvent(const EvTouchEvent *Touch);
 
   private:
-    void          (*mOnTouch)(EvLabel *Sender, EvTouchEvent *Touch);
+    void          (*mOnTouch)(EvLabel *Sender, const EvTouchEvent *Touch);
 
   public:
     static EvLabel  *Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ);

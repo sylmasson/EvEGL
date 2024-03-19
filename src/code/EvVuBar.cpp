@@ -55,7 +55,7 @@ void        EvVuBar::SetPeakDetect(bool Enabled)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvVuBar::SetOnTouch(void (*OnTouch)(EvVuBar *Sender, EvTouchEvent *Touch))
+void        EvVuBar::SetOnTouch(void (*OnTouch)(EvVuBar *Sender, const EvTouchEvent *Touch))
 {
   mOnTouch = OnTouch;
 }
@@ -241,7 +241,7 @@ void        EvVuBar::refreshEvent(void)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvVuBar::touchEvent(EvTouchEvent *Touch)
+void        EvVuBar::touchEvent(const EvTouchEvent *Touch)
 {
   if (mOnTouch != nullptr)
     mOnTouch(this, Touch);
