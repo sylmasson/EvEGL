@@ -14,6 +14,7 @@
 #define     CONTROL_OBJ     (1 << 7)
 #define     MODIF_TEXT_OBJ  (1 << 8)
 #define     FUNCT_USED_OBJ  (1 << 9)
+#define     FULLSCREEN_OBJ  (1 << 10)
 #define     FILTER_DIS_OBJ  (1 << 13)
 #define     ABORT_OBJ       (1 << 14)
 #define     SYSTEM_OBJ      (1 << 15) // reserved for GUI System
@@ -128,6 +129,7 @@ class EvObj : public Stream
     bool          IsModified(void);
     bool          IsModifiedText(void);
     bool          IsControlObj(void);
+    bool          IsFullScreen(void);
     bool          IsMultiTouchObj(void);
     void          BdShape(uint8_t Shape);
     void          BdRadius(uint16_t Radius);  // 1/16 pixel

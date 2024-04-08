@@ -55,10 +55,10 @@ EvPlayer::EvPlayer(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, E
 
   mRun = false;
   mLock = false;
-  mFullScreen = false;
   mSpeedIndex = 0;
   mTimerHide = 0;
   mTouchCount = 0;
+  mSmallOwner = nullptr;
   Video->SetOnLoadFrame(sOnLoadFrame);
 
   TopBar->BgColor(RGB555(0, 0, 0), 128);
@@ -189,7 +189,7 @@ void        EvPlayer::HideInfo(void)
 
 void        EvPlayer::ScreenSize(void)
 {
-  if (!mFullScreen)
+  if (!IsFullScreen())
     FullScreen();
   else
     SmallScreen();
@@ -202,18 +202,22 @@ void        EvPlayer::ScreenSize(void)
 
 void        EvPlayer::FullScreen(void)
 {
-  if (!mFullScreen)
+  if (!IsFullScreen())
   {
+    Disp->KbdDelete();
     mSmallLeft = mLeft;
     mSmallTop = mTop;
     mSmallWidth = mWidth;
     mSmallHeight = mHeight;
 
+    if ((mSmallOwner = mOwner) != Disp)
+      MoveTo(Disp);
+
     ToFront();
     MoveTo(0, 0);
     ReSize(Disp->Width(), Disp->Height());
     FullButton->Modified();
-    mFullScreen = true;
+    mStatus |= FULLSCREEN_OBJ;
     mMovable = false;
   }
 }
@@ -222,21 +226,17 @@ void        EvPlayer::FullScreen(void)
 
 void        EvPlayer::SmallScreen(void)
 {
-  if (mFullScreen)
+  if (IsFullScreen())
   {
+    if (mSmallOwner != nullptr && mSmallOwner != Disp)
+      MoveTo(mSmallOwner);
+
     MoveTo(mSmallLeft, mSmallTop);
     ReSize(mSmallWidth, mSmallHeight);
     FullButton->Modified();
-    mFullScreen = false;
+    mStatus &= ~FULLSCREEN_OBJ;
     mMovable = false;
   }
-}
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-bool        EvPlayer::IsFullScreen(void)
-{
-  return mFullScreen;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -267,7 +267,7 @@ void        EvPlayer::TouchInfo(const EvTouchEvent *Touch)
   switch (Touch->event)
   {
     case TOUCH_START:
-      Touch->repeatTimer = 200;
+      Touch->repeatTimer = 100;
       mTouchCount++;
       break;
 
@@ -279,6 +279,10 @@ void        EvPlayer::TouchInfo(const EvTouchEvent *Touch)
 
     case TOUCH_HOLD:
       ShowInfo();
+      break;
+
+    case TOUCH_CANCEL:
+      HideInfo();
       break;
   }
 }
@@ -322,8 +326,6 @@ void        EvPlayer::touchEvent(const EvTouchEvent *Touch)
     HideInfo();
   else
     TouchInfo(Touch);
-
-  Touch->event = 0;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -347,7 +349,7 @@ void        EvPlayer::Button::drawEvent(void)
       Disp->LineWidth(24);
       Disp->Begin(LINES);
 
-      if (!((EvPlayer *)GetOwner(2))->mFullScreen)
+      if (!((EvPlayer *)GetOwner(2))->IsFullScreen())
       { // Full screen button
         Disp->Vertex2i(x +  0, y +  7);
         Disp->Vertex2i(x +  0, y +  0);
@@ -458,7 +460,7 @@ void        EvPlayer::resize(void)
   SpeedButton->OwnerAlign(LEFT_CENTER);
 
   FullButton->Modified();
-  mFullScreen = false;
+  mStatus &= ~FULLSCREEN_OBJ;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -529,6 +531,7 @@ static void sOnTouchTimeLapse(EvLabel *Sender, const EvTouchEvent *Touch)
     }
 
   player->TouchInfo(Touch);
+  Touch->event = 0;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

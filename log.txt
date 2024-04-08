@@ -1,3 +1,11 @@
+commit e7378b8b3ecd0d07fde9f38129bd66e3fc6eca30
+Author: Sylvain Masson <sylvainmasson@Sylvains-Mac-mini.local>
+Date:   Tue Mar 19 07:15:25 2024 -0400
+
+    EvTouch: Only a few variables should be writable with the addition of mutable keyword in EvTouchEvent struct
+    
+    Global: Change all function calls from (EvTouchEvent *Touch) to (const EvTouchEvent *Touch)
+
 commit c07ebdbac96a9038948c8fe5389c00b780d2b2e6
 Author: Sylvain Masson <sylvainmasson@Sylvains-Mac-mini.local>
 Date:   Mon Mar 18 11:01:04 2024 -0400

@@ -30,7 +30,6 @@ class EvPlayer : public EvPanel
     void          ScreenSize(void);
     void          FullScreen(void);
     void          SmallScreen(void);
-    bool          IsFullScreen(void);
     bool          IsRunning(void);
     bool          IsMovable(void);
     void          SetMovable(bool Value);
@@ -40,7 +39,6 @@ class EvPlayer : public EvPanel
     bool          mRun;
     bool          mLock;
     bool          mMovable;
-    bool          mFullScreen;
     uint8_t       mSpeedIndex;
     uint8_t       mTouchCount;
     uint16_t      mTimerHide;
@@ -48,6 +46,7 @@ class EvPlayer : public EvPanel
     int16_t       mSmallTop;
     uint16_t      mSmallWidth;
     uint16_t      mSmallHeight;
+    EvPanel       *mSmallOwner;
 
     virtual void  resizeEvent(void);
     virtual void  refreshEvent(void);

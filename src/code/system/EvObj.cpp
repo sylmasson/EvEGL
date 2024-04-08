@@ -323,6 +323,19 @@ bool        EvObj::IsControlObj(void)
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
+ * @brief      Check if the Object is full screen.
+ * 
+ * @return     true if the Object is full screen.
+ * 
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+bool        EvObj::IsFullScreen(void)
+{
+  return (mStatus & FULLSCREEN_OBJ) ? true : false;
+}
+
+/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *
  * @brief      Check if is a multi-touch Object.
  * 
  * Used to find out if the object allows the use of multi-touch events.
