@@ -115,7 +115,7 @@
 #define     BLUE                    4
 #define     ALPHA                   5
 
-// CmdLoadImage and CmdPlayVideo options
+// CmdLoadImage options
 
 #define     OPT_RGB565              0
 #define     OPT_MONO                1
@@ -400,7 +400,6 @@ class EvEVE : public EvSPI
     bool          UnloadBmp(const EvMem *ptr);
     uint32_t      MediaFifoFree(uint32_t &Dst);
     void          MediaFifoUpdate(uint32_t Cnt);
-    uint32_t      SetPlayVideoBuffer(uint32_t Size);
 
     uint16_t      ReadDL(void);
     void          SwapDL(void);
@@ -479,7 +478,6 @@ class EvEVE : public EvSPI
     void          CmdMemSet(uint32_t Addr, uint8_t Value, uint32_t Num);
     void          CmdMemWrite(uint32_t Addr, uint32_t Num);
     void          CmdMemZero(uint32_t Addr, uint32_t Num);
-    void          CmdPlayVideo(uint32_t Opts);
     void          CmdRotate(int32_t Angle);
     void          CmdRomFont(uint32_t Font, uint32_t Romslot);
     void          CmdScale(int32_t X, int32_t Y);
@@ -500,8 +498,6 @@ class EvEVE : public EvSPI
     void          wrCmdBufDL(uint32_t Data);
     int32_t       transformCoeff(int32_t Coeff);
     uint32_t      colorCorrection(uint32_t Color);
-
-    const EvMem   *mVideoBuf;
 
     int16_t       mDL;
     uint8_t       mActivePrim;

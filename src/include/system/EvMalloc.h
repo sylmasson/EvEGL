@@ -16,7 +16,6 @@
 #define     EV_FONT         1
 #define     EV_BMP          2
 #define     EV_OBJ          3
-#define     EV_VIDEO        4
 
 #define     EV_MALLOC_ADDR  0x000000
 #define     EV_MALLOC_SIZE  0x100000

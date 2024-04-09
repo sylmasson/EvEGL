@@ -60,7 +60,6 @@ EvEVE::EvEVE(const uint32_t *Config, uint8_t CS, uint8_t RST, SPIClass *Spi, uin
     delay(10);
 
   wrCmdBufClear();
-  mVideoBuf = nullptr;
   mConvertToGray = 0;
   mColorCalibration = 0;
   mStackContextCount = 0;
@@ -236,22 +235,6 @@ void        EvEVE::MediaFifoUpdate(uint32_t Cnt)
 
   wr32(REG_MEDIAFIFO_WRITE, mMediaFifo.wrPtr);
   mMediaFifo.rdPtr = rd32(REG_MEDIAFIFO_READ);
-}
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-uint32_t    EvEVE::SetPlayVideoBuffer(uint32_t Size)
-{
-  if (Size == 0 || mVideoBuf != nullptr)
-  {
-    RAM_G.Free(mVideoBuf);
-    mVideoBuf = nullptr;
-  }
-
-  if (Size > 0 && (mVideoBuf = RAM_G.Malloc(Size, "Video Buffer", EV_VIDEO)) != nullptr)
-    return mVideoBuf->size;
-
-  return 0;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -959,15 +942,6 @@ void        EvEVE::CmdMemZero(uint32_t Addr, uint32_t Num)
   wrCmdBuf32(CMD_MEMZERO);
   wrCmdBuf32(Addr);
   wrCmdBuf32(Num);
-}
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-void        EvEVE::CmdPlayVideo(uint32_t Opts)
-{
-  wrCmdBuf32(CMD_PLAYVIDEO);
-  wrCmdBuf32(Opts);
-  mDL = -1;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

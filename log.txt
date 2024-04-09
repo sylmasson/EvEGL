@@ -1,3 +1,11 @@
+commit 6b1e2046fadc57e64226c2fa31313cc3189149f1
+Author: Sylvain Masson <sylvainmasson@Sylvains-Mac-mini.local>
+Date:   Mon Apr 8 10:16:17 2024 -0400
+
+    EvPlayer: Changed to support opening in any panel and moving the object to the current root display before entering full screen mode
+    
+    EvObj: Add global FULLSCREEN_OBJ flag for all objects
+
 commit e7378b8b3ecd0d07fde9f38129bd66e3fc6eca30
 Author: Sylvain Masson <sylvainmasson@Sylvains-Mac-mini.local>
 Date:   Tue Mar 19 07:15:25 2024 -0400

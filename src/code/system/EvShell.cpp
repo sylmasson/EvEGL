@@ -607,10 +607,9 @@ void        EvShell::displayMallocBlock(EvDisplay *Disp)
       {
         switch (ptr->typeId)
         {
-          case EV_VIDEO:
           case EV_UNDEFINED:
             tag = (char *)owner;
-            snprintf(str, sizeof(str) - 1, " %s \"%s\"", ptr->typeId == EV_VIDEO ? "VDO" : "UND", !tag ? tagNull : tag);
+            snprintf(str, sizeof(str) - 1, " UND \"%s\"", !tag ? tagNull : tag);
             EvOut->print(str);
             break;
 

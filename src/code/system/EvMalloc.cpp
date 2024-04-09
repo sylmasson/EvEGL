@@ -1,6 +1,7 @@
 
 #include    <EvGUI.h>
 
+#define     BOTTOM_SIZE_MIN (128 * 1024)
 #define     BLOCK_SIZE(x)   (((x) + (EV_MALLOC_MIN-1)) & ~(EV_MALLOC_MIN-1))
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -75,12 +76,7 @@ const EvMem *EvMalloc::Malloc(size_t Size, const void *Owner, uint8_t TypeId)
     if ((size = BLOCK_SIZE(used = Size)) < EV_MALLOC_MIN)
       size = EV_MALLOC_MIN;
 
-    if (TypeId != EV_VIDEO)
-      ptr = memAlloc(size);
-    else if (mFirst->used == 0 && mFirst->size >= size)
-      ptr = memSplit(mFirst, size, true);
-
-    if (ptr != nullptr)
+    if ((ptr = memAlloc(size)) != nullptr)
     {
       ptr->used = used;
       ptr->owner = Owner;
@@ -176,7 +172,7 @@ const EvMem *EvMalloc::Realloc(const EvMem *Ptr, size_t Size)
 
     if (size <= ptr->size)
     { // decrease the size of the block
-      if (size == ptr->size || (ptr = memSplit(ptr, size)) != nullptr)
+      if (size == ptr->size || (ptr = memSplit(ptr, size, size >= BOTTOM_SIZE_MIN)) != nullptr)
         ptr->used = used;
     }
     else
@@ -406,7 +402,7 @@ EvMem       *EvMalloc::memAlloc(size_t Size)
     if (p->used == 0 && Size <= p->size && (ptr == nullptr || p->size < ptr->size))
       ptr = p;
 
-  if (ptr != nullptr && (ptr = memSplit(ptr, Size)) != nullptr)
+  if (ptr != nullptr && (ptr = memSplit(ptr, Size, Size >= BOTTOM_SIZE_MIN)) != nullptr)
     ptr->used = ptr->size;
 
   return ptr;
@@ -461,7 +457,7 @@ EvMem       *EvMalloc::memSplit(EvMem *Ptr, size_t Size, bool Bottom)
       ptr = next;
     }
     else
-    { // Allocate memory block at bottom and free memory block at top (For video memory)
+    { // Allocate memory block at bottom and free memory block at top
       next->id = 0;
       next->used = 0;
       next->owner = nullptr;
