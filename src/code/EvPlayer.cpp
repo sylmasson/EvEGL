@@ -40,7 +40,7 @@ EvPlayer    *EvPlayer::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_
 
 EvPlayer::EvPlayer(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) : EvPanel(Left, Top, Width, Height, Disp, Tag, State)
 {
-  if (!(Video = EvVideo::Create(0, 0, mWidth, mHeight, this, "VideoFrame", VISIBLE_DIS_OBJ)) ||
+  if (!(Video = EvVideo::Create(0, 0, mWidth, mHeight, this, nullptr, VISIBLE_DIS_OBJ)) ||
       !(TopBar = EvSideBar::Create(0, 0, mWidth, SIDEBAR_HEIGHT, this, "TopBar", DISABLED_OBJ)) ||
       !(BottomBar = EvSideBar::Create(0, 0, mWidth, SIDEBAR_HEIGHT, this, "BottomBar", DISABLED_OBJ)) ||
       !(TimeLine = EvSlider::Create(0, 0, mWidth - 20, SIDEBAR_HEIGHT - 16, BottomBar, "TimeLine", VISIBLE_OBJ)) ||

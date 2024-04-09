@@ -10,8 +10,8 @@ static void sOnSaveTouchCalibration(EvTouchCal *Sender, bool Save);
 static EvCmd    sCmdList[] =
 {
   {DC,       1,    "", "dc",       "dc [1-4|Name]         Display Change"},
-  {LIST,     1,   "l", "list",     "l, list [DL|#Id|Tag]  List display memory"},
-  {DUMP,     1,   "d", "dump",     "d, dump [0x|#Id|Tag]  Dump display memory"},
+  {LIST,     1,   "l", "list",     "l, list [DL|Id|Tag]   List display memory"},
+  {DUMP,     1,   "d", "dump",     "d, dump [0x|Id|Tag]   Dump display memory"},
   {RADIX,    1,   "r", "radix",    "r, radix [b|w|d]      Change radix"},
   {EDITOR,   1,   "e", "editor",   "e, editor [close]     Open/close editor"},
   {TRACE,    1,   "t", "trace",    "t, trace opt          [modif|touch|fps|off]"},
@@ -106,7 +106,7 @@ void        EvShell::Input(const char C)
             snprintf(str, sizeof(str) - 1, "DL Size:%-4lu (%.1f%%)  ", size, (float)(size * 100) / 8192.0);
             EvOut->println(str);
           }
-          else if (((ptr = Disp->RAM_G.FindByTag(arg[1], EV_OBJ)) == nullptr && (sscanf(arg[1], "#%d%c", &i, &c) != 1 || (ptr = Disp->RAM_G.FindById(i)) == nullptr)) || ptr->used == 0 || ptr->typeId != EV_OBJ)
+          else if (((ptr = Disp->RAM_G.FindByTag(arg[1], EV_OBJ)) == nullptr && (sscanf(arg[1], "%d%c", &i, &c) != 1 || (ptr = Disp->RAM_G.FindById(i)) == nullptr)) || ptr->used == 0 || ptr->typeId != EV_OBJ)
           {
             msg = InvalidArg;
             break;
@@ -132,7 +132,7 @@ void        EvShell::Input(const char C)
             }
             else
             {
-              if (sscanf(arg[1], "#%i%c", &i, &c) == 1)
+              if (sscanf(arg[1], "%d%c", &i, &c) == 1)
               {
                 if ((ptr = Disp->RAM_G.FindById(i)) != nullptr && ptr->used != 0)
                 {
@@ -363,6 +363,7 @@ void        EvShell::displayListCommand(EvDisplay *Disp, uint32_t Addr, uint32_t
   uint16_t    commentLen, mask = 0xFF;
   float       x = 0, y = 0;
   const char  *name;
+  uint32_t    data;
   union
   {
     uint32_t  d;
@@ -418,7 +419,7 @@ void        EvShell::displayListCommand(EvDisplay *Disp, uint32_t Addr, uint32_t
   param[0] = 0;
   comment[0] = 0;
   commentLen = 0;
-  d = Disp->rd32(Addr);
+  data = d = Disp->rd32(Addr);
   cmd = d >> 24;
 
   if ((cmd & 0xC0) != 0)
@@ -571,7 +572,7 @@ void        EvShell::displayListCommand(EvDisplay *Disp, uint32_t Addr, uint32_t
       mStack[mSp - 1] = mVt;
   }
 
-  sprintf(addr, "0x%05lX:  %08lX  %s", Addr, d, tab);
+  sprintf(addr, "0x%05lX:  %08lX  %s", Addr, data, tab);
   EvOut->print(addr);
   EvOut->print(name);
   EvOut->print(param);

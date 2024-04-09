@@ -1,3 +1,9 @@
+commit e824baec7579addce18e4f29f52af95f00f321b2
+Author: Sylvain Masson <sylvainmasson@Sylvains-Mac-mini.local>
+Date:   Tue Apr 9 08:03:15 2024 -0400
+
+    EvMalloc, EvShell, EvEVE: Remove EV_VIDEO, mVideoBuf, SetPlayVideoBuffer and CmdPlayVideo
+
 commit 6b1e2046fadc57e64226c2fa31313cc3189149f1
 Author: Sylvain Masson <sylvainmasson@Sylvains-Mac-mini.local>
 Date:   Mon Apr 8 10:16:17 2024 -0400

@@ -241,11 +241,11 @@ void        EvDisplay::update(void)
   VertexFormat(4);
   Draw();
 
-  if ((mSizeDL = ReadDL()) > mMaxDL)
-    mMaxDL = mSizeDL;
-
   if (mOnUpdate)
     mOnUpdate(this);
+
+  if ((mSizeDL = ReadDL()) > mMaxDL)
+    mMaxDL = mSizeDL;
 
   SwapDL();
   mTimeUsed += micros() - usec;

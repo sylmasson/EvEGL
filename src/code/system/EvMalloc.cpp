@@ -9,6 +9,7 @@
 EvMalloc::EvMalloc(void)
 {
   mId = 1;
+  mIdDelCnt = 0;
 
   if ((mFirst = new EvMem) != nullptr)
   {
@@ -49,8 +50,15 @@ EvMalloc::~EvMalloc(void)
 
 void        EvMalloc::Free(const EvMem *Ptr)
 {
-  if (Ptr != nullptr)
-    memFree((EvMem *)Ptr);
+  EvMem     *ptr = (EvMem *)Ptr;
+
+  if (ptr != nullptr)
+  {
+    if (mIdDelCnt < ID_DEL_MAX)
+      mIdDel[mIdDelCnt++] = ptr->id;
+
+    memFree(ptr);
+  }
 }
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -341,7 +349,9 @@ uint16_t    EvMalloc::nextId(void)
 {
   uint16_t  id = mId;
 
-  if (++mId == 1000)
+  if (mIdDelCnt > 0)
+    id = mIdDel[--mIdDelCnt];
+  else if (++mId == 1000)
     mId = 0;
 
   return id;
@@ -353,7 +363,7 @@ void        EvMalloc::renewAllIds()
 {
   EvMem     *ptr;
 
-  for (ptr = mFirst, mId = 1; ptr != nullptr; ptr = ptr->next)
+  for (ptr = mFirst, mIdDelCnt = 0, mId = 1; ptr != nullptr; ptr = ptr->next)
     if (ptr->used != 0)
       ptr->id = mId++;
 }

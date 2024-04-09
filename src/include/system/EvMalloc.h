@@ -22,6 +22,8 @@
 
 #define     EV_MALLOC_MIN   64        // must be 32, 64, 128, 256 etc..
 
+#define     ID_DEL_MAX      128
+
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 struct      EvFont;
@@ -104,6 +106,8 @@ class EvMalloc
   private:
     EvMem         *mFirst;
     uint16_t      mId;
+    uint16_t      mIdDelCnt;
+    uint16_t      mIdDel[ID_DEL_MAX];
 
     uint16_t      nextId(void);
     void          renewAllIds();
