@@ -31,23 +31,26 @@ EvImage     *EvImage::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-EvImage::EvImage(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) : EvObj(Left, Top, Width, Height, Disp, Tag, State)
+EvImage::EvImage(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) :
+  EvObj(Left, Top, Width, Height, Disp, Tag, State),
+  mRefreshCoeff(true),
+  mResizeLock(false),
+  mResizeMode(RESIZE_PROPORTIONAL | RESIZE_ON_LOAD),
+  mFilterMode(NEAREST),
+  mOffsetX(0),
+  mOffsetY(0),
+  mPivotX(0),
+  mPivotY(0),
+  mAngle(-1),
+  mScaleX(1.0),
+  mScaleY(1.0),
+  mLoadDMA(nullptr),
+  mLoad(nullptr),
+  mBmp(nullptr),
+  mOnTouch(nullptr)
 {
-  mBmp = nullptr;
-  mLoad = nullptr;
-  mLoadDMA = nullptr;
-  mOffsetX = 0;
-  mOffsetY = 0;
-  mResizeLock = false;
-  mStyle.align = LEFT_CENTER | ALIGNMENT_LOCK;
-  mPivotX = mPivotY = 0;
-  mScaleX = mScaleY = 1.0;
-  mAngle = -1;
+  TextAlign(LEFT_CENTER | ALIGNMENT_LOCK);
   Rotate(0);
-  SetMode(RESIZE_PROPORTIONAL | RESIZE_ON_LOAD, NEAREST);
-  SetOnTouch(nullptr);
-  ModifiedCoeff();
-  Modified();
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

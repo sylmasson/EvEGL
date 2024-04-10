@@ -64,7 +64,10 @@ EvPixelBox     *EvPixelBox::Create(int16_t Left, int16_t Top, uint16_t Width, ui
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-EvPixelBox::EvPixelBox(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) : EvObj(Left, Top, Width, Height, Disp, Tag, State)
+EvPixelBox::EvPixelBox(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) :
+  EvObj(Left, Top, Width, Height, Disp, Tag, State),
+  mBufInd(0),
+  mOnTouch(nullptr)
 {
   mBmp.Format = RAW_DATA;
   mBmp.Layout = PALETTED565;
@@ -75,7 +78,6 @@ EvPixelBox::EvPixelBox(int16_t Left, int16_t Top, uint16_t Width, uint16_t Heigh
   mBmp.DataSize = sizeof(RegularHSV);
   mBmp.Data = (const uint8_t *)RegularHSV;
   mBmp.Tag = Tag;
-  mBufInd = 0;
 
   if ((mDest = Disp->LoadBmp(&mBmp)) == nullptr)
     abortCreate();
@@ -84,7 +86,6 @@ EvPixelBox::EvPixelBox(int16_t Left, int16_t Top, uint16_t Width, uint16_t Heigh
     Disp->CmdMemSet(mDest->addr + mBmp.PalSize, 0, mBmp.BmpSize);
     BdShape(SQUARE_CORNERS);
     mBmp.BmpSize /= 2;
-    SetOnTouch(nullptr);
   }
 }
 

@@ -32,19 +32,22 @@ EvNumInt  *EvNumInt::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t 
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-EvNumInt::EvNumInt(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) : EvObj(Left, Top, Width, Height, Disp, Tag, State)
+EvNumInt::EvNumInt(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) :
+  EvObj(Left, Top, Width, Height, Disp, Tag, State),
+  mValue(-1),
+  mMin(0),
+  mMax(1000),
+  mInc(0),
+  mSkipUp(false),
+  mFormat("%ld"),
+  mOnTouch(nullptr),
+  mOnChange(nullptr)
 {
-  mInc = 0;
-  mValue = -1;
   TextFont(25);
   TextAlign(RIGHT_CENTER);
   TextColor(TEXT_COLOR);
   TextPadding(5, 0);
-  SetFormat("%ld");
-  SetRange(0, 1000);
   BdShape(FIXED_CORNERS);
-  SetOnTouch(nullptr);
-  SetOnChange(nullptr);
   SetValue(0);
 }
 

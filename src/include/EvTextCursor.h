@@ -18,7 +18,7 @@ class EvTextCursor : public EvObj
 
   public:
     uint8_t       Style(void);
-    uint8_t       Style(uint8_t CursorStyle);
+    uint8_t       SetStyle(uint8_t CursorStyle);
 
   protected:
     uint8_t       mCursorState;

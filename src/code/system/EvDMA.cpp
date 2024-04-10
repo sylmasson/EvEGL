@@ -5,29 +5,32 @@ EvTaskDMA   TaskDMA;
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-EvDMA::EvDMA(EvDisplay *Disp, uint8_t *Src, uint32_t Cnt, void *Tag, void *Sender, void (*OnEvent)(EvDMA *Data), EvMem *Dst)
+EvDMA::EvDMA(EvDisplay *Disp, uint8_t *Src, uint32_t Cnt, void *Tag, void *Sender, void (*OnEvent)(EvDMA *Data), EvMem *Dst) :
+  Status(EvDMA::PENDING),
+  Disp(Disp),
+  Dst(Dst),
+  Src(Src),
+  Cnt(Cnt),
+  Tag(Tag),
+  Sender(Sender),
+  OnEvent(OnEvent),
+  mNext(nullptr),
+  mPrev(nullptr)
 {
   if (Dst == nullptr)
-    Cnt = (Cnt + 3) & ~3;   // Padding 32bit alignment for MEDIAFIFO
-
-  EvDMA::Status = EvDMA::PENDING;
-  EvDMA::Disp = Disp;
-  EvDMA::Dst = Dst;
-  EvDMA::Src = Src;
-  EvDMA::Cnt = Cnt;
-  EvDMA::Tag = Tag;
-  EvDMA::Sender = Sender;
-  EvDMA::OnEvent = OnEvent;
-  mNext = nullptr;
-  mPrev = nullptr;
+    EvDMA::Cnt = (Cnt + 3) & ~3;   // Padding 32bit alignment for MEDIAFIFO
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-EvTaskDMA::EvTaskDMA(void)
+EvTaskDMA::EvTaskDMA(void) :
+  mInProgress(nullptr),
+  mFirst(nullptr),
+  mLast(nullptr),
+  mInd(0),
+  mCnt(0),
+  mBusy(false)
 {
-  mBusy = false;
-  mFirst = mLast = nullptr;
   mEvent.attach(mOnEventDMA);
 }
 

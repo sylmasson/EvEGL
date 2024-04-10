@@ -33,18 +33,20 @@ EvCheckBox  *EvCheckBox::Create(int16_t Left, int16_t Top, uint16_t Width, uint1
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-EvCheckBox::EvCheckBox(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) : EvObj(Left, Top, Width, Height, Disp, Tag, State)
+EvCheckBox::EvCheckBox(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) :
+  EvObj(Left, Top, Width, Height, Disp, Tag, State),
+  mValue(true),
+  mColorCheck(COLOR_CHECK),
+  mColorUncheck(COLOR_UNCHECK),
+  mColorBorder(COLOR_BORDER),
+  mTouchFlag(false),
+  mOnTouch(nullptr),
+  mOnChange(nullptr)
 {
-  mValue = false;
-  mTouchFlag = false;
   TextLabel("CheckBox");
   TextAlign(LEFT_CENTER);
   TextColor(COLOR_TEXT, COLOR_TEXT_2);
-  SetColor(COLOR_CHECK, COLOR_UNCHECK, COLOR_BORDER);
   BdShape(RATIO_CORNERS);
-  SetOnTouch(nullptr);
-  SetOnChange(nullptr);
-  SetValue(true);
 }
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *

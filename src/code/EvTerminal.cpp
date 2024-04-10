@@ -34,10 +34,11 @@ EvTerminal  *EvTerminal::Create(int16_t Left, int16_t Top, uint16_t Width, uint1
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-EvTerminal::EvTerminal(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) : EvTextBlock(Left, Top, Width, Height, Disp, Tag, State)
+EvTerminal::EvTerminal(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) :
+  EvTextBlock(Left, Top, Width, Height, Disp, Tag, State),
+  mScrolling(0),
+  MaxBufferSize(4096)
 {
-  MaxBufferSize = 4096;
-  mScrolling = 0;
   WrapText(false);
   TextFont(17);
   TextPadding(7, 5);
@@ -51,7 +52,7 @@ EvTerminal::EvTerminal(int16_t Left, int16_t Top, uint16_t Width, uint16_t Heigh
   {
     Disp->UnloadFont(17);
     Disp->LoadFont(Menio20, 17);
-    Cursor->Style(CURSOR_SMOOTH);
+    Cursor->SetStyle(CURSOR_SMOOTH);
   }
 }
 

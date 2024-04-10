@@ -29,13 +29,14 @@ EvPanel     *EvPanel::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-EvPanel::EvPanel(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) : EvObj(Left, Top, Width, Height, Disp, Tag, State)
+EvPanel::EvPanel(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) :
+  EvObj(Left, Top, Width, Height, Disp, Tag, State),
+  mOffsetX(0),
+  mOffsetY(0),
+  mFirst(nullptr),
+  mLast(nullptr)
 {
   BgColor(TRANSPARENT);
-  mFirst = nullptr;
-  mLast = nullptr;
-  mOffsetX = 0;
-  mOffsetY = 0;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

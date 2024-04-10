@@ -6,11 +6,10 @@
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-EvMalloc::EvMalloc(void)
+EvMalloc::EvMalloc(void) :
+  mId(1),
+  mIdDelCnt(0)
 {
-  mId = 1;
-  mIdDelCnt = 0;
-
   if ((mFirst = new EvMem) != nullptr)
   {
     mFirst->id = 0;

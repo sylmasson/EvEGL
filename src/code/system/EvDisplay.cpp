@@ -22,7 +22,14 @@ EvDisplay   *EvDisplay::Create(uint16_t Width, uint16_t Height, const char *Tag,
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 EvDisplay::EvDisplay(uint16_t Width, uint16_t Height, const char *Tag, const uint32_t *Config, uint8_t CS, uint8_t RST, SPIClass *Spi, uint32_t Baudrate) :
-EvEVE(Config, CS, RST, Spi, Baudrate), EvPanel(0, 0, Width, Height, this, Tag, VISIBLE_OBJ | SYSTEM_OBJ), EvSysFont(this)
+  EvPanel(0, 0, Width, Height, this, Tag, VISIBLE_OBJ | SYSTEM_OBJ),
+  EvEVE(Config, CS, RST, Spi, Baudrate),
+  EvSysFont(this),
+  mFrameCount(0),
+  mTimeUsed(0),
+  mSizeDL(0),
+  mMaxDL(0),
+  mKbd(nullptr)
 {
   if (sDispCount >= 3)
   {
@@ -39,9 +46,6 @@ EvEVE(Config, CS, RST, Spi, Baudrate), EvPanel(0, 0, Width, Height, this, Tag, V
   #endif
 
   sDispList[sDispCount++] = this;
-  mKbd = nullptr;
-  mTimeUsed = 0;
-  mMaxDL = 0;
 
 #ifdef DEBUG
   pinMode(28, OUTPUT);   // debug Disp1 update
@@ -54,7 +58,6 @@ EvEVE(Config, CS, RST, Spi, Baudrate), EvPanel(0, 0, Width, Height, this, Tag, V
   Rotate(rd8(REG_ROTATE));
   SetOnUpdate(nullptr);
   SetOnTouch(nullptr);
-  InitSystemFont();
   Brightness(64);
 }
 

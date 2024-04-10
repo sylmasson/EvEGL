@@ -11,7 +11,6 @@ class EvDMA
   public:
     enum {PENDING, BEGIN, LOADING, COMPLETED, ABORT};
 
-    uint16_t        Priority;
     uint16_t        Status;
     EvDisplay       *Disp;
     const EvMem     *Dst;     // Is nullptr the destination is MEDIAFIFO

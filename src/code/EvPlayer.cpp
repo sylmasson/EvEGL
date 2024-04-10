@@ -38,7 +38,15 @@ EvPlayer    *EvPlayer::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-EvPlayer::EvPlayer(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) : EvPanel(Left, Top, Width, Height, Disp, Tag, State)
+EvPlayer::EvPlayer(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) :
+  EvPanel(Left, Top, Width, Height, Disp, Tag, State),
+  mRun(false),
+  mLock(false),
+  mMovable(false),
+  mSpeedIndex(0),
+  mTouchCount(0),
+  mTimerHide(0),
+  mSmallOwner(nullptr)
 {
   if (!(Video = EvVideo::Create(0, 0, mWidth, mHeight, this, nullptr, VISIBLE_DIS_OBJ)) ||
       !(TopBar = EvSideBar::Create(0, 0, mWidth, SIDEBAR_HEIGHT, this, "TopBar", DISABLED_OBJ)) ||
@@ -53,12 +61,6 @@ EvPlayer::EvPlayer(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, E
     return;
   }
 
-  mRun = false;
-  mLock = false;
-  mSpeedIndex = 0;
-  mTimerHide = 0;
-  mTouchCount = 0;
-  mSmallOwner = nullptr;
   Video->SetOnLoadFrame(sOnLoadFrame);
 
   TopBar->BgColor(RGB555(0, 0, 0), 128);

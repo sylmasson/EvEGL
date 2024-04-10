@@ -34,15 +34,16 @@ EvScrollBar *EvScrollBar::Create(int16_t Left, int16_t Top, uint16_t Width, uint
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-EvScrollBar::EvScrollBar(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) : EvObj(Left, Top, Width, Height, Disp, Tag, State)
+EvScrollBar::EvScrollBar(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) :
+  EvObj(Left, Top, Width, Height, Disp, Tag, State),
+  mValue(0),
+  mTimer(0),
+  mPageSize(0),
+  mViewSize(0),
+  mScrolling(0),
+  mTouchBar(false),
+  mScrollBarSync(nullptr)
 {
-  mValue = 0;
-  mTimer = 0;
-  mPageSize = 0;
-  mViewSize = 0;
-  mScrolling = 0;
-  mTouchBar = false;
-  mScrollBarSync = nullptr;
   mKinScroll.Setup(48);
   BdShape(ROUND_CORNERS);
   SetBarStyle(SCROLL_BAR_AUTO);

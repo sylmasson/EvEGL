@@ -105,7 +105,8 @@ static void OnTouchDotReSize(EvEditDot *Sender, const EvTouchEvent *Touch);
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-EvEditor::EvEditor(EvDisplay *Disp, const char *Tag) : EvPanel(0, 0, Disp->Width(), Disp->Height(), Disp, Tag, VISIBLE_DIS_OBJ | SYSTEM_OBJ)
+EvEditor::EvEditor(EvDisplay *Disp, const char *Tag) :
+  EvPanel(0, 0, Disp->Width(), Disp->Height(), Disp, Tag, VISIBLE_DIS_OBJ | SYSTEM_OBJ)
 {
   if (!(DotMove = (EvEditDot *)TryCreate(new EvEditDot(50, OnTouchDotMove, Disp, "DotMove"), this)) ||
       !(DotReSize = (EvEditDot *)TryCreate(new EvEditDot(50, OnTouchDotReSize, Disp, "DotReSize"), this)))
@@ -326,9 +327,10 @@ void        EvEditor::AlwaysToFront(void)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-EvEditDot::EvEditDot(uint16_t Size, void (*OnTouch)(EvEditDot *Sender, const EvTouchEvent *Touch), EvDisplay *Disp, const char *Tag) : EvObj(0, 0, Size, Size, Disp, Tag, VISIBLE_OBJ | SYSTEM_OBJ)
+EvEditDot::EvEditDot(uint16_t Size, void (*OnTouch)(EvEditDot *Sender, const EvTouchEvent *Touch), EvDisplay *Disp, const char *Tag) :
+  EvObj(0, 0, Size, Size, Disp, Tag, VISIBLE_OBJ | SYSTEM_OBJ),
+  mOnTouch(OnTouch)
 {
-  mOnTouch = OnTouch;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -350,7 +352,9 @@ void        EvEditDot::touchEvent(const EvTouchEvent *Touch)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-EvEditProp::EvEditProp(EvDisplay *Disp, const char *Tag) : EvPanel(0, 0, 150, 310, Disp, Tag, VISIBLE_OBJ | SYSTEM_OBJ)
+EvEditProp::EvEditProp(EvDisplay *Disp, const char *Tag) :
+  EvPanel(0, 0, 150, 310, Disp, Tag, VISIBLE_OBJ | SYSTEM_OBJ),
+  Minimized(false)
 {
   if (property || !(LabTitle = EvLabel::Create(40, 0, 65, 36, this, nullptr, VISIBLE_DIS_OBJ | SYSTEM_OBJ)) ||
       !(BtnMinimize = EvButton::Create(6, 6, 25, 25, this, nullptr, VISIBLE_OBJ | SYSTEM_OBJ)) ||

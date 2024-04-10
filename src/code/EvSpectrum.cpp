@@ -30,15 +30,15 @@ EvSpectrum     *EvSpectrum::Create(int16_t Left, int16_t Top, uint16_t Width, ui
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-EvSpectrum::EvSpectrum(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) : EvObj(Left, Top, Width, Height, Disp, Tag, State)
+EvSpectrum::EvSpectrum(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) :
+  EvObj(Left, Top, Width, Height, Disp, Tag, State),
+  mDataSize(Width / 2),
+  mLineColor(LINE_COLOR),
+  mFillColor(FILL_COLOR),
+  mOnTouch(nullptr)
 {
-  if ((mData = (uint8_t *)calloc(mDataSize = Width / 2, sizeof(*mData))) == nullptr)
+  if ((mData = (uint8_t *)calloc(mDataSize, sizeof(*mData))) == nullptr)
     abortCreate();
-  else
-  {
-    SetColor(LINE_COLOR, FILL_COLOR);
-    SetOnTouch(nullptr);
-  }
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

@@ -39,7 +39,8 @@ EvTab       *EvTab::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t H
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-EvTab::EvTab(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) : EvSelector(Left, Top, Width, Height, Disp, Tag, State)
+EvTab::EvTab(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) :
+  EvSelector(Left, Top, Width, Height, Disp, Tag, State)
 {
   mOption = TAB_STYLE | TAB_LEFT_TOP | SEPARATOR_ON;
 }
@@ -118,19 +119,22 @@ EvSelector  *EvSelector::Create(int16_t Left, int16_t Top, uint16_t Width, uint1
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-EvSelector::EvSelector(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) : EvObj(Left, Top, Width, Height, Disp, Tag, State)
+EvSelector::EvSelector(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) :
+  EvObj(Left, Top, Width, Height, Disp, Tag, State),
+  mValue(0),
+  mCount(0),
+  mNewVal(-2),
+  mOption(0),
+  mColorNew(COLOR_SELNEW),
+  mColorNone(COLOR_SELNONE),
+  mColorSelect(COLOR_SELECT),
+  mDest(nullptr),
+  mBmp(nullptr),
+  mOnTouch(nullptr),
+  mOnChange(nullptr)
 {
-  mValue = 0;
-  mCount = 0;
-  mOption = 0;
-  mBmp = nullptr;
-  mDest = nullptr;
-  setNewVal(-2);
   TextColor(TEXT_SELNONE, TEXT_SELECT);
-  SetColor(COLOR_SELNONE, COLOR_SELECT, COLOR_SELNEW);
   BdShape(FIXED_CORNERS);
-  SetOnTouch(nullptr);
-  SetOnChange(nullptr);
   Items.SetOnChange(sOnStringListChange, this);
 }
 

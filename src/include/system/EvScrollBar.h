@@ -49,6 +49,7 @@ class EvScrollBar : public EvObj
 
   protected:
     int16_t       mValue;
+    uint16_t      mTimer;
     int16_t       mSpeed;
     uint16_t      mPageSize;
     uint16_t      mViewSize;
@@ -63,7 +64,6 @@ class EvScrollBar : public EvObj
     uint8_t       mAlpha;
     uint8_t       mScrolling;
     bool          mTouchBar;
-    uint16_t      mTimer;
     EvKinScroll   mKinScroll;
     EvScrollBar   *mScrollBarSync;
 

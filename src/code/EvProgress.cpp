@@ -33,14 +33,17 @@ EvProgress  *EvProgress::Create(int16_t Left, int16_t Top, uint16_t Width, uint1
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-EvProgress::EvProgress(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) : EvObj(Left, Top, Width, Height, Disp, Tag, State)
+EvProgress::EvProgress(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) :
+  EvObj(Left, Top, Width, Height, Disp, Tag, State),
+  mValue(-1),
+  mColorLower(LOWER_COLOR),
+  mColorUpper(UPPER_COLOR),
+  mOnTouch(nullptr)
 {
-  mValue = -1;
-  SetFormat("%.0f%%");
-  SetColor(LOWER_COLOR, UPPER_COLOR);
+  BgColor(mColorUpper);
   BdColor(BORDER_COLOR);
   BdShape(ROUND_CORNERS);
-  SetOnTouch(nullptr);
+  SetFormat("%.0f%%");
   SetValue(0);
 }
 

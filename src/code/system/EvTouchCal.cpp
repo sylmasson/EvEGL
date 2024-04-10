@@ -23,13 +23,14 @@ EvTouchCal  *EvTouchCal::Create(int16_t Left, int16_t Top, uint16_t Width, uint1
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-EvTouchCal::EvTouchCal(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) : EvObj(Left, Top, Width, Height, Disp, Tag, State)
+EvTouchCal::EvTouchCal(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) :
+  EvObj(Left, Top, Width, Height, Disp, Tag, State),
+  mInd(0),
+  mTouchTag(0),
+  mTimer(0),
+  mText(DefaultText),
+  mOnExit(nullptr)
 {
-  mInd = 0;
-  mTimer = 0;
-  mTouchTag = 0;
-  mOnExit = nullptr;
-  mText = DefaultText;
   mTargetX[0] = mTargetX[3] = mWidth / 10;
   mTargetX[1] = mTargetX[2] = mWidth - mTargetX[0];
   mTargetY[0] = mTargetY[2] = mHeight / 10;

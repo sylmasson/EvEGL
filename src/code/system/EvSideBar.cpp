@@ -29,7 +29,8 @@ EvSideBar   *EvSideBar::Create(int16_t Left, int16_t Top, uint16_t Width, uint16
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-EvSideBar::EvSideBar(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) : EvPanel(Left, Top, Width, Height, Disp, Tag, State)
+EvSideBar::EvSideBar(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) :
+  EvPanel(Left, Top, Width, Height, Disp, Tag, State)
 {
   Setup(SIDEBAR_TOP);
 }

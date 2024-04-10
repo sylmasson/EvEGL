@@ -17,15 +17,15 @@ const char  *c_str(const String &Str)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-EvStringList::EvStringList(void)
+EvStringList::EvStringList(void) :
+  mCount(0),
+  mMaxItems(0),
+  mStringList(nullptr),
+  mOnChange(nullptr),
+  AutoSort(false),
+  ReverseSort(false),
+  CaseSensitive(false)
 {
-  mCount = 0;
-  mMaxItems = 0;
-  mOnChange = nullptr;
-  mStringList = nullptr;
-  AutoSort = false;
-  ReverseSort = false;
-  CaseSensitive = false;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

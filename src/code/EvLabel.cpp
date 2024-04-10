@@ -29,14 +29,15 @@ EvLabel     *EvLabel::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-EvLabel::EvLabel(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) : EvObj(Left, Top, Width, Height, Disp, Tag, State)
+EvLabel::EvLabel(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) :
+  EvObj(Left, Top, Width, Height, Disp, Tag, State),
+  mTouchFlag(false),
+  mOnTouch(nullptr)
 {
   TextFont(25);
   TextLabel("Label");
   TextAlign(RIGHT_CENTER);
   TextColor(TEXT_COLOR);
-  SetOnTouch(nullptr);
-  mTouchFlag = false;
 }
 
 /// @copydoc EvButton::SetOnTouch()

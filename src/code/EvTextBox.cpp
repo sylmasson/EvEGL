@@ -49,9 +49,21 @@ EvTextBox   *EvTextBox::Create(int16_t Left, int16_t Top, uint16_t Width, uint16
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-EvTextBox::EvTextBox(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) : EvPanel(Left, Top, Width, Height, Disp, Tag, State)
+EvTextBox::EvTextBox(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) :
+  EvPanel(Left, Top, Width, Height, Disp, Tag, State),
+  mFlags(0),
+  mMaxLength(0),
+  mCursorIndex(0),
+  mSelectBegin(0),
+  mSelectCount(0),
+  mOnTouch(nullptr),
+  mOnChange(nullptr),
+  mOnReturn(nullptr),
+  mOnFilter(nullptr),
+  mOnSetKbdFocus(nullptr),
+  mOnLostKbdFocus(nullptr),
+  SelectAllOnSetKbdFocus(false)
 {
-  mFlags = 0;
   TextClear();
   TextFont(26);
   TextPadding(10, 0);
@@ -61,20 +73,13 @@ EvTextBox::EvTextBox(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height,
   BdColor(BD_COLOR);
   BdShape(FIXED_CORNERS);
   BdWidth(24);
-  SetOnTouch(nullptr);
-  SetOnChange(nullptr);
-  SetOnReturn(nullptr);
-  SetOnFilter(nullptr);
-  SetOnKbdFocus(nullptr, nullptr);
-  SelectAllOnSetKbdFocus = false;
-  mMaxLength = 0;
 
   if ((Cursor = EvTextCursor::Create(0, 0, 0, 0, this, nullptr, DISABLED_OBJ | FIXED_OBJ)) == nullptr)
     abortCreate();
   else
   {
     Cursor->BgColor(CURSOR_COLOR);
-    Cursor->Style(CURSOR_SMOOTH);
+    Cursor->SetStyle(CURSOR_SMOOTH);
   }
 }
 
@@ -271,7 +276,7 @@ size_t      EvTextBox::write(const uint8_t *Buffer, size_t Count)
   uint16_t  len;
   char      *buf;
 
-  Cursor->Style(CURSOR_SOLID);
+  Cursor->SetStyle(CURSOR_SOLID);
 
   for (size_t i = 0; i < Count; i++)
     if ((c = filter(*Buffer++)) == '\b')
@@ -316,7 +321,7 @@ size_t      EvTextBox::write(const uint8_t *Buffer, size_t Count)
       }
     }
 
-  Cursor->Style(CURSOR_SMOOTH);
+  Cursor->SetStyle(CURSOR_SMOOTH);
   return Count;
 }
 
@@ -565,7 +570,7 @@ void        EvTextBox::touchEvent(const EvTouchEvent *Touch)
     case TOUCH_START:
       ClrTouchBox();
       SetMoveToWord();
-      Cursor->Style(CURSOR_SOLID);
+      Cursor->SetStyle(CURSOR_SOLID);
       Touch->repeatTimer = 200;
       Touch->repeatDelay = 40;
       Touch->event = 0;
@@ -616,7 +621,7 @@ void        EvTextBox::touchEvent(const EvTouchEvent *Touch)
       SetKbdFocus();
 
     case TOUCH_CANCEL:
-      Cursor->Style(CURSOR_SMOOTH);
+      Cursor->SetStyle(CURSOR_SMOOTH);
       ClrTouchBox();
       moveCursor();
       Touch->event = 0;

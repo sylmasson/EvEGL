@@ -36,18 +36,22 @@ EvSlider    *EvSlider::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-EvSlider::EvSlider(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) : EvObj(Left, Top, Width, Height, Disp, Tag, State)
+EvSlider::EvSlider(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) :
+  EvObj(Left, Top, Width, Height, Disp, Tag, State),
+  mValue(0),
+  mMin(0),
+  mMax(100),
+  mSetPoint(0),
+  mColorLower(COLOR_LOWER),
+  mColorUpper(COLOR_UPPER),
+  mColorKnob(COLOR_KNOB),
+  mTouchKnob(false),
+  mOnTouch(nullptr),
+  mOnChange(nullptr)
 {
-  mTouchKnob = false;
   BdShape(ROUND_CORNERS);
-  resizeEvent();
   SetDelay(SLIDER_DELAY);
-  SetRange(0, 100);
-  SetColor(COLOR_LOWER, COLOR_UPPER, COLOR_KNOB);
-  SetOnTouch(nullptr);
-  SetOnChange(nullptr);
-  mSetPoint = mValue;
-  SetValue(0);
+  resizeEvent();
 }
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *

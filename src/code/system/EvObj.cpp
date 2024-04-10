@@ -5,34 +5,34 @@
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-EvObj::EvObj(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State)
+EvObj::EvObj(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) :
+  mStatus(State),
+  mOpacity(256),
+  mLeft(Left),
+  mTop(Top),
+  mWidth(Width),
+  mHeight(Height),
+  mTouchCnt(0),
+  mTouchMax(1),
+  mBgColor(0),
+  mBgColorA(0),
+  mBdShape(SQUARE_CORNERS),
+  mBdRadius(0),
+  mBdWidth(0),
+  mBdColor(0),
+  mLabel(""),
+  mOwner(nullptr),
+  mCache(nullptr),
+  Disp(Disp),
+  Tag(!Tag ? "EvObj" : Tag),
+  TagId(0)
 {
-  TagId = 0;
-  mLeft = Left;
-  mTop = Top;
-  mWidth = Width;
-  mHeight = Height;
-  EvObj::Disp = Disp;
-  EvObj::Tag = !Tag ? "EvObj" : Tag;
-  mStatus = State;
-  mTouchCnt = 0;
-  mTouchMax = 1;
-  mBdShape = SQUARE_CORNERS;
-  mBdRadius = 0;
-  mBdWidth = 0;
-  mBdColor = 0;
-  mBgColor = 0;
-  mBgColorA = 0;
-  mOpacity = 256;
-  mOwner = nullptr;
-  mCache = nullptr;
   mStyle.font = 25;
   mStyle.align = CENTER;
   mStyle.padX = 0;
   mStyle.padY = 0;
   mStyle.color = RGB555(255, 255, 255);
   mStyle.color2 = 0;
-  mLabel = "";
   ModifiedText();
   SetView();
 }

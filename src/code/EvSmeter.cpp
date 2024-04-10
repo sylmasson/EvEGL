@@ -10,7 +10,12 @@ EvSmeter    *EvSmeter::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-EvSmeter::EvSmeter(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) : EvPanel(Left, Top, Width == 0 ? sSmeter.Width : Width, Height == 0 ? sSmeter.Height : Height, Disp, Tag, State)
+EvSmeter::EvSmeter(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) :
+  EvPanel(Left, Top, Width == 0 ? sSmeter.Width : Width, Height == 0 ? sSmeter.Height : Height, Disp, Tag, State),
+  mLock(false),
+  mValue(0),
+  mAngle(0),
+  mOnTouch(nullptr)
 {
   mBG = (EvImage *)EvImage::Create(0, 0, mWidth, mHeight, this, "SmeterBG");
   mNeedle = (EvNeedle *)TryCreate(new EvNeedle(0, 0, 0, 0, Disp, "SmeterNeedle"), this);
@@ -19,15 +24,15 @@ EvSmeter::EvSmeter(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, E
     abortCreate();
   else
   {
-    mValue = 0;
+/*    mValue = 0;
     mAngle = 0;
-    mLock = false;
+    mLock = false;*/
     mBG->SetMode(RESIZE_PROPORTIONAL, BILINEAR);
     mNeedle->SetMode(RESIZE_PROPORTIONAL, BILINEAR);
     mNeedle->RotateAround(sSmeterNeedle.Width / 2, sSmeterNeedle.Height - 6);
     BgColor(RGB555(0, 0, 0));
     resizeEvent();
-    SetOnTouch(nullptr);
+//    SetOnTouch(nullptr);
     SetValue(-1000);
   }
 }
@@ -77,7 +82,8 @@ void        EvSmeter::touchEvent(const EvTouchEvent *Touch)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-EvNeedle::EvNeedle(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag) : EvImage(Left, Top, Width, Height, Disp, Tag)
+EvNeedle::EvNeedle(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag) :
+  EvImage(Left, Top, Width, Height, Disp, Tag)
 {
 }
 

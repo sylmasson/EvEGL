@@ -10,15 +10,16 @@ EvVuBar     *EvVuBar::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-EvVuBar::EvVuBar(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) : EvObj(Left, Top, Width, Height, Disp, Tag, State)
+EvVuBar::EvVuBar(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) :
+  EvObj(Left, Top, Width, Height, Disp, Tag, State),
+  mValue(0),
+  mDotValue(0),
+  mPeakValue(0),
+  mPeakTimer(0),
+  mOnTouch(nullptr)
 {
-  mValue = 0;
-  mDotValue = 0;
-  mPeakValue = 0;
-  mPeakTimer = 0;
   SetColor(0, 0);
   SetFormat(12, 3, 5);
-  SetOnTouch(nullptr);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

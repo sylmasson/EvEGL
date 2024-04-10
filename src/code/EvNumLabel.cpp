@@ -27,10 +27,11 @@ EvNumLabel  *EvNumLabel::Create(int16_t Left, int16_t Top, uint16_t Width, uint1
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-EvNumLabel::EvNumLabel(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) : EvLabel(Left, Top, Width, Height, Disp, Tag, State)
+EvNumLabel::EvNumLabel(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) :
+  EvLabel(Left, Top, Width, Height, Disp, Tag, State),
+  mFormat("%ld")
 {
   mValue.i = -1;
-  SetFormat("%ld");
   SetValue(0L);
 }
 

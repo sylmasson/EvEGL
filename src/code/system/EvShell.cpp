@@ -27,14 +27,14 @@ static EvCmd    sCmdList[] =
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-EvShell::EvShell(Stream &SerialMonitor, SDClass *SDCard)
+EvShell::EvShell(Stream &SerialMonitor, SDClass *SDCard) :
+  mAddr(0),
+  mSize(EV_MALLOC_SIZE),
+  mRadix(0),
+  mActDisp(0),
+  mBufCount(0),
+  mSDCard(SDCard)
 {
-  mAddr = 0;
-  mSize = EV_MALLOC_SIZE;
-  mRadix = 0;
-  mActDisp = 0;
-  mBufCount = 0;
-  mSDCard = SDCard;
   EvIn = &SerialMonitor;
   EvOut = &SerialMonitor;
 }

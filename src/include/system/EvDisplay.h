@@ -10,7 +10,7 @@
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-class EvDisplay : public EvEVE, public EvPanel, public EvSysFont
+class EvDisplay : public EvPanel, public EvEVE, public EvSysFont
 {
   friend class  EvObj;
   friend class  EvShell;

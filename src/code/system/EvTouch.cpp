@@ -16,7 +16,8 @@
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-EvTouch::EvTouch(void)
+EvTouch::EvTouch(void) :
+  mOnTouch(nullptr)
 {
   memset(&mTouchEvent, 0, sizeof(mTouchEvent));
 }

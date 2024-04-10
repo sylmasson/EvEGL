@@ -30,11 +30,12 @@ EvScrollBox *EvScrollBox::Create(int16_t Left, int16_t Top, uint16_t Width, uint
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-EvScrollBox::EvScrollBox(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) : EvPanel(Left, Top, Width, Height, Disp, Tag, State)
+EvScrollBox::EvScrollBox(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) :
+  EvPanel(Left, Top, Width, Height, Disp, Tag, State),
+  mPageWidth(Width),
+  mPageHeight(Height),
+  mTouchFlag(false)
 {
-  mTouchFlag = false;
-  mPageWidth = Width;
-  mPageHeight = Height;
   mScrollBarX = EvScrollBar::Create(0, 0, Width, 20, this, nullptr, VISIBLE_OBJ | FIXED_OBJ | SYSTEM_OBJ);
   mScrollBarY = EvScrollBar::Create(0, 0, 20, Height, this, nullptr, VISIBLE_OBJ | FIXED_OBJ | SYSTEM_OBJ);
 

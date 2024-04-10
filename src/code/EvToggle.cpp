@@ -34,13 +34,21 @@ EvToggle    *EvToggle::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-EvToggle::EvToggle(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) : EvObj(Left, Top, Width, Height, Disp, Tag, State)
+EvToggle::EvToggle(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) :
+  EvObj(Left, Top, Width, Height, Disp, Tag, State),
+  mValue(0),
+  mColorOn(COLOR_ON),
+  mColorOff(COLOR_OFF),
+  mColorKnob(COLOR_KNOB),
+  mSkipUp(false),
+  mPosKnob(0),
+  mDirKnob(0),
+  mTouchKnob(false),
+  mTimerKnob(0),
+  mOnTouch(nullptr),
+  mOnChange(nullptr)
 {
-  mTouchKnob = false;
-  SetColor(COLOR_ON, COLOR_OFF, COLOR_KNOB);
   BdShape(ROUND_CORNERS);
-  SetOnTouch(nullptr);
-  SetOnChange(nullptr);
   SetValue(mValue = false);
 }
 

@@ -32,17 +32,15 @@ EvKbd       *EvKbd::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t H
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-EvKbd::EvKbd(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) : EvSideBar(Left, Top, Width, Height, Disp, Tag, State)
+EvKbd::EvKbd(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) :
+  EvSideBar(Left, Top, Width, Height, Disp, Tag, State),
+  mKey(0),
+  mKeyId(0),
+  mLayout(0),
+  mPrevKey(0),
+  mShiftKey(0),
+  FocusObj(nullptr)
 {
-  mKey = 0;
-  mKeyId = 0;
-  mLayout = 0;
-  mPrevKey = 0;
-  mShiftKey = 0;
-  FocusObj = nullptr;
-  SetOnTouch(nullptr);
-  TouchMax(2);
-
   if ((mOverKey = EvLabel::Create(0, 0, 0, 0, this, "KbdOverlay", DISABLED_OBJ | FLOAT_OBJ | SYSTEM_OBJ)) == nullptr)
   {
     abortCreate();
@@ -53,6 +51,8 @@ EvKbd::EvKbd(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDispl
   mOverKey->BdColor(OVER_KEY_BD_COLOR);
   mOverKey->BdWidth(24);
 
+  TouchMax(2);
+  SetOnTouch(nullptr);
   SetOwner(Disp); // Owner is not yet initialized
   SetKeyboard(Disp->Orientation & 2 ? 1 : 0);
 }

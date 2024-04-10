@@ -1,3 +1,13 @@
+commit c497f59ba5cf9b9ed89c9c80a665b204aabd526b
+Author: Sylvain Masson <sylvainmasson@Sylvains-Mac-mini.local>
+Date:   Tue Apr 9 11:27:54 2024 -0400
+
+    EvMalloc: Save and reassign deleted unique Id
+    
+    EvShell: Change #Id to Id only and bug fix in Bitmap source decoding
+    
+    Previous commit EvMalloc: Allocate the big blocks to bottom and the small block to top of RAM_G
+
 commit e824baec7579addce18e4f29f52af95f00f321b2
 Author: Sylvain Masson <sylvainmasson@Sylvains-Mac-mini.local>
 Date:   Tue Apr 9 08:03:15 2024 -0400

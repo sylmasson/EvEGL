@@ -32,15 +32,17 @@ EvButton    *EvButton::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-EvButton::EvButton(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) : EvObj(Left, Top, Width, Height, Disp, Tag, State)
+EvButton::EvButton(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) :
+  EvObj(Left, Top, Width, Height, Disp, Tag, State),
+  mValue(0),
+  mColorUp(COLOR_UP),
+  mColorDown(COLOR_DOWN),
+  mTouchFlag(false),
+  mOnTouch(nullptr),
+  mOnChange(nullptr)
 {
-  mValue = false;
-  mTouchFlag = false;
   TextColor(TEXT_UP, TEXT_DOWN);
-  SetColor(COLOR_UP, COLOR_DOWN);
   BdShape(FIXED_CORNERS | SHADOW);
-  SetOnTouch(nullptr);
-  SetOnChange(nullptr);
 }
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *

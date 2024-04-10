@@ -27,20 +27,21 @@ EvTextBlock *EvTextBlock::Create(int16_t Left, int16_t Top, uint16_t Width, uint
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-EvTextBlock::EvTextBlock(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) : EvScrollBox(Left, Top, Width, Height, Disp, Tag, State)
+EvTextBlock::EvTextBlock(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) :
+  EvScrollBox(Left, Top, Width, Height, Disp, Tag, State),
+  mWrapText(true),
+  mLineSpacing(0),
+  mLinesCount(0),
+  mMaxWidth(0),
+  mLines(nullptr),
+  mOnTouch(nullptr)
 {
-  mWrapText = true;
-  mLineSpacing = 0;
-  mLinesCount = 0;
-  mLines = nullptr;
-  mMaxWidth = 0;
   TextClear();
   TextFont(24);
   TextPadding(5, 0);
   TextAlign(LEFT_CENTER);
   TextColor(RGB555(0, 0, 0));
   BgColor(RGB555(255, 255, 255));
-  SetOnTouch(nullptr);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

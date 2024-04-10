@@ -29,11 +29,13 @@ EvTextCursor    *EvTextCursor::Create(int16_t Left, int16_t Top, uint16_t Width,
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-EvTextCursor::EvTextCursor(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) : EvObj(Left, Top, Width, Height, Disp, Tag, State)
+EvTextCursor::EvTextCursor(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) :
+  EvObj(Left, Top, Width, Height, Disp, Tag, State),
+  mCursorState(CURSOR_SOLID),
+  mCursorTimer(millis())
 {
-  mCursorState = CURSOR_SOLID;
   SetOpacity(128 << 1);
-  Style(CURSOR_SMOOTH);
+  SetStyle(CURSOR_SMOOTH);
   BdShape(ROUND_CORNERS);
   BgColor(CURSOR_COLOR);
 }
@@ -47,7 +49,7 @@ uint8_t     EvTextCursor::Style(void)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-uint8_t     EvTextCursor::Style(uint8_t CursorStyle)
+uint8_t     EvTextCursor::SetStyle(uint8_t CursorStyle)
 {
   uint8_t   style = CursorStyle & 3;
   uint8_t   state = mCursorState & 3;

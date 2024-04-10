@@ -138,15 +138,18 @@ EvVideo      *EvVideo::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-EvVideo::EvVideo(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) : EvImage(Left, Top, Width, Height, Disp, Tag, State)
+EvVideo::EvVideo(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) :
+  EvImage(Left, Top, Width, Height, Disp, Tag, State),
+  mCtrl(0),
+  mSpeed(1),
+  mSkip(0),
+  mFileInd(0),
+  mFileSize(0),
+  mFrameSync(++sVideoCount & 1),
+  mOnLoadFrame(nullptr),
+  Mute(false)
 {
-  SetOnLoadFrame(nullptr);
   SetMode(RESIZE_PROPORTIONAL, BILINEAR);
-  mFrameSync = ++sVideoCount & 1;
-  Mute = false;
-  mSpeed = 1;
-  mSkip = 0;
-  mCtrl = 0;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

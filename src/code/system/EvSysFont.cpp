@@ -275,9 +275,10 @@ const EvFont   *sEvRomFont[19] =
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-EvSysFont::EvSysFont(EvDisplay *Disp)
+EvSysFont::EvSysFont(EvDisplay *Disp) :
+  Disp(Disp)
 {
-  EvSysFont::Disp = Disp;
+  InitSystemFont();
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
