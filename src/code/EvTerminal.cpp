@@ -1,7 +1,6 @@
 
 #include    <EvGUI.h>
 
-#define     TEXT_COLOR      RGB555(  0,   0,   0)
 #define     BG_COLOR        RGB555(255, 255, 255)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -36,24 +35,23 @@ EvTerminal  *EvTerminal::Create(int16_t Left, int16_t Top, uint16_t Width, uint1
 
 EvTerminal::EvTerminal(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) :
   EvTextBlock(Left, Top, Width, Height, Disp, Tag, State),
-  mScrolling(0),
-  MaxBufferSize(4096)
+  mScrolling(0)
 {
+  if (!(Cursor = EvTextCursor::Create(0, 0, 0, 0, this, nullptr, VISIBLE_DIS_OBJ)))
+  {
+    abortCreate();
+    return;
+  }
+
   WrapText(false);
   TextFont(17);
   TextPadding(7, 5);
-  TextAlign(LEFT_CENTER);
-  TextColor(TEXT_COLOR);
   BgColor(BG_COLOR);
-
-  if (!(Cursor = EvTextCursor::Create(0, 0, 0, 0, this, nullptr, VISIBLE_DIS_OBJ)))
-    abortCreate();
-  else
-  {
-    Disp->UnloadFont(17);
-    Disp->LoadFont(Menio20, 17);
-    Cursor->SetStyle(CURSOR_SMOOTH);
-  }
+  BdShape(FIXED_CORNERS);
+  SetBufferSize(4 * 1024);
+  Disp->UnloadFont(17);
+  Disp->LoadFont(Menio20, 17);
+  Cursor->SetStyle(CURSOR_SMOOTH);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -65,13 +63,6 @@ void        EvTerminal::refreshEvent(void)
     int16_t   lineHeight;
     int16_t   textHeight = TextHeight();
     int16_t   x, y, cursorWidth = TextCursorWidth();
-    int16_t   extraLength = mLabel.length() - MaxBufferSize;
-
-    if (extraLength > 0)
-    {
-      int16_t i = mLabel.indexOf('\n', extraLength);
-      mLabel.remove(0, i < 0 ? extraLength : i + 1);
-    }
 
     TextAlign(LEFT_CENTER);
     parseTextAsLines();

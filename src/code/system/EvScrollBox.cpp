@@ -229,8 +229,8 @@ void        EvScrollBox::touchEvent(const EvTouchEvent *Touch)
     }
     else if (touch->event == TOUCH_END)
     {
-      mKinScrollX.Start(mSpeedX);
-      mKinScrollY.Start(mSpeedY);
+      mKinScrollX.Start(abs(mSpeedX) < 24 ? 0 : mSpeedX);
+      mKinScrollY.Start(abs(mSpeedY) < 24 ? 0 : mSpeedY);
       mTouchFlag = false;
       touch->obj = nullptr;
     }
@@ -267,10 +267,12 @@ void        EvScrollBox::resize(void)
   mScrollBarX->MoveTo(0, mHeight - size);
   mScrollBarX->ReSize(mWidth - (!SCROLLY ? 0 : size), size);
   mScrollBarX->SetPageSize(mPageWidth, mWidth);
+  mScrollBarX->SetValue(mScrollBarX->Value());
 
   mScrollBarY->MoveTo(mWidth - size, 0);
   mScrollBarY->ReSize(size, mHeight - (!SCROLLX ? 0 : size));
   mScrollBarY->SetPageSize(mPageHeight, mHeight);
+  mScrollBarY->SetValue(mScrollBarY->Value());
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

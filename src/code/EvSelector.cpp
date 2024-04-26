@@ -4,8 +4,8 @@
 #define     COLOR_SELNONE   RGB555(210, 210, 210)
 #define     COLOR_SELECT    RGB555(  0,   0, 160)
 #define     COLOR_SELNEW    RGB555(160, 160, 210)
-#define     TEXT_SELNONE    RGB555(  0,   0,   0)
-#define     TEXT_SELECT     RGB555(255, 255, 255)
+#define     TEXT_SELNONE    EV_BLACK
+#define     TEXT_SELECT     EV_WHITE
 
 #define     SEPARATOR_ON    (1 << 0)
 #define     TAB_STYLE       (1 << 1)
@@ -43,6 +43,8 @@ EvTab::EvTab(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDispl
   EvSelector(Left, Top, Width, Height, Disp, Tag, State)
 {
   mOption = TAB_STYLE | TAB_LEFT_TOP | SEPARATOR_ON;
+  TextColor(EV_BLACK, EV_BLACK);
+  BdShape(RATIO_CORNERS);
 }
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -133,6 +135,7 @@ EvSelector::EvSelector(int16_t Left, int16_t Top, uint16_t Width, uint16_t Heigh
   mOnTouch(nullptr),
   mOnChange(nullptr)
 {
+  TextAlign(CENTER);
   TextColor(TEXT_SELNONE, TEXT_SELECT);
   BdShape(FIXED_CORNERS);
   Items.SetOnChange(sOnStringListChange, this);

@@ -4,6 +4,19 @@
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+#define     BG_COLOR              RGB555(213, 215, 220)
+#define     OVER_KEY_BD_COLOR     RGB555(179, 183, 192)
+#define     STD_KEY_COLOR_UP      RGB555(255, 255, 255)
+#define     STD_KEY_COLOR_DOWN    RGB555(255, 255, 255)
+#define     CTRL_KEY_COLOR_UP     RGB555(179, 183, 192)
+#define     CTRL_KEY_COLOR_DOWN   RGB555(255, 255, 255)
+#define     SPACE_KEY_COLOR_UP    RGB555(255, 255, 255)
+#define     SPACE_KEY_COLOR_DOWN  RGB555(179, 183, 192)
+#define     TEXT_COLOR_UP         RGB555(  0,   0,   0)
+#define     TEXT_COLOR_DOWN       RGB555(  0,   0,   0)
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
 static const char   sKeyAlpha[] = "qwertyuiopasdfghjklzxcvbnm, .\n\b\4\3\1";
 static const char   sKeyNum[]   = "1234567890#$%():!\'\"*-+/=;?, .\n\b\4\2\5";
 static const char   sKeyExtra[] = "1234567890~|@[]{}\'\"^_&\\<>?, .\n\b\4\2\6";
@@ -46,5 +59,5 @@ static const EvKbdLayout    sKbdLayout480x230[3] =
 
 EvKeyboard                  Keyboard480x230 =
 {
-  0, 0, 480, 230, BG_COLOR, 0, 2, 28, 75, 3, sKbdLayout480x230
+  0, 0, 480, 230, BG_COLOR, 0, 2, 28, 75, OVER_KEY_BD_COLOR, 3, sKbdLayout480x230
 };

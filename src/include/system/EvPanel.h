@@ -30,8 +30,7 @@
  * @par Example
  * ~~~
  * EvPanel *myPanel = EvPanel::Create(50, 50, 200, 200, myDisplay, "MyPanel");
- * EvLabel *myLabel = EvLabel::Create(10, 10, 150, 50, myPanel, "MyLabel");
- * myLabel->TextLabel("Hello World!");
+ * EvLabel *myLabel = EvLabel::Create(10, 10, 150, 50, myPanel, "Hello World!");
  * myPanel->TextAlign(CENTER);
  * myPanel->TextFont(29);
  * ~~~
@@ -55,6 +54,7 @@ class EvPanel : public EvObj
     EvObj         *AddObj(EvObj *Obj, const char *Tag = nullptr);
     EvObj         *RemoveObj(EvObj *Obj);
     EvObj         *FirstObj(void);
+    virtual void  Hide(void);
     virtual void  ClearCache(void);
     virtual void  SetOpacity(uint16_t Opacity);
     virtual void  ModifiedAll(void);

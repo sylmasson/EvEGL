@@ -1,3 +1,9 @@
+commit a037004286d1c9f78bee648dce7521838778fcc7
+Author: Sylvain Masson <sylvainmasson@Sylvains-Mac-mini.local>
+Date:   Wed Apr 10 16:49:52 2024 -0400
+
+    Overall: moved constructor variable initialization to initialization list
+
 commit c497f59ba5cf9b9ed89c9c80a665b204aabd526b
 Author: Sylvain Masson <sylvainmasson@Sylvains-Mac-mini.local>
 Date:   Tue Apr 9 11:27:54 2024 -0400

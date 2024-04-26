@@ -40,6 +40,7 @@ EvProgress::EvProgress(int16_t Left, int16_t Top, uint16_t Width, uint16_t Heigh
   mColorUpper(UPPER_COLOR),
   mOnTouch(nullptr)
 {
+  TextAlign(CENTER);
   BgColor(mColorUpper);
   BdColor(BORDER_COLOR);
   BdShape(ROUND_CORNERS);

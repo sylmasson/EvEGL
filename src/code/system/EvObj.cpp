@@ -14,7 +14,7 @@ EvObj::EvObj(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDispl
   mHeight(Height),
   mTouchCnt(0),
   mTouchMax(1),
-  mBgColor(0),
+  mBgColor(EV_TRANSPARENT),
   mBgColorA(0),
   mBdShape(SQUARE_CORNERS),
   mBdRadius(0),
@@ -28,10 +28,10 @@ EvObj::EvObj(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDispl
   TagId(0)
 {
   mStyle.font = 25;
-  mStyle.align = CENTER;
+  mStyle.align = LEFT_CENTER;
   mStyle.padX = 0;
   mStyle.padY = 0;
-  mStyle.color = RGB555(255, 255, 255);
+  mStyle.color = EV_BLACK;
   mStyle.color2 = 0;
   ModifiedText();
   SetView();
@@ -46,7 +46,7 @@ EvObj::~EvObj(void)
 
     snprintf(str, sizeof(str) - 1, "~EvObj: %p ", this);
     EvOut->print(str);
-    DisplayTagList();
+    DisplayTagList(EvOut);
     EvOut->println();
   #endif
 
@@ -128,44 +128,6 @@ uint16_t    EvObj::Height(void)
 uint8_t     EvObj::Shape(void)
 {
   return mBdShape;
-}
-
-/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- *
- * @brief      Sets the Object as visible.
- * 
- * If the Object is not visible, change it to visible Object.
- * 
- * By default, a new Object is set as visible.
- * 
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-void        EvObj::Show(void)
-{
-  if (!(mStatus & VISIBLE_OBJ))
-  {
-    mStatus |= VISIBLE_OBJ;
-    Modified();
-  }
-}
-
-/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- *
- * @brief      Sets the Object as not visible.
- * 
- * If the Object is visible, change it to not visible Object.
- * 
- * By default, a new Object is set as visible.
- * 
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-void        EvObj::Hide(void)
-{
-  if (mStatus & VISIBLE_OBJ)
-  {
-    mStatus &= ~VISIBLE_OBJ;
-    Modified();
-  }
 }
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -441,7 +403,7 @@ void        EvObj::BdWidth(uint16_t Width)
  * 
  * @param[in]  Color    The border color of the Object.
  * 
- * Color are defined in RGB555 format. The default is TRANSPARENT.
+ * Color are defined in RGB555 format. The default is EV_TRANSPARENT.
  * 
  * A border color is drawing only if BdWidth has been defined.
  * 
@@ -464,7 +426,7 @@ void        EvObj::BdColor(uint16_t Color)
  * 
  * @param[in]  Color    The background color of the Object.
  * 
- * Color are defined in RGB555 format. The default is TRANSPARENT.
+ * Color are defined in RGB555 format. The default is EV_TRANSPARENT.
  * 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
@@ -683,20 +645,17 @@ void        EvObj::ToFront(bool AllOwner)
 
 void        EvObj::SetKbdFocus(void)
 {
-  if (Disp->mKbd != nullptr || (Disp->mKbd = EvKbd::Create(0, 0, 0, 0, Disp, "KbdSystem", SYSTEM_OBJ)) != nullptr)
+  EvKbd     *kbd = Disp->Kbd;
+
+  if (kbd->FocusObj != this)
   {
-    EvKbd   *kbd = Disp->mKbd;
+    if (kbd->FocusObj != nullptr)
+      kbd->FocusObj->lostKbdFocusEvent();
 
-    if (kbd->FocusObj != this)
-    {
-      if (kbd->FocusObj != nullptr)
-        kbd->FocusObj->lostKbdFocusEvent();
-
-      kbd->FocusObj = this;
-      kbd->SetLayout(LAYOUT_SHIFT);
-      kbd->Open();
-      setKbdFocusEvent();
-    }
+    kbd->FocusObj = this;
+    kbd->SetLayout(LAYOUT_SHIFT);
+    kbd->Open();
+    setKbdFocusEvent();
   }
 }
 
@@ -710,9 +669,9 @@ void        EvObj::SetKbdFocus(void)
 
 void        EvObj::LostKbdFocus(void)
 {
-  EvKbd     *kbd = Disp->mKbd;
+  EvKbd     *kbd = Disp->Kbd;
 
-  if (kbd != nullptr && kbd->FocusObj != nullptr)
+  if (kbd->FocusObj != nullptr)
   {
     kbd->FocusObj->lostKbdFocusEvent();
     kbd->FocusObj = nullptr;
@@ -732,7 +691,7 @@ void        EvObj::LostKbdFocus(void)
 
 EvObj       *EvObj::GetKbdFocus(void)
 {
-  return (Disp->mKbd == nullptr) ? nullptr : Disp->mKbd->FocusObj;
+  return Disp->Kbd->FocusObj;
 }
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -752,14 +711,55 @@ bool        EvObj::IsOnKbdFocus(void)
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
+ * @brief      Sets the Object as visible.
+ * 
+ * If the Object is not visible, change it to visible Object.
+ * 
+ * By default, a new Object is set as visible.
+ * 
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+void        EvObj::Show(void)
+{
+  if (!(mStatus & VISIBLE_OBJ))
+  {
+    mStatus |= VISIBLE_OBJ;
+    Modified();
+  }
+}
+
+/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *
+ * @brief      Sets the Object as not visible.
+ * 
+ * If the Object is visible, change it to not visible Object.
+ * 
+ * By default, a new Object is set as visible.
+ * 
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+void        EvObj::Hide(void)
+{
+  if (mStatus & VISIBLE_OBJ)
+  {
+    mStatus &= ~VISIBLE_OBJ;
+    Modified();
+  }
+}
+
+/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *
  * @brief      Clear the display list cache of the Opject.
  * 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 void        EvObj::ClearCache(void)
 {
-  Disp->RAM_G.Free(mCache);
-  mCache = nullptr;
+  if (mCache)
+  {
+    Disp->RAM_G.Free(mCache);
+    mCache = nullptr;
+  }
 }
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -907,7 +907,7 @@ void        EvObj::TextColor(uint16_t Color, uint16_t Color2)
 
 void        EvObj::TextLabel(const char *Label)
 {
-  mLabel = Label;
+  mLabel = (Label == nullptr) ? "" : Label;
   ModifiedText();
 }
 
@@ -1012,7 +1012,7 @@ int16_t     EvObj::TextWidth(const char *Str, uint8_t Font, int16_t Count)
   if (Font == 0)
     Font = mStyle.font;
 
-  if (Font <= LAST_FONT && (fnt = Disp->SystemFont[Font]) != nullptr)
+  if (Str != nullptr && Font <= LAST_FONT && (fnt = Disp->SystemFont[Font]) != nullptr)
     for (; (c = *Str) != 0 && Count != 0; Str++, Count--)
       if (c >= fnt->CharBeg && c < (fnt->CharBeg + fnt->CharCnt))
         width += fnt->Width[c];
@@ -1061,7 +1061,8 @@ void        EvObj::DrawText(int16_t Left, int16_t Top, int16_t Width, int16_t He
 
 void        EvObj::DrawText(int16_t Left, int16_t Top, int16_t Width, int16_t Height, const char *Str, uint16_t Color, uint8_t Font, uint8_t Align, int16_t PadX, int16_t PadY)
 {
-  int16_t   i, c, y, x = 0;
+  int32_t   x = 0;
+  int16_t   i, c, y;
   int16_t   textHeight = TextHeight(Font);
   int16_t   textWidth = TextWidth(Str, Font);
   int16_t   spCount, spWidth = TextWidth(' ', Font) << 4;
@@ -1105,7 +1106,7 @@ void        EvObj::DrawText(int16_t Left, int16_t Top, int16_t Width, int16_t He
       {
         if (x + textWidth >= 0 && x < (mWidth << 4))
         {
-          if ((uint16_t)x < (512 << 4) && (uint16_t)y < 512)
+          if ((uint16_t)x + 8 < (512 << 4) && (uint16_t)y < 512)
             Disp->Vertex2ii((x + 8) >> 4, y, Font, c);
           else
           {
@@ -1296,8 +1297,8 @@ void        EvObj::EndFunction(uint16_t Label, uint16_t CmdSize)
 {
   if (!(mStatus & FUNCT_USED_OBJ))
   {
-    EvOut->print("\nEndFunction() Error: BeginFunction() was not called in ");
-    DisplayTagList();
+    EvErr->print("\nEndFunction() Error: BeginFunction() was not called in ");
+    DisplayTagList(EvErr);
   }
   else
   {
@@ -1312,15 +1313,15 @@ void        EvObj::EndFunction(uint16_t Label, uint16_t CmdSize)
       char    str[80];
 
       snprintf(str, sizeof(str) - 1, "\nEndFunction() Error: CmdSize Expected=%u, Generated=%u in ", CmdSize, size);
-      EvOut->print(str);
-      DisplayTagList();
+      EvErr->print(str);
+      DisplayTagList(EvErr);
     }
   }
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvObj::DisplayTagList(void)
+void        EvObj::DisplayTagList(Stream *Out)
 {
   char        str[80];
   const char  *tag[8];
@@ -1330,7 +1331,7 @@ void        EvObj::DisplayTagList(void)
   if ((obj->Tag) != nullptr)
   {
     snprintf(str, sizeof(str) - 1, "\"%s\"", obj->Tag);
-    EvOut->print(str);
+    Out->print(str);
 
     for (tagCount = 0;  tagCount < 8 && (obj = obj->mOwner) != nullptr; tagCount++)
       tag[tagCount] = obj->Tag;
@@ -1338,12 +1339,12 @@ void        EvObj::DisplayTagList(void)
     if (tagCount-- > 0)
     {
       snprintf(str, sizeof(str) - 1, " from [%s]", tag[tagCount] == nullptr ? "nullptr" : tag[tagCount]);
-      EvOut->print(str);
+      Out->print(str);
 
       while (tagCount-- > 0)
       {
         snprintf(str, sizeof(str) - 1, "->[%s]", tag[tagCount] == nullptr ? "nullptr" : tag[tagCount]);
-        EvOut->print(str);
+        Out->print(str);
       }
     }
   }
@@ -1393,7 +1394,7 @@ void        EvObj::TouchUpdate(const EvTouchEvent *Touch)
       EvOut->print(str);
       snprintf(str, sizeof(str) - 1, "xy(%3d,%3d)  abs(%3u,%4u)  move(%3d,%3d)  ", Touch->x, Touch->y, Touch->abs.x, Touch->abs.y, Touch->move.x, Touch->move.y);
       EvOut->print(str);
-      DisplayTagList();
+      DisplayTagList(EvOut);
     }
 
     if (Touch->event == TOUCH_DOUBLE && !(mStatus & SYSTEM_OBJ))
@@ -1575,7 +1576,7 @@ void        EvObj::Draw(void)
 
         snprintf(str, sizeof(str) - 1, "\n[%s] Modified object (%3u bytes) ", Disp->Tag, sizeDL);
         EvOut->print(str);
-        DisplayTagList();
+        DisplayTagList(EvOut);
       }
     }
   }
@@ -1593,7 +1594,7 @@ void        EvObj::abortCreate(void)
 EvObj       *EvObj::TryCreate(EvObj *Obj, EvPanel *Dest)
 {
   if (Dest == nullptr)
-    EvOut->println("TryCreate: Dest is nullptr");
+    EvErr->println("TryCreate: Dest is nullptr");
   else if (Obj != nullptr)
   {
     #ifdef VERBOSE

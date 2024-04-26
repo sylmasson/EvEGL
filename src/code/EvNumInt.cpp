@@ -1,33 +1,85 @@
 
 #include    <EvGUI.h>
 
-#define     TEXT_COLOR      RGB555(255, 255, 255)
 #define     BD_SEL_COLOR    RGB555(  0,   0, 160)
 #define     BD_INC_COLOR    RGB555(  0, 200, 100)
 #define     BD_DEC_COLOR    RGB555(230,   0,   0)
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
- * @brief      Create a new instance of the standard NumInt class.
+ * @brief      Create a new instance of the standard **EvNumInt** class.
  * 
- * A new NumInt class is created at the specified size and relative position
+ * A new **EvNumInt** class is created at the specified size and relative position
  * of its owner Dest.
  * 
- * @param[in]  Left    The left position of the EvNumInt.
- * @param[in]  Top     The top position of the EvNumInt.
- * @param[in]  Width   The width of the EvNumInt.
- * @param[in]  Height  The height of the EvNumInt.
- * @param[out] *Dest   The address pointer of the EvPanel destination. Cannot be nullptr.
- * @param[in]  Tag     The tag name of the EvNumInt. If nullptr, the default tag name is "EvNumInt".
- * @param[in]  State   The initial state of the EvNumInt. Default is set to VISIBLE_OBJ | FILTER_DIS_OBJ.
+ * @param[in]  Left    The left position of the **EvNumInt**.
+ * @param[in]  Top     The top position of the **EvNumInt**.
+ * @param[in]  Width   The width of the **EvNumInt**.
+ * @param[in]  Height  The height of the **EvNumInt**.
+ * @param[out] *Dest   The address pointer of the **EvPanel** destination. Cannot be nullptr.
+ * @param[in]  Tag     The tag name of the **EvNumInt**. If nullptr, the default tag name is **"EvNumInt"**.
+ * @param[in]  State   The initial state of the **EvNumInt**. Default is set to VISIBLE_OBJ | FILTER_DIS_OBJ.
  *
- * @return     EvNumInt address pointer on success, otherwise returns nullptr.
+ * @return     **EvNumInt** address pointer on success, otherwise returns nullptr.
  * 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 EvNumInt  *EvNumInt::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag, uint16_t State)
 {
-  return !Dest ? nullptr : (EvNumInt *)EvObj::TryCreate(new EvNumInt(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvNumInt" : Tag, State), Dest);
+  EvNumInt  *num = nullptr;
+
+  if (Dest != nullptr && (num = (EvNumInt *)EvObj::TryCreate(new EvNumInt(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvNumInt" : Tag, State), Dest)) != nullptr)
+  {
+    num->TextFont(25);
+    num->TextPadding(5, 0);
+    num->TextAlign(RIGHT_CENTER);
+    num->BdShape(FIXED_CORNERS);
+    num->SetValue(0);
+  }
+
+  return num;
+}
+
+/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *
+ * @brief      Create a new instance of the standard **EvNumInt** class.
+ * 
+ * A new **EvNumInt** class is created at the specified size and relative position
+ * of its owner Dest.
+ * 
+ * @param[in]  Left    The left position of the **EvNumInt**.
+ * @param[in]  Top     The top position of the **EvNumInt**.
+ * @param[in]  *Src    The address pointer of the **EvNumInt** source model.
+ * @param[out] *Dest   The address pointer of the **EvPanel** destination. Cannot be nullptr.
+ * @param[in]  Tag     The tag name of the **EvNumInt**. If nullptr, the default tag name is "**EvNumInt"**.
+ * @param[in]  State   The initial state of the **EvNumInt**. Default is set to VISIBLE_OBJ | FILTER_DIS_OBJ.
+ *
+ * @return     **EvNumInt** address pointer on success, otherwise returns nullptr.
+ * 
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+EvNumInt  *EvNumInt::Create(int16_t Left, int16_t Top, int32_t Value, const EvNumInt *Src, EvPanel *Dest, const char *Tag, uint16_t State)
+{
+  EvNumInt  *obj = nullptr;
+
+  if (Dest != nullptr && Src != nullptr && (obj = (EvNumInt *)EvObj::TryCreate(new EvNumInt(Left, Top, Src->mWidth, Src->mHeight, Dest->Disp, !Tag ? "EvNumInt" : Tag, State), Dest)) != nullptr)
+  {
+    obj->mStyle = Src->mStyle;
+    obj->mOpacity = Src->mOpacity;
+    obj->mBgColor = Src->mBgColor;
+    obj->mBgColorA = Src->mBgColorA;
+    obj->mBdShape = Src->mBdShape;
+    obj->mBdRadius = Src->mBdRadius;
+    obj->mBdWidth = Src->mBdWidth;
+    obj->mBdColor = Src->mBdColor;
+    obj->mFormat = Src->mFormat;
+    obj->mMin = Src->mMin;
+    obj->mMax = Src->mMax;
+    obj->mInc = Src->mInc;
+    obj->printValue(obj->mValue = Value);
+  }
+
+  return obj;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -43,12 +95,6 @@ EvNumInt::EvNumInt(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, E
   mOnTouch(nullptr),
   mOnChange(nullptr)
 {
-  TextFont(25);
-  TextAlign(RIGHT_CENTER);
-  TextColor(TEXT_COLOR);
-  TextPadding(5, 0);
-  BdShape(FIXED_CORNERS);
-  SetValue(0);
 }
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -82,8 +128,6 @@ int32_t     EvNumInt::Value(void)
 
 bool        EvNumInt::SetValue(int32_t Value)
 {
-  char      str[80];
-
   if (Value < mMin)
     Value = mMin;
   else if (Value > mMax)
@@ -92,8 +136,7 @@ bool        EvNumInt::SetValue(int32_t Value)
   if (mValue == Value || mFormat == nullptr)
     return false;
 
-  snprintf(str, sizeof(str) - 1, mFormat, mValue = Value);
-  TextLabel(str);
+  printValue(mValue = Value);
 
   if (mOnChange != nullptr)
     mOnChange(this, Value);
@@ -114,6 +157,7 @@ bool        EvNumInt::SetValue(int32_t Value)
 void        EvNumInt::SetFormat(const char *Format)
 {
   mFormat = Format;
+  printValue(mValue);
 }
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -131,6 +175,11 @@ void        EvNumInt::SetRange(int32_t Min, int32_t Max)
 {
   mMin = Min;
   mMax = Max;
+
+  if (mValue < Min)
+    SetValue(Min);
+  else if (mValue > Max)
+    SetValue(Max);
 }
 
 /// @copydoc EvButton::SetOnTouch()
@@ -248,4 +297,14 @@ void        EvNumInt::touchEvent(const EvTouchEvent *Touch)
       Touch->event = 0;
       break;
   }
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+void        EvNumInt::printValue(int32_t Value)
+{
+  char      str[80];
+
+  snprintf(str, sizeof(str) - 1, mFormat, Value);
+  TextLabel(str);
 }

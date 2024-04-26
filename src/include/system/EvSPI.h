@@ -7,7 +7,7 @@
 class EvSPI
 {
   public:
-    void          hostSetup(uint8_t CS, uint8_t RST = 255, SPIClass *Spi = nullptr, uint32_t Baudrate = 16000000);
+    void          hostSetup(uint8_t CS, uint8_t RST = 255, uint32_t Baudrate = 16000000, SPIClass *Spi = nullptr);
     void          hostCommand(uint8_t Cmd, uint8_t Parameter = 0);
     void          hostRequestSPI(void);
 

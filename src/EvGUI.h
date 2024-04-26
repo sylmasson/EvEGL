@@ -69,6 +69,7 @@ class       EvVuBar;
 #include    <include/system/EvScrollBox.h>
 #include    <include/system/EvTouchCal.h>
 #include    <include/system/EvKbd.h>
+#include  	<include/system/EvKeyboard.h>
 #include    <include/system/EvEditor.h>
 #include    <include/system/EvShell.h>
 

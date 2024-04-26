@@ -1,11 +1,10 @@
 
 #include    <EvGUI.h>
 
-#define     BG_COLOR        RGB555(245, 245, 245)
+#define     BG_COLOR        RGB555(240, 240, 240)
 #define     PANEL_COLOR     RGB555(210, 210, 210)
 #define     NUM_COLOR       RGB555(255, 255, 255)
 #define     DOT_COLOR       RGB555(255,   0,   0)
-#define     TEXT_COLOR      RGB555(  0,   0,   0)
 #define     TEXT_ERROR      RGB555(255,   0,   0)
 #define     TEXT_SELECT     RGB555(255, 255, 255)
 
@@ -242,7 +241,7 @@ void        EvEditor::SelectObj(EvObj *Obj)
     property->NumWidth->SetValue(0);
     property->NumHeight->SetValue(0);
     property->NumFont->SetValue(0);
-    property->NumFont->TextColor(TEXT_COLOR);
+    property->NumFont->TextColor(EV_BLACK);
     property->NumPadX->SetValue(0);
     property->NumPadY->SetValue(0);
     property->SelShape->SetValue(-1);
@@ -297,7 +296,7 @@ void        EvEditor::SelectObj(EvObj *Obj)
     }
 
     property->LabTag->TextLabel(Obj->Tag);
-    property->LabTag->TextColor(TEXT_COLOR);
+    property->LabTag->TextColor(EV_BLACK);
   }
 }
 
@@ -356,30 +355,30 @@ EvEditProp::EvEditProp(EvDisplay *Disp, const char *Tag) :
   EvPanel(0, 0, 150, 310, Disp, Tag, VISIBLE_OBJ | SYSTEM_OBJ),
   Minimized(false)
 {
-  if (property || !(LabTitle = EvLabel::Create(40, 0, 65, 36, this, nullptr, VISIBLE_DIS_OBJ | SYSTEM_OBJ)) ||
-      !(BtnMinimize = EvButton::Create(6, 6, 25, 25, this, nullptr, VISIBLE_OBJ | SYSTEM_OBJ)) ||
-      !(TglEdit = EvToggle::Create(105, 6, 40, 25, this, nullptr, VISIBLE_OBJ | SYSTEM_OBJ)) ||
-      !(TabPanel = EvTab::Create(1, 35, mWidth - 2, 31, this, nullptr, VISIBLE_OBJ | SYSTEM_OBJ)) ||
-      !(PanObj = EvPanel::Create(1, 65, mWidth - 2, 213, this, nullptr, VISIBLE_DIS_OBJ | SYSTEM_OBJ)) ||
-      !(PanText = EvPanel::Create(1, 65, mWidth - 2, 213, this, nullptr, VISIBLE_DIS_OBJ | SYSTEM_OBJ)) ||
-      !(LabTag = EvLabel::Create(7, 283, mWidth - 11, 20, this, nullptr, VISIBLE_DIS_OBJ | SYSTEM_OBJ)) ||
-      !(LabLeft = EvLabel::Create(5, 10, 63, 32, PanObj, nullptr, VISIBLE_DIS_OBJ | SYSTEM_OBJ)) ||
-      !(LabTop = EvLabel::Create(5, 50, 63, 32, PanObj, nullptr, VISIBLE_DIS_OBJ | SYSTEM_OBJ)) ||
-      !(LabWidth = EvLabel::Create(5, 90, 63, 32, PanObj, nullptr, VISIBLE_DIS_OBJ | SYSTEM_OBJ)) ||
-      !(LabHeight = EvLabel::Create(5, 130, 63, 32, PanObj, nullptr, VISIBLE_DIS_OBJ | SYSTEM_OBJ)) ||
-      !(NumLeft = EvNumInt::Create(73, 10, 65, 32, PanObj, nullptr, VISIBLE_OBJ | SYSTEM_OBJ | FILTER_DIS_OBJ)) ||
-      !(NumTop = EvNumInt::Create(73, 50, 65, 32, PanObj, nullptr, VISIBLE_OBJ | SYSTEM_OBJ | FILTER_DIS_OBJ)) ||
-      !(NumWidth = EvNumInt::Create(73, 90, 65, 32, PanObj, nullptr, VISIBLE_OBJ | SYSTEM_OBJ | FILTER_DIS_OBJ)) ||
-      !(NumHeight = EvNumInt::Create(73, 130, 65, 32, PanObj, nullptr, VISIBLE_OBJ | SYSTEM_OBJ | FILTER_DIS_OBJ)) ||
-      !(SelShape = EvSelector::Create(10, 172, 128, 32, PanObj, nullptr, VISIBLE_OBJ | SYSTEM_OBJ | FILTER_DIS_OBJ)) ||
-      !(LabFont = EvLabel::Create(5, 10, 63, 32, PanText, nullptr, VISIBLE_DIS_OBJ | SYSTEM_OBJ)) ||
-      !(LabPadX = EvLabel::Create(5, 50, 63, 32, PanText, nullptr, VISIBLE_DIS_OBJ | SYSTEM_OBJ)) ||
-      !(LabPadY = EvLabel::Create(5, 90, 63, 32, PanText, nullptr, VISIBLE_DIS_OBJ | SYSTEM_OBJ)) ||
-      !(NumFont = EvNumInt::Create(73, 10, 65, 32, PanText, nullptr, VISIBLE_OBJ | SYSTEM_OBJ | FILTER_DIS_OBJ)) ||
-      !(NumPadX = EvNumInt::Create(73, 50, 65, 32, PanText, nullptr, VISIBLE_OBJ | SYSTEM_OBJ | FILTER_DIS_OBJ)) ||
-      !(NumPadY = EvNumInt::Create(73, 90, 65, 32, PanText, nullptr, VISIBLE_OBJ | SYSTEM_OBJ | FILTER_DIS_OBJ)) ||
-      !(SelAlignX = EvSelector::Create(10, 132, 128, 32, PanText, nullptr, VISIBLE_OBJ | SYSTEM_OBJ | FILTER_DIS_OBJ)) ||
-      !(SelAlignY = EvSelector::Create(10, 172, 128, 32, PanText, nullptr, VISIBLE_OBJ | SYSTEM_OBJ | FILTER_DIS_OBJ)) ||
+  if (property || !(LabTitle = EvLabel::Create(35, 0, 63, 36, this, "Editor", VISIBLE_DIS_OBJ | SYSTEM_OBJ)) ||
+      !(BtnMinimize = EvButton::Create(6, 6, 25, 25, this, "Minimize", VISIBLE_OBJ | SYSTEM_OBJ)) ||
+      !(TglEdit = EvToggle::Create(105, 6, 40, 25, this, "TglEdit", VISIBLE_OBJ | SYSTEM_OBJ)) ||
+      !(TabPanel = EvTab::Create(1, 35, mWidth - 2, 31, this, "TabPanel", VISIBLE_OBJ | SYSTEM_OBJ)) ||
+      !(PanObj = EvPanel::Create(1, 65, mWidth - 2, 213, this, "PanObj", VISIBLE_DIS_OBJ | SYSTEM_OBJ)) ||
+      !(PanText = EvPanel::Create(1, 65, mWidth - 2, 213, this, "PanText", VISIBLE_DIS_OBJ | SYSTEM_OBJ)) ||
+      !(LabTag = EvLabel::Create(7, 283, mWidth - 11, 20, this, "Tag", VISIBLE_DIS_OBJ | SYSTEM_OBJ)) ||
+      !(LabLeft = EvLabel::Create(5, 10, 63, 32, PanObj, "Left", VISIBLE_DIS_OBJ | SYSTEM_OBJ)) ||
+      !(LabTop = EvLabel::Create(5, 50, 63, 32, PanObj, "Top", VISIBLE_DIS_OBJ | SYSTEM_OBJ)) ||
+      !(LabWidth = EvLabel::Create(5, 90, 63, 32, PanObj, "Width", VISIBLE_DIS_OBJ | SYSTEM_OBJ)) ||
+      !(LabHeight = EvLabel::Create(5, 130, 63, 32, PanObj, "Height", VISIBLE_DIS_OBJ | SYSTEM_OBJ)) ||
+      !(NumLeft = EvNumInt::Create(73, 10, 65, 32, PanObj, "NumLeft", VISIBLE_OBJ | SYSTEM_OBJ | FILTER_DIS_OBJ)) ||
+      !(NumTop = EvNumInt::Create(73, 50, 65, 32, PanObj, "NumTop", VISIBLE_OBJ | SYSTEM_OBJ | FILTER_DIS_OBJ)) ||
+      !(NumWidth = EvNumInt::Create(73, 90, 65, 32, PanObj, "NumWidth", VISIBLE_OBJ | SYSTEM_OBJ | FILTER_DIS_OBJ)) ||
+      !(NumHeight = EvNumInt::Create(73, 130, 65, 32, PanObj, "NumHeight", VISIBLE_OBJ | SYSTEM_OBJ | FILTER_DIS_OBJ)) ||
+      !(SelShape = EvSelector::Create(10, 172, 128, 32, PanObj, "Shape", VISIBLE_OBJ | SYSTEM_OBJ | FILTER_DIS_OBJ)) ||
+      !(LabFont = EvLabel::Create(5, 10, 63, 32, PanText, "Font", VISIBLE_DIS_OBJ | SYSTEM_OBJ)) ||
+      !(LabPadX = EvLabel::Create(5, 50, 63, 32, PanText, "PadX", VISIBLE_DIS_OBJ | SYSTEM_OBJ)) ||
+      !(LabPadY = EvLabel::Create(5, 90, 63, 32, PanText, "PadY", VISIBLE_DIS_OBJ | SYSTEM_OBJ)) ||
+      !(NumFont = EvNumInt::Create(73, 10, 65, 32, PanText, "NumFont", VISIBLE_OBJ | SYSTEM_OBJ | FILTER_DIS_OBJ)) ||
+      !(NumPadX = EvNumInt::Create(73, 50, 65, 32, PanText, "NumPadX", VISIBLE_OBJ | SYSTEM_OBJ | FILTER_DIS_OBJ)) ||
+      !(NumPadY = EvNumInt::Create(73, 90, 65, 32, PanText, "NumPadY", VISIBLE_OBJ | SYSTEM_OBJ | FILTER_DIS_OBJ)) ||
+      !(SelAlignX = EvSelector::Create(10, 132, 128, 32, PanText, "AlignX", VISIBLE_OBJ | SYSTEM_OBJ | FILTER_DIS_OBJ)) ||
+      !(SelAlignY = EvSelector::Create(10, 172, 128, 32, PanText, "AlignY", VISIBLE_OBJ | SYSTEM_OBJ | FILTER_DIS_OBJ)) ||
       !SelShape->SetBmp(&sShapeIcons, 4) || !SelAlignX->SetBmp(&sAlignIconsX, 4) || !SelAlignY->SetBmp(&sAlignIconsY, 3))
     {
       abortCreate();
@@ -392,10 +391,6 @@ EvEditProp::EvEditProp(EvDisplay *Disp, const char *Tag) :
   BdShape(FIXED_CORNERS);
   MoveTo(sLeft, sTop);
 
-  LabTitle->TextLabel("Editor");
-  LabTitle->TextColor(TEXT_COLOR);
-  LabTitle->TextAlign(LEFT_CENTER);
-
   BtnMinimize->TextLabel("_");
   BtnMinimize->BdShape(ROUND_CORNERS);
   BtnMinimize->TextFont(27);
@@ -405,7 +400,6 @@ EvEditProp::EvEditProp(EvDisplay *Disp, const char *Tag) :
 
   TabPanel->TextFont(25);
   TabPanel->TextAlign(CENTER);
-  TabPanel->TextColor(TEXT_COLOR, TEXT_COLOR);
   TabPanel->Items.Add("Obj|Text", '|');
   TabPanel->HideDelimiter();
   TabPanel->SetColor(0, PANEL_COLOR, COLOR_SELNEW);
@@ -422,39 +416,23 @@ EvEditProp::EvEditProp(EvDisplay *Disp, const char *Tag) :
   TglEdit->SetValue(true);
   TglEdit->SetOnChange(OnChangeEdit);
 
-  LabLeft->TextLabel("Left");
-  LabLeft->TextColor(TEXT_COLOR);
-
-  LabTop->TextLabel("Top");
-  LabTop->TextColor(TEXT_COLOR);
-
-  LabWidth->TextLabel("Width");
-  LabWidth->TextColor(TEXT_COLOR);
-
-  LabHeight->TextLabel("Height");
-  LabHeight->TextColor(TEXT_COLOR);
-
   NumLeft->BgColor(NUM_COLOR);
   NumLeft->TextFont(26);
-  NumLeft->TextColor(TEXT_COLOR);
   NumLeft->SetRange(-32768, 32767);
   NumLeft->SetOnChange(OnChangeLeft);
 
   NumTop->BgColor(NUM_COLOR);
   NumTop->TextFont(26);
-  NumTop->TextColor(TEXT_COLOR);
   NumTop->SetRange(-32768, 32767);
   NumTop->SetOnChange(OnChangeTop);
 
   NumWidth->BgColor(NUM_COLOR);
   NumWidth->TextFont(26);
-  NumWidth->TextColor(TEXT_COLOR);
   NumWidth->SetRange(0, 2048);
   NumWidth->SetOnChange(OnChangeWidth);
 
   NumHeight->BgColor(NUM_COLOR);
   NumHeight->TextFont(26);
-  NumHeight->TextColor(TEXT_COLOR);
   NumHeight->SetRange(0, 2048);
   NumHeight->SetOnChange(OnChangeHeight);
 
@@ -463,30 +441,18 @@ EvEditProp::EvEditProp(EvDisplay *Disp, const char *Tag) :
   SelShape->SetColor(COLOR_SELNONE, COLOR_SELECT, COLOR_SELNEW);
   SelShape->SetOnChange(OnChangeShape);
 
-  LabFont->TextLabel("Font");
-  LabFont->TextColor(TEXT_COLOR);
-
-  LabPadX->TextLabel("PadX");
-  LabPadX->TextColor(TEXT_COLOR);
-
-  LabPadY->TextLabel("PadY");
-  LabPadY->TextColor(TEXT_COLOR);
-
   NumFont->BgColor(NUM_COLOR);
   NumFont->TextFont(26);
-  NumFont->TextColor(TEXT_COLOR);
   NumFont->SetRange(1, 31);
   NumFont->SetOnChange(OnChangeFont);
 
   NumPadX->BgColor(NUM_COLOR);
   NumPadX->TextFont(26);
-  NumPadX->TextColor(TEXT_COLOR);
   NumPadX->SetRange(-128, 127);
   NumPadX->SetOnChange(OnChangePadX);
 
   NumPadY->BgColor(NUM_COLOR);
   NumPadY->TextFont(26);
-  NumPadY->TextColor(TEXT_COLOR);
   NumPadY->SetRange(-128, 127);
   NumPadY->SetOnChange(OnChangePadY);
 
@@ -501,8 +467,7 @@ EvEditProp::EvEditProp(EvDisplay *Disp, const char *Tag) :
   SelAlignY->SetOnChange(OnChangeAlignY);
 
   LabTag->TextFont(24);
-  LabTag->TextAlign(LEFT_TOP);
-  LabTag->TextColor(TEXT_COLOR);
+  LabTag->TextAlign(LEFT_CENTER);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -526,7 +491,7 @@ void        EvEditProp::refreshEvent(void)
     NumHeight->SetValue(editObj->Height());
     SelShape->SetValue((shape == USER_CORNERS ? -1 : shape));
     NumFont->SetValue(editObj->Style.font);
-    NumFont->TextColor(editObj->Disp->SystemFont[editObj->Style.font] == nullptr ? TEXT_ERROR : TEXT_COLOR);
+    NumFont->TextColor(editObj->Disp->SystemFont[editObj->Style.font] == nullptr ? TEXT_ERROR : EV_BLACK);
     NumPadX->SetValue(editObj->Style.padX);
     NumPadY->SetValue(editObj->Style.padY);
     SelAlignX->SetValue(editObj->Style.align & 3);
@@ -662,7 +627,7 @@ static void OnChangeFont(EvNumInt *Sender, int32_t Value)
 {
   if (editObj != nullptr)
   {
-    Sender->TextColor(editObj->Disp->SystemFont[Value] == 0 ? TEXT_ERROR : TEXT_COLOR);
+    Sender->TextColor(editObj->Disp->SystemFont[Value] == 0 ? TEXT_ERROR : EV_BLACK);
     editObj->TextFont(Value);
   }
 }

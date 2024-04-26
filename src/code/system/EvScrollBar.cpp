@@ -121,8 +121,9 @@ void        EvScrollBar::ToBeginning(bool Wakeup)
   if (mValue > 0)
   {
     uint16_t  size = mPageSize - mViewSize;
+    int16_t   velocity = ((-mValue * size)) / (size * 4);
 
-    mKinScroll.Start(((-mValue * size)) / (size * 4));
+    mKinScroll.Start(velocity > -24 ? -24 : velocity);
     mTouchBar = false;
     Modified();
 
@@ -142,8 +143,9 @@ void        EvScrollBar::ToTheEnd(bool Wakeup)
   if (mValue != mPageSize - mViewSize)
   {
     uint16_t  size = mPageSize - mViewSize;
+    int16_t   velocity = ((size - mValue) * size) / (size * 4);
 
-    mKinScroll.Start(((size - mValue) * size) / (size * 4));
+    mKinScroll.Start(velocity < 24 ? 24 : velocity);
     mTouchBar = false;
     Modified();
 
@@ -408,13 +410,13 @@ void        EvScrollBar::touchEvent(const EvTouchEvent *Touch)
         int16_t   move = (mHeight > mWidth) ? Touch->move.y : Touch->move.x;
 
         SetValue(mValue + ((move * mPageSize) / len));
-        mSpeed = (mSpeed >> 2) + (move * 3 << 2);
+        mSpeed = (mSpeed >> 2) + (move * 2 << 2);
         Touch->event = 0;
       }
       break;
 
     case TOUCH_END:
-      mKinScroll.Start(mSpeed);
+      mKinScroll.Start(abs(mSpeed) < 24 ? 0 : mSpeed);
       mTouchBar = false;
       Modified();
       WakeUp();

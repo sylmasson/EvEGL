@@ -17,7 +17,6 @@ static EvCmd    sCmdList[] =
   {TRACE,    1,   "t", "trace",    "t, trace opt          [modif|touch|fps|off]"},
   {ROTATE,   1, "rot", "rotate",   "rot, rotate 0-3       Set display orientation"},
   {CALIB,    0,    "", "calib",    "calib                 Touchscreen calibration"},
-  {INFO,     0,    "", "info",     "info                  Show display information"},
   {FONT,     0,    "", "font",     "font                  List font metrix block"},
   {ROMFONT,  0,    "", "romfont",  "romfont               List display romfont"},
   {LISTSD,   1,  "ls", "dir",      "ls, dir               List SD card directory"},
@@ -37,6 +36,15 @@ EvShell::EvShell(Stream &SerialMonitor, SDClass *SDCard) :
 {
   EvIn = &SerialMonitor;
   EvOut = &SerialMonitor;
+  EvErr = &SerialMonitor;
+  EvDbg = &SerialMonitor;
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+void        EvShell::Input(const String &Str)
+{
+  Input(c_str(Str));
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -116,7 +124,7 @@ void        EvShell::Input(const char C)
             displayObjectRamG(Disp, ptr->addr, ptr->addr - ptr->startDL, ptr->used);
             snprintf(str, sizeof(str) - 1, "Size:%-4lu (%.1f%%)  ", ptr->used, (float)(ptr->used * 100) / 8192.0);
             EvOut->print(str);
-            ((EvObj *)(ptr->owner))->DisplayTagList();
+            ((EvObj *)(ptr->owner))->DisplayTagList(EvOut);
             EvOut->println();
           }
           msg = nullptr;
@@ -572,8 +580,9 @@ void        EvShell::displayListCommand(EvDisplay *Disp, uint32_t Addr, uint32_t
       mStack[mSp - 1] = mVt;
   }
 
-  sprintf(addr, "0x%05lX:  %08lX  %s", Addr, data, tab);
+  sprintf(addr, "0x%05lX:  %08lX  ", Addr, data);
   EvOut->print(addr);
+  EvOut->print(tab);
   EvOut->print(name);
   EvOut->print(param);
   EvOut->println(comment);
@@ -633,7 +642,7 @@ void        EvShell::displayMallocBlock(EvDisplay *Disp)
           case EV_OBJ:
             EvOut->print(" OBJ ");
             if (((EvObj *)owner)->Tag != nullptr)
-              ((EvObj *)owner)->DisplayTagList();
+              ((EvObj *)owner)->DisplayTagList(EvOut);
             break;
         }
       }
@@ -879,5 +888,7 @@ static void sOnSaveTouchCalibration(EvTouchCal *Sender, bool Save)
       EvOut->println(str);
     }
   }
+
+  EvOut->println();
 } 
 

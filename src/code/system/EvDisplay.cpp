@@ -1,7 +1,7 @@
 
 #include    <EvGUI.h>
 
-#define     DEBUG     1
+//#define     DEBUG     1
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
@@ -14,36 +14,29 @@ EvDisplay   *EvDisplay::sDispList[DISP_MAX];
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-EvDisplay   *EvDisplay::Create(uint16_t Width, uint16_t Height, const char *Tag, const uint32_t *Config, uint8_t CS, uint8_t RST, SPIClass *Spi, uint32_t Baudrate)
+EvDisplay   *EvDisplay::Create(uint16_t Width, uint16_t Height, const char *Tag, const uint32_t *Config, uint8_t CS, uint8_t RST, uint32_t Baudrate, SPIClass *Spi)
 {
-  return new EvDisplay(Width, Height, Tag, Config, CS, RST, Spi, Baudrate);
+  return new EvDisplay(Width, Height, Tag, Config, CS, RST, Baudrate, Spi);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-EvDisplay::EvDisplay(uint16_t Width, uint16_t Height, const char *Tag, const uint32_t *Config, uint8_t CS, uint8_t RST, SPIClass *Spi, uint32_t Baudrate) :
+EvDisplay::EvDisplay(uint16_t Width, uint16_t Height, const char *Tag, const uint32_t *Config, uint8_t CS, uint8_t RST, uint32_t Baudrate, SPIClass *Spi) :
   EvPanel(0, 0, Width, Height, this, Tag, VISIBLE_OBJ | SYSTEM_OBJ),
-  EvEVE(Config, CS, RST, Spi, Baudrate),
+  EvEVE(Config, CS, RST, Baudrate, Spi),
   EvSysFont(this),
   mFrameCount(0),
   mTimeUsed(0),
   mSizeDL(0),
   mMaxDL(0),
-  mKbd(nullptr)
+  mOnUpdate(nullptr),
+  mOnUpdateFPS(nullptr)
 {
   if (sDispCount >= 3)
   {
-    EvOut->println("Error: Too many instances of the EvDisplay class");
+    EvErr->println("Error: Too many instances of the EvDisplay class");
     exit(0);
   }
-
-  #if defined(ESP32)
-    if ((mMutex = xSemaphoreCreateRecursiveMutex()) == nullptr)
-    {
-      EvOut->println("Error: Cannot create mutex");
-      exit(0);
-    }
-  #endif
 
   sDispList[sDispCount++] = this;
 
@@ -54,65 +47,10 @@ EvDisplay::EvDisplay(uint16_t Width, uint16_t Height, const char *Tag, const uin
   digitalWrite(37, LOW);
 #endif
 
+  Kbd = EvKbd::Create(0, 0, 0, 0, this, "KbdSystem", SYSTEM_OBJ);
   BgColor(RGB555(0, 0, 0));
   Rotate(rd8(REG_ROTATE));
-  SetOnUpdate(nullptr);
-  SetOnTouch(nullptr);
   Brightness(64);
-}
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-EvDisplay::~EvDisplay(void)
-{
-  delete this;
-}
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-bool        EvDisplay::Lock(void)
-{
-  #if defined(ESP32)
-    return xSemaphoreTakeRecursive(mMutex, portMAX_DELAY);
-  #else
-    return true;
-  #endif
-}
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-bool        EvDisplay::Unlock(void)
-{
-  #if defined(ESP32)
-    return xSemaphoreGiveRecursive(mMutex);
-  #else
-    return true;
-  #endif
-}
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-bool        EvDisplay::TryLock(void)
-{
-  #if defined(ESP32)
-    return xSemaphoreTakeRecursive(mMutex, 1);
-  #else
-    return true;
-  #endif
-}
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-void        EvDisplay::KbdDelete(void)
-{
-  if (mKbd != nullptr)
-  {
-    if (mKbd->FocusObj != nullptr)
-      mKbd->FocusObj->LostKbdFocus();
-
-    mKbd->Delete();
-    mKbd = nullptr;
-  }
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -138,20 +76,27 @@ void        EvDisplay::Rotate(uint8_t Orientation)
   else
     ReSize(w, h);
 
-  if (mKbd != nullptr)
-    mKbd->SetKeyboard((mOrientation & 2) ? 1 : 0, mKbd->IsOpen());
+  Kbd->SetKeyboard((mOrientation & 2) ? 1 : 0, Kbd->IsOpen());
+  Modified();
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvDisplay::SetOnUpdate(void (*OnUpdate)(EvDisplay *Disp))
+void        EvDisplay::SetOnUpdate(void (*OnUpdate)(EvDisplay *Sender))
 {
   mOnUpdate = OnUpdate;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvDisplay::SetOnTouch(void (*OnTouch)(EvObj *Obj, const EvTouchEvent *Touch))
+void        EvDisplay::SetOnUpdateFPS(void (*OnUpdateFPS)(EvDisplay *Sender, uint32_t TimeUsed, uint16_t FrameCount, uint16_t MaxDL))
+{
+  mOnUpdateFPS = OnUpdateFPS;
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+void        EvDisplay::SetOnTouch(void (*OnTouch)(EvObj *Sender, const EvTouchEvent *Touch))
 {
   Touch.mOnTouch = OnTouch;
 }
@@ -176,11 +121,14 @@ bool        EvDisplay::Update(void)
 
         snprintf(str, sizeof(str) - 1, "\n[%s] %u FPS", disp->Tag, disp->mFrameCount);
         EvOut->print(str);
-        snprintf(str, sizeof(str) - 1, " using %.2f msec/frame (%4.1f%%)", timeUsed / disp->mFrameCount, timeUsed / 10);
+        snprintf(str, sizeof(str) - 1, " avg %.2f msec/frame (%4.1f%%)", timeUsed / disp->mFrameCount, timeUsed / 10);
         EvOut->print(str);
-        snprintf(str, sizeof(str) - 1, " with %4u bytes of DL (%4.1f%%)", disp->mMaxDL, (disp->mMaxDL * 100.0) / 8192.0);
+        snprintf(str, sizeof(str) - 1, " %4u bytes of DL (%4.1f%%)", disp->mMaxDL, (disp->mMaxDL * 100.0) / 8192.0);
         EvOut->print(str);
       }
+
+      if (disp->mOnUpdateFPS != nullptr)
+        disp->mOnUpdateFPS(disp, disp->mTimeUsed, disp->mFrameCount, disp->mMaxDL);
 
       disp->mFrameCount = 0;
       disp->mTimeUsed = 0;
@@ -196,7 +144,7 @@ bool        EvDisplay::Update(void)
   for (i = 0; i < sDispCount; i++)
     if (!sDispList[i]->wrCmdBufEmpty())
     {
-//      EvOut->println("Delayed by 1ms");
+//      EvErr->println("Delayed by 1ms");
       sUpdateTimer += 1000;
       return false;
     }
@@ -230,14 +178,12 @@ void        EvDisplay::update(void)
   Touch.update(this);
   Refresh();
 
-  if (mKbd)
-    mKbd->ToFront();
-
+  Kbd->ToFront();
   EvEditor::AlwaysToFront();
 
   Opacity(OPACITY_MAX);
   ColorA(255);
-  ClearColorRGB(TRANSPARENT);
+  ClearColorRGB(EV_TRANSPARENT);
   ClearStencil(0);
   ClearTag(255);
   Clear();

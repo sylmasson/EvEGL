@@ -36,6 +36,7 @@ class EvShell
   public:
     EvShell(Stream &SerialMonitor, SDClass *SDCard = nullptr);
 
+    void          Input(const String &Str);
     void          Input(const char *Str);
     void          Input(const char C);
     void          ShowPrompt(void);

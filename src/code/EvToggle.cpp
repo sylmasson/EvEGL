@@ -164,7 +164,7 @@ void        EvToggle::drawEvent(void)
     y -= radius + ((y - (radius * 2)) * mPosKnob / SLIDE_DELAY);
   }
 
-  border = (radius * 8) / 100; 
+  border = (radius * 8) / 100;
   Disp->Clear(0, 1, 1);
   Disp->TagValue(KNOB_TAG);
   Disp->ColorA(50);

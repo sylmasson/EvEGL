@@ -25,12 +25,12 @@ static const char   bitPixel[18] = {16, 1, 4, 8, 8, 8, 16, 16, 0, 0, 0, 0, 0, 0,
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-EvEVE::EvEVE(const uint32_t *Config, uint8_t CS, uint8_t RST, SPIClass *Spi, uint32_t Baudrate)
+EvEVE::EvEVE(const uint32_t *Config, uint8_t CS, uint8_t RST, uint32_t Baudrate, SPIClass *Spi)
 {
   uint32_t  reg;
   char      str[32];
 
-  hostSetup(CS, RST, Spi, Baudrate);
+  hostSetup(CS, RST, Baudrate, Spi);
   hostCommand(RST_PULSE);
   hostCommand(SLEEP);
   delay(20);
@@ -157,7 +157,7 @@ const EvMem *EvEVE::LoadBmp(const EvBmp *Bmp, uint32_t Options)
 
   if (Bmp->Layout > L2 || ((Options & OPT_FLASH) != 0 && ChipID < 0x815))
   {
-    EvOut->println("LoadBmp: Options not supported");
+    EvErr->println("LoadBmp: Options not supported");
     return nullptr;
   }
 
@@ -647,7 +647,7 @@ void        EvEVE::Return(void)
 void        EvEVE::RestoreContext(void)
 {
   if (--mStackContextCount < 0)
-    EvOut->println("EvEVE RestoreContext Error: 4-Level Context Stack Underflow");
+    EvErr->println("EvEVE RestoreContext Error: 4-Level Context Stack Underflow");
 
   if ((uint16_t)mStackContextCount <= 3)
     mActiveContext = mStackContext[mStackContextCount];
@@ -663,7 +663,7 @@ void        EvEVE::SaveContext(void)
     mStackContext[mStackContextCount] = mActiveContext;
 
   if (++mStackContextCount > 3)
-    EvOut->println("EvEVE SaveContext Error: 4-Level Context Stack Overflow");
+    EvErr->println("EvEVE SaveContext Error: 4-Level Context Stack Overflow");
 
   wrCmdBufDL(EV_SAVE_CONTEXT());
 }
@@ -797,10 +797,18 @@ void        EvEVE::VertexTranslateY(uint32_t Y)
 
 void        EvEVE::CmdAppend(uint32_t Addr, uint32_t Num)
 {
-  wrCmdBuf32(CMD_APPEND);
-  wrCmdBuf32(Addr);
-  wrCmdBuf32(Num);
-  mDL += Num;
+  if (mDL < 0)
+    ReadDL();
+
+  if (mDL + Num <= 8000)
+  {
+    wrCmdBuf32(CMD_APPEND);
+    wrCmdBuf32(Addr);
+    wrCmdBuf32(Num);
+    mDL += Num;
+  }
+
+  checkDL();
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -839,7 +847,7 @@ void        EvEVE::CmdGradient(int16_t X0, int16_t Y0, uint32_t Color0, int16_t 
 void        EvEVE::CmdGradientA(int16_t X0, int16_t Y0, uint32_t Color0, int16_t X1, int16_t Y1, uint32_t Color1)
 {
   if (ChipID < 0x815)
-    EvOut->println("CMD_GRADIENTA not supported");
+    EvErr->println("CMD_GRADIENTA not supported");
   else
   {
     wrCmdBuf32(CMD_GRADIENTA);
@@ -866,7 +874,7 @@ void        EvEVE::CmdInflate(uint32_t Addr)
 void        EvEVE::CmdInflate2(uint32_t Addr, uint32_t Options)
 {
   if (ChipID < 0x815)
-    EvOut->println("CMD_INFLATE2 not supported");
+    EvErr->println("CMD_INFLATE2 not supported");
   else
   {
     wrCmdBuf32(CMD_INFLATE2);
@@ -1032,7 +1040,7 @@ void        EvEVE::CmdSwap(void)
 void        EvEVE::CmdSync(void)
 {
   if (ChipID < 0x817)
-    EvOut->println("CMD_SYNC not supported");
+    EvErr->println("CMD_SYNC not supported");
   else
     wrCmdBuf32(CMD_SYNC);
 }
@@ -1048,12 +1056,29 @@ void        EvEVE::CmdTranslate(int32_t X, int32_t Y)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+void        EvEVE::checkDL(void)
+{
+  if (mDL > 6500)
+  {
+    EvErr->print(mDL >= 8000 ? "Error limit: DL = " : "Warning: DL = ");
+    EvErr->println(mDL);
+  }
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
 void        EvEVE::wrCmdBufDL(uint32_t Data)
 {
-  wrCmdBuf32(Data);
+  if (mDL < 0)
+    ReadDL();
 
-  if (mDL >= 0)
-    mDL+=4;
+  if (mDL <= 8000 - 4)
+  {
+    wrCmdBuf32(Data);
+    mDL += 4;
+  }
+
+  checkDL();
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

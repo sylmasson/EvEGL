@@ -116,8 +116,6 @@ class EvObj : public Stream
     uint16_t      Width(void);
     uint16_t      Height(void);
     uint8_t       Shape(void);
-    void          Show(void);
-    void          Hide(void);
     void          Enable(void);
     void          Disable(void);
     void          Delete(void);
@@ -149,6 +147,8 @@ class EvObj : public Stream
     EvObj         *GetKbdFocus(void);
     bool          IsOnKbdFocus(void);
 
+    virtual void    Show(void);
+    virtual void    Hide(void);
     virtual void    ClearCache(void);
     virtual void    SetOpacity(uint16_t Opacity);
     virtual void    ModifiedAll(void) { Modified(); };
@@ -193,7 +193,7 @@ class EvObj : public Stream
     void          EndFunction(uint16_t Label, uint16_t CmdSize);
 
     // Public functions reserved for the system
-    void          DisplayTagList(void);
+    void          DisplayTagList(Stream *Out);
     bool          TouchStart(void);
     void          TouchEnd(void);
     void          TouchMax(uint8_t Max);

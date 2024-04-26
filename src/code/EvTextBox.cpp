@@ -4,7 +4,6 @@
 #define     BG_COLOR        RGB555(255, 255, 255)
 #define     BD_COLOR        RGB555(210, 210, 210)
 #define     FOCUS_COLOR     RGB555(  0,  51, 153)
-#define     TEXT_COLOR      RGB555(  0,   0,   0)
 #define     CURSOR_COLOR    RGB555(  0,  51, 153)
 #define     SELECT_COLOR    RGB555(179, 204, 255)
 
@@ -67,8 +66,6 @@ EvTextBox::EvTextBox(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height,
   TextClear();
   TextFont(26);
   TextPadding(10, 0);
-  TextAlign(LEFT_CENTER);
-  TextColor(TEXT_COLOR);
   BgColor(BG_COLOR);
   BdColor(BD_COLOR);
   BdShape(FIXED_CORNERS);

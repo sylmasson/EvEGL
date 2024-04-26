@@ -10,8 +10,7 @@
  * 
  * @par Example
  * ~~~
- * EvLabel *myLabel = EvLabel::Create(50, 50, 150, 50, myPanel, "MyLabel");
- * myLabel->TextLabel("Hello World!");
+ * EvLabel *myLabel = EvLabel::Create(50, 50, 150, 50, myPanel, "Hello World!");
  * myLabel->TextAlign(CENTER);
  * myLabel->TextFont(29);
  * ~~~
@@ -37,6 +36,8 @@ class EvLabel : public EvObj
 
   public:
     static EvLabel  *Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ);
+    static EvLabel  *Create(int16_t Left, int16_t Top, const char *Label, uint8_t Font, EvPanel *Dest, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ);
+    static EvLabel  *Create(int16_t Left, int16_t Top, const char *Label, const EvLabel *Src, EvPanel *Dest, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ);
 };
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

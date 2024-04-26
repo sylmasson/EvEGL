@@ -294,7 +294,7 @@ String      &EvStringList::operator[](const int Index)
     static  String dummy;
 
     snprintf(str, sizeof(str) - 1, "EvStringList(%p)::operator[%d] Error: Out of boundary.", this, Index);
-    EvOut->println(str);
+    EvErr->println(str);
     return dummy = "";    // dummy string is return to prevents crash if Index is out of boundary
   }
 

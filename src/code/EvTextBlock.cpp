@@ -32,16 +32,18 @@ EvTextBlock::EvTextBlock(int16_t Left, int16_t Top, uint16_t Width, uint16_t Hei
   mWrapText(true),
   mLineSpacing(0),
   mLinesCount(0),
+  mBufferSize(0),
   mMaxWidth(0),
   mLines(nullptr),
   mOnTouch(nullptr)
 {
   TextClear();
   TextFont(24);
-  TextPadding(5, 0);
+  TextPadding(5, 5);
   TextAlign(LEFT_CENTER);
   TextColor(RGB555(0, 0, 0));
   BgColor(RGB555(255, 255, 255));
+  BdShape(FIXED_CORNERS);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -105,6 +107,29 @@ int16_t     EvTextBlock::LineSpacing(float Ratio)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+void        EvTextBlock::ClearBuffer(void)
+{
+  TextClear();
+  mScrollBarX->ToBeginning(false);
+  mScrollBarY->ToBeginning(false);
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+bool        EvTextBlock::SetBufferSize(uint16_t Size)
+{
+  if (!mLabel.reserve(Size))
+  {
+    mBufferSize = 0;
+    return false;
+  }
+
+  mBufferSize = Size;
+  return true;
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
 String      EvTextBlock::GetLine(uint16_t Line)
 {
   if (IsModifiedText())
@@ -155,7 +180,16 @@ size_t      EvTextBlock::write(uint8_t C)
 
 size_t      EvTextBlock::write(const uint8_t *Buffer, size_t Count)
 {
-  mLabel.reserve(mLabel.length() + Count);
+  if (mBufferSize > 0)
+  {
+    int16_t   i, extra = mLabel.length() + Count - (mBufferSize - 1);
+
+    if (extra > 0)
+    {
+      i = mLabel.indexOf('\n', extra);
+      mLabel.remove(0, i < 0 ? extra : i + 1);
+    }
+  }
 
   for (size_t i = 0; i < Count; i++)
     mLabel.concat((const char)*Buffer++);
@@ -306,9 +340,7 @@ bool        EvTextBlock::parseTextAsLines(void)
 
 String      EvTextBlock::getLine(uint16_t Line)
 {
-  String    str;
   SubString *line = &mLines[Line];
 
-  str = Text.substring(line->from, line->to);
-  return str;
+  return Text.substring(line->from, line->to);
 }

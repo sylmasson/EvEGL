@@ -4,17 +4,6 @@
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#define     BG_COLOR              RGB555(213, 215, 220)
-#define     OVER_KEY_BD_COLOR     RGB555(179, 183, 192)
-#define     STD_KEY_COLOR_UP      RGB555(255, 255, 255)
-#define     STD_KEY_COLOR_DOWN    RGB555(255, 255, 255)
-#define     CTRL_KEY_COLOR_UP     RGB555(179, 183, 192)
-#define     CTRL_KEY_COLOR_DOWN   RGB555(255, 255, 255)
-#define     SPACE_KEY_COLOR_UP    RGB555(255, 255, 255)
-#define     SPACE_KEY_COLOR_DOWN  RGB555(179, 183, 192)
-#define     TEXT_COLOR_UP         RGB555(  0,   0,   0)
-#define     TEXT_COLOR_DOWN       RGB555(  0,   0,   0)
-
 #define     SHIFT_KEY             1
 #define     ALPHA_KEY             2
 #define     NUM_KEY               3

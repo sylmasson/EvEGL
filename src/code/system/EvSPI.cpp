@@ -12,7 +12,7 @@ EvSPI       *EvSPI::inUsed = nullptr;
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvSPI::hostSetup(uint8_t CS, uint8_t RST, SPIClass *Spi, uint32_t Baudrate)
+void        EvSPI::hostSetup(uint8_t CS, uint8_t RST, uint32_t Baudrate, SPIClass *Spi)
 {
   wrPtr = wrLast = 0;
   wrFree = RAM_CMD_EMPTY;
@@ -180,7 +180,7 @@ void        EvSPI::wrCmdBuf16(uint16_t Data)
     wrCmdBufFreeSpace(2);
 
   if (wrPtr & 1)
-    EvOut->println("wrCmdBuf16: Misalignment");
+    EvErr->println("wrCmdBuf16: Misalignment");
   else
   {
     wr16(RAM_CMD + wrPtr, Data);
@@ -197,7 +197,7 @@ void        EvSPI::wrCmdBuf32(uint32_t Data)
     wrCmdBufFreeSpace(4);
 
   if (wrPtr & 3)
-    EvOut->println("wrCmdBuf32: Misalignment");
+    EvErr->println("wrCmdBuf32: Misalignment");
   else
   {
     wr32(RAM_CMD + wrPtr, Data);

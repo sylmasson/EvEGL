@@ -9,26 +9,115 @@
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
- * @brief      Create a new instance of a standard CheckBox.
+ * @brief      Create a new instance of a standard **EvCheckBox**.
  * 
- * A new CheckBox is created at the specified size and relative position
+ * A new **EvCheckBox** is created at the specified size and relative position
  * of its owner Dest.
  * 
- * @param[in]  Left    The left position of the CheckBox.
- * @param[in]  Top     The top position of the CheckBox.
- * @param[in]  Width   The width of the CheckBox.
- * @param[in]  Height  The height of the CheckBox.
- * @param[out] *Dest   The address pointer of the EvPanel destination. Cannot be nullptr.
- * @param[in]  Tag     The tag name of the CheckBox. If nullptr, the default tag name is "EvCheckBox".
- * @param[in]  State   The initial state of the CheckBox. Default is set to VISIBLE_OBJ.
+ * @param[in]  Left    The left position of the **EvCheckBox**.
+ * @param[in]  Top     The top position of the **EvCheckBox**.
+ * @param[in]  Width   The width of the **EvCheckBox**.
+ * @param[in]  Height  The height of the **EvCheckBox**.
+ * @param[out] *Dest   The address pointer of the **EvPanel** destination. Cannot be nullptr.
+ * @param[in]  Tag     The tag name of the **EvCheckBox**. If nullptr, the default tag name is **"EvCheckBox"**.
+ * @param[in]  State   The initial state of the **EvCheckBox**. Default is set to VISIBLE_OBJ.
  *
- * @return     EvCheckBox address pointer on success, otherwise returns nullptr.
+ * @return     **EvCheckBox** address pointer on success, otherwise returns nullptr.
  * 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 EvCheckBox  *EvCheckBox::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag, uint16_t State)
 {
-  return !Dest ? nullptr : (EvCheckBox *)EvObj::TryCreate(new EvCheckBox(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvCheckBox" : Tag, State), Dest);
+  EvCheckBox  *obj = nullptr;
+
+  if (Dest != nullptr && (obj = (EvCheckBox *)EvObj::TryCreate(new EvCheckBox(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvCheckBox" : Tag, State), Dest)) != nullptr)
+  {
+    obj->TextLabel(obj->Tag);
+    obj->TextColor(COLOR_TEXT, COLOR_TEXT_2);
+    obj->BdShape(RATIO_CORNERS);
+  }
+
+  return obj;
+}
+
+/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *
+ * @brief      Create a new instance of a standard **EvCheckBox**.
+ * 
+ * A new **EvCheckBox** is created at relative position of its owner Dest.
+ * 
+ * @param[in]  Left    The left position of the **EvCheckBox**.
+ * @param[in]  Top     The top position of the **EvCheckBox**.
+ * @param[in]  Label   The Label of the **EvCheckBox**.
+ * @param[in]  Font    The font size of the Label.
+ * @param[out] *Dest   The address pointer of the **EvPanel** destination. Cannot be nullptr.
+ * @param[in]  Tag     The tag name of the **EvCheckBox**. If nullptr, the default tag name is **"EvCheckBox"**.
+ * @param[in]  State   The initial state of the **EvCheckBox**. Default is set to VISIBLE_OBJ.
+ *
+ * @return     **EvCheckBox** address pointer on success, otherwise returns nullptr.
+ * 
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+EvCheckBox  *EvCheckBox::Create(int16_t Left, int16_t Top, const char *Label, uint8_t Font, EvPanel *Dest, const char *Tag, uint16_t State)
+{
+  EvCheckBox  *obj = nullptr;
+
+  if (Dest != nullptr && (obj = (EvCheckBox *)EvObj::TryCreate(new EvCheckBox(Left, Top, 0, 0, Dest->Disp, !Tag ? "EvCheckBox" : Tag, State), Dest)) != nullptr)
+  {
+    obj->TextFont(Font);
+    obj->TextLabel(Label);
+    obj->TextPadding(5, 0);
+    obj->TextColor(COLOR_TEXT, COLOR_TEXT_2);
+    obj->mHeight = 10 * ((obj->TextHeight(Font) + 5) / 10);
+    obj->mWidth = obj->TextWidth(Label) + obj->mHeight + obj->mStyle.padX + 10;
+    obj->BdShape(RATIO_CORNERS);
+    obj->SetView();
+  }
+
+  return obj;
+}
+
+/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *
+ * @brief      Create a new instance of a standard **EvCheckBox**.
+ * 
+ * A new **EvCheckBox** is created at relative position of its owner Dest.
+ * 
+ * @param[in]  Left    The left position of the **EvCheckBox**.
+ * @param[in]  Top     The top position of the **EvCheckBox**.
+ * @param[in]  Label   The Label of the **EvCheckBox**.
+ * @param[in]  *Src    The address pointer of the **EvCheckBox** source model.
+ * @param[out] *Dest   The address pointer of the **EvPanel** destination. Cannot be nullptr.
+ * @param[in]  Tag     The tag name of the **EvCheckBox**. If nullptr, the default tag name is **"EvCheckBox"**.
+ * @param[in]  State   The initial state of the **EvCheckBox**. Default is set to VISIBLE_OBJ.
+ *
+ * @return     **EvCheckBox** address pointer on success, otherwise returns nullptr.
+ * 
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+EvCheckBox  *EvCheckBox::Create(int16_t Left, int16_t Top, const char *Label, const EvCheckBox *Src, EvPanel *Dest, const char *Tag, uint16_t State)
+{
+  EvCheckBox  *obj = nullptr;
+
+  if (Dest != nullptr && Src != nullptr && (obj = (EvCheckBox *)EvObj::TryCreate(new EvCheckBox(Left, Top, Src->mWidth, Src->mHeight, Dest->Disp, !Tag ? "EvCheckBox" : Tag, State), Dest)) != nullptr)
+  {
+    obj->TextLabel(Label);
+    obj->mStyle = Src->mStyle;
+    obj->mOpacity = Src->mOpacity;
+    obj->mBgColor = Src->mBgColor;
+    obj->mBgColorA = Src->mBgColorA;
+    obj->mBdShape = Src->mBdShape;
+    obj->mBdRadius = Src->mBdRadius;
+    obj->mBdWidth = Src->mBdWidth;
+    obj->mBdColor = Src->mBdColor;
+    obj->mColorCheck = Src->mColorCheck;
+    obj->mColorUncheck = Src->mColorUncheck;
+    obj->mColorBorder = Src->mColorBorder;
+    obj->mWidth = obj->TextWidth(Label) + obj->mHeight + obj->mStyle.padX + 10;
+    obj->SetView();
+  }
+
+  return obj;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -43,10 +132,6 @@ EvCheckBox::EvCheckBox(int16_t Left, int16_t Top, uint16_t Width, uint16_t Heigh
   mOnTouch(nullptr),
   mOnChange(nullptr)
 {
-  TextLabel("CheckBox");
-  TextAlign(LEFT_CENTER);
-  TextColor(COLOR_TEXT, COLOR_TEXT_2);
-  BdShape(RATIO_CORNERS);
 }
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *

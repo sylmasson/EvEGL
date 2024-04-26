@@ -4,7 +4,7 @@
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-static EvKeyboard     *sKeyboard[2] = {&Keyboard1066x276, &Keyboard600x252};
+static EvKeyboard     *sKeyboard[2] = {&Keyboard800x220, &Keyboard480x230};
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
@@ -41,14 +41,13 @@ EvKbd::EvKbd(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDispl
   mShiftKey(0),
   FocusObj(nullptr)
 {
-  if ((mOverKey = EvLabel::Create(0, 0, 0, 0, this, "KbdOverlay", DISABLED_OBJ | FLOAT_OBJ | SYSTEM_OBJ)) == nullptr)
+  if ((mOverKey = EvLabel::Create(0, 0, (uint16_t)0, 0, this, "OverKey", DISABLED_OBJ | FLOAT_OBJ | SYSTEM_OBJ)) == nullptr)
   {
     abortCreate();
     return;
   }
 
   mOverKey->TextPadding(0, 7);
-  mOverKey->BdColor(OVER_KEY_BD_COLOR);
   mOverKey->BdWidth(24);
 
   TouchMax(2);
@@ -98,7 +97,8 @@ void        EvKbd::SetLayout(uint8_t Layout)
 
 void        EvKbd::SetKeyboard(int Keyboard, bool OpenState)
 {
-  SetKeyboard(sKeyboard[Keyboard], OpenState);
+  if (Keyboard < 2)
+    SetKeyboard(sKeyboard[Keyboard], OpenState);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -112,6 +112,19 @@ void        EvKbd::SetKeyboard(EvKeyboard *Keyboard, bool OpenState)
   BdRadius(mKb->bdRadius);
   ReSize(mKb->width, mKb->height);
   Setup(SIDEBAR_BOTTOM, OpenState);
+  mOverKey->BdColor(mKb->overKeyBdColor);
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+void        EvKbd::SetKeyboard(EvKeyboard *Landscape, EvKeyboard *Portrait)
+{
+  if (Landscape != nullptr && Portrait != nullptr)
+  {
+    sKeyboard[0] = Landscape;
+    sKeyboard[1] = Portrait;
+    SetKeyboard(Disp->Orientation & 2 ? 1 : 0);
+  }
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

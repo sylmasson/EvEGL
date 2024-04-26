@@ -16,19 +16,17 @@ class EvDisplay : public EvPanel, public EvEVE, public EvSysFont
   friend class  EvShell;
 
   protected:
-    EvDisplay(uint16_t Width, uint16_t Height, const char *Tag, const uint32_t *Config, uint8_t CS, uint8_t RST = 255, SPIClass *Spi = nullptr, uint32_t Baudrate = 30000000);
+    EvDisplay(uint16_t Width, uint16_t Height, const char *Tag, const uint32_t *Config, uint8_t CS, uint8_t RST = 255, uint32_t Baudrate = 30000000, SPIClass *Spi = nullptr);
 
   public:
-    virtual       ~EvDisplay();
-
     bool          Lock(void);
     bool          Unlock(void);
     bool          TryLock(void);
-    void          KbdDelete(void);
     uint32_t      FrameNumber(void);
     void          Rotate(uint8_t Orientation);
-    void          SetOnUpdate(void (*OnUpdate)(EvDisplay *Disp));
-    void          SetOnTouch(void (*OnTouch)(EvObj *Obj, const EvTouchEvent *Touch));
+    void          SetOnUpdate(void (*OnUpdate)(EvDisplay *Sender));
+    void          SetOnUpdateFPS(void (*OnUpdateFPS)(EvDisplay *Sender, uint32_t TimeUsed, uint16_t FrameCount, uint16_t MaxDL));
+    void          SetOnTouch(void (*OnTouch)(EvObj *Sender, const EvTouchEvent *Touch));
 
     static bool   Update(void);
 
@@ -40,16 +38,13 @@ class EvDisplay : public EvPanel, public EvEVE, public EvSysFont
     uint32_t      mTimeUsed;
     uint16_t      mSizeDL;
     uint16_t      mMaxDL;
-    EvKbd         *mKbd;
-
-  #if defined(ESP32)
-    SemaphoreHandle_t   mMutex;
-  #endif
 
   private:
     void          (*mOnUpdate)(EvDisplay *Disp);
+    void          (*mOnUpdateFPS)(EvDisplay *Disp, uint32_t TimeUsed, uint16_t FrameCount, uint16_t MaxDL);
 
   public:
+    EvKbd         *Kbd;
     EvTouch       Touch;
     const uint8_t &Orientation = mOrientation;
 
@@ -62,7 +57,7 @@ class EvDisplay : public EvPanel, public EvEVE, public EvSysFont
     static EvDisplay  *sDispList[DISP_MAX];
 
   public:
-    static EvDisplay  *Create(uint16_t Width, uint16_t Height, const char *Tag, const uint32_t *Config, uint8_t CS, uint8_t RST = 255, SPIClass *Spi = nullptr, uint32_t Baudrate = 30000000);
+    static EvDisplay  *Create(uint16_t Width, uint16_t Height, const char *Tag, const uint32_t *Config, uint8_t CS, uint8_t RST = 255, uint32_t Baudrate = 30000000, SPIClass *Spi = nullptr);
 };
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

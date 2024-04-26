@@ -27,7 +27,100 @@
 
 EvButton    *EvButton::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag, uint16_t State)
 {
-  return !Dest ? nullptr : (EvButton *)EvObj::TryCreate(new EvButton(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvButton" : Tag, State), Dest);
+  EvButton  *obj = nullptr;
+
+  if (Dest != nullptr && (obj = (EvButton *)EvObj::TryCreate(new EvButton(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvButton" : Tag, State), Dest)) != nullptr)
+  {
+    obj->TextAlign(CENTER);
+    obj->TextLabel(obj->Tag);
+    obj->TextColor(TEXT_UP, TEXT_DOWN);
+    obj->BdShape(FIXED_CORNERS | SHADOW);
+  }
+
+  return obj;
+}
+
+/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *
+ * @brief      Create a new instance of a standard **EvButton**.
+ * 
+ * A new **EvButton** is created at the specified size and relative position
+ * of its owner Dest.
+ * 
+ * @param[in]  Left    The left position of the **EvButton**.
+ * @param[in]  Top     The top position of the **EvButton**.
+ * @param[in]  Label   The Label of the **EvButton**.
+ * @param[in]  Font    The font size of the Label.
+ * @param[out] *Dest   The destination **EvPanel** address pointer.
+ * @param[in]  Tag     The tag name of the **EvButton**. If nullptr, the default tag name is **"EvButton"**.
+ * @param[in]  State   The initial state of the **EvButton**. Default is set to VISIBLE_OBJ | FILTER_DIS_OBJ.
+ *
+ * @return     **EvButton** address pointer on success, otherwise returns nullptr.
+ * 
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+EvButton    *EvButton::Create(int16_t Left, int16_t Top, const char *Label, uint8_t Font, EvPanel *Dest, const char *Tag, uint16_t State)
+{
+  EvButton  *obj = nullptr;
+
+  if (Dest != nullptr && (obj = (EvButton *)EvObj::TryCreate(new EvButton(Left, Top, 0, 0, Dest->Disp, !Tag ? "EvButton" : Tag, State), Dest)) != nullptr)
+  {
+    uint16_t  w;
+
+    obj->TextFont(Font);
+    obj->TextLabel(Label);
+    obj->TextAlign(CENTER);
+    obj->TextColor(TEXT_UP, TEXT_DOWN);
+    obj->mHeight = 10 * ((obj->TextHeight(Font) * 2) / 10);
+    obj->mWidth = (obj->mHeight * 5) / 2;
+    if ((w = obj->TextWidth(Label)) > obj->mWidth - 20)
+      obj->mWidth = (10 * ((w + 5) / 10)) + 20;
+    obj->BdShape(FIXED_CORNERS | SHADOW);
+    obj->SetView();
+  }
+
+  return obj;
+}
+
+/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *
+ * @brief      Create a new instance of a standard **EvButton**.
+ * 
+ * A new **EvButton** is created at the specified size and relative position
+ * of its owner Dest.
+ * 
+ * @param[in]  Left    The left position of the **EvButton**.
+ * @param[in]  Top     The top position of the **EvButton**.
+ * @param[in]  Label   The Label of the **EvButton**.
+ * @param[in]  *Src    The address pointer of the **EvButton** source model.
+ * @param[out] *Dest   The destination **EvPanel** address pointer.
+ * @param[in]  Tag     The tag name of the **EvButton**. If nullptr, the default tag name is **"EvButton"**.
+ * @param[in]  State   The initial state of the **EvButton**. Default is set to VISIBLE_OBJ | FILTER_DIS_OBJ.
+ *
+ * @return     **EvButton** address pointer on success, otherwise returns nullptr.
+ * 
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+EvButton    *EvButton::Create(int16_t Left, int16_t Top, const char *Label, const EvButton *Src, EvPanel *Dest, const char *Tag, uint16_t State)
+{
+  EvButton  *obj = nullptr;
+
+  if (Dest != nullptr && Src != nullptr && (obj = (EvButton *)EvObj::TryCreate(new EvButton(Left, Top, Src->mWidth, Src->mHeight, Dest->Disp, !Tag ? "EvButton" : Tag, State), Dest)) != nullptr)
+  {
+    obj->TextLabel(Label);
+    obj->mStyle = Src->mStyle;
+    obj->mOpacity = Src->mOpacity;
+    obj->mBgColor = Src->mBgColor;
+    obj->mBgColorA = Src->mBgColorA;
+    obj->mBdShape = Src->mBdShape;
+    obj->mBdRadius = Src->mBdRadius;
+    obj->mBdWidth = Src->mBdWidth;
+    obj->mBdColor = Src->mBdColor;
+    obj->mColorUp = Src->mColorUp;
+    obj->mColorDown = Src->mColorDown;
+  }
+
+  return obj;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -41,8 +134,6 @@ EvButton::EvButton(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, E
   mOnTouch(nullptr),
   mOnChange(nullptr)
 {
-  TextColor(TEXT_UP, TEXT_DOWN);
-  BdShape(FIXED_CORNERS | SHADOW);
 }
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *

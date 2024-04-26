@@ -16,7 +16,6 @@ class EvTerminal : public EvTextBlock
 
   public:
     EvTextCursor  *Cursor;
-    uint16_t      MaxBufferSize;
 
     static EvTerminal *Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ);
 };

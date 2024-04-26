@@ -14,6 +14,8 @@ class DummySerial : public Stream
 
 extern Stream         *EvIn;
 extern Stream         *EvOut;
+extern Stream         *EvErr;
+extern Stream         *EvDbg;
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 

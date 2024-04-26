@@ -33,7 +33,7 @@ void        EvKinScroll::Setup(uint8_t Speed, uint16_t Period)
 
 void        EvKinScroll::Start(int16_t Velocity)
 {
-  mVelocity = (abs(Velocity) < (3 << 4)) ? 0 : (Velocity * (int)mSpeed) >> 4;
+  mVelocity = (Velocity * (int)mSpeed) >> 4;
   mIndex = mPeriod;
   mValue = 0;
 }

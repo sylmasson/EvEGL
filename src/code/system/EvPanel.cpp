@@ -36,7 +36,6 @@ EvPanel::EvPanel(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvD
   mFirst(nullptr),
   mLast(nullptr)
 {
-  BgColor(TRANSPARENT);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -51,7 +50,7 @@ EvPanel::~EvPanel(void)
 
     snprintf(str, sizeof(str) - 1, "~EvPanel: %p ", this);
     EvOut->print(str);
-    DisplayTagList();
+    DisplayTagList(EvOut);
     EvOut->println();
   #endif
 
@@ -158,6 +157,25 @@ EvObj       *EvPanel::RemoveObj(EvObj *Obj)
 EvObj       *EvPanel::FirstObj(void)
 {
   return (mFirst != nullptr) ? mFirst->obj : nullptr;
+}
+
+/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *
+ * @brief      Sets the Object as not visible.
+ * 
+ * If the Object is visible, change it to not visible Object.
+ * 
+ * By default, a new Object is set as visible.
+ * 
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+void        EvPanel::Hide(void)
+{
+  if (mStatus & VISIBLE_OBJ)
+  {
+    EvObj::Hide();
+    ClearCache();
+  }
 }
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *

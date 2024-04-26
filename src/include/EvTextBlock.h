@@ -22,6 +22,8 @@ class EvTextBlock : public EvScrollBox
     int16_t       LineSpacing(int Pixel);
     int16_t       LineSpacing(float Ratio);
     String        GetLine(uint16_t Line);
+    void          ClearBuffer(void);
+    bool          SetBufferSize(uint16_t Size);
     void          SetOnTouch(void (*OnTouch)(EvTextBlock *Sender, const EvTouchEvent *Touch));
 
     EvTextBlock   &operator+=(const char C);
@@ -37,6 +39,7 @@ class EvTextBlock : public EvScrollBox
     bool          mWrapText;
     int8_t        mLineSpacing;
     uint16_t      mLinesCount;
+    uint16_t      mBufferSize;
     int32_t       mMaxWidth;
     SubString     *mLines;
 

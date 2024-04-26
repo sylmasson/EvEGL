@@ -9,11 +9,30 @@
 // Color constant
 
 #define     OPACITY_MAX     256
-#define     TRANSPARENT     ((uint16_t)0)
 #define     C8(c5)          (((((c5) & 0x1F) * 527) + 23) >> 6)
 #define     C5(c8)          (((((c8) & 0xFF) * 249) + 1014) >> 11)
 #define     RGB555(r,g,b)   ((uint16_t)((C5(r) << 10) | (C5(g) << 5) | C5(b) | 0x8000))
 #define     ARGB(a,r,g,b)   ((uint32_t)((((a) & 0xFFL) << 24) | (((r) & 0xFFL) << 16) | (((g) & 0xFFL) << 8) | ((b) & 0xFFL)))
+
+// Basic color constant
+
+#define     EV_TRANSPARENT  ((uint16_t)0)
+#define     EV_BLACK        RGB555(  0,   0,   0)
+#define     EV_WHITE        RGB555(255, 255, 255)
+#define     EV_RED          RGB555(255,   0,   0)
+#define     EV_LIME         RGB555(  0, 255,   0)
+#define     EV_BLUE         RGB555(  0,   0, 255)
+#define     EV_YELLOW       RGB555(255, 255,   0)
+#define     EV_CYAN         RGB555(  0, 255, 255)
+#define     EV_MAGENTA      RGB555(255,   0, 255)
+#define     EV_SILVER       RGB555(192, 192, 192)
+#define     EV_GRAY         RGB555(128, 128, 128)
+#define     EV_MAROON       RGB555(128,   0,   0)
+#define     EV_OLIVE        RGB555(128, 128,   0)
+#define     EV_GREEN        RGB555(  0, 128,   0)
+#define     EV_PURPLE       RGB555(128,   0, 128)
+#define     EV_TEAL         RGB555(  0, 128, 128)
+#define     EV_NAVY         RGB555(  0,   0, 128)
 
 // Fixed point convertion
 
@@ -386,7 +405,7 @@ class EvEVE : public EvSPI
   };
 
   public:
-    EvEVE(const uint32_t *Config, uint8_t CS, uint8_t RST = 255, SPIClass *Spi = nullptr, uint32_t Baudrate = 16000000);
+    EvEVE(const uint32_t *Config, uint8_t CS, uint8_t RST = 255, uint32_t Baudrate = 16000000, SPIClass *Spi = nullptr);
 
     void          ClearContext(void);
     void          ClearPrimitive(void);
@@ -495,6 +514,7 @@ class EvEVE : public EvSPI
     bool          CapacitiveTouchEngine;  
 
   private:
+  	void 					checkDL(void);
     void          wrCmdBufDL(uint32_t Data);
     int32_t       transformCoeff(int32_t Coeff);
     uint32_t      colorCorrection(uint32_t Color);

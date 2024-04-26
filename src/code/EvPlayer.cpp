@@ -206,7 +206,7 @@ void        EvPlayer::FullScreen(void)
 {
   if (!IsFullScreen())
   {
-    Disp->KbdDelete();
+    Disp->Kbd->Close();
     mSmallLeft = mLeft;
     mSmallTop = mTop;
     mSmallWidth = mWidth;

@@ -3,7 +3,6 @@
 
 #define     DOT_COLOR     RGB555(   0,   0, 220)
 #define     BG_COLOR      RGB555(   0,   0,   0)
-#define     TEXT_COLOR    RGB555(   0,   0,   0)
 
 #define     CANCEL_BTN    1
 #define     RESTART_BTN   2
@@ -40,7 +39,7 @@ EvTouchCal::EvTouchCal(int16_t Left, int16_t Top, uint16_t Width, uint16_t Heigh
   if (Disp->CapacitiveTouchEngine)
     Disp->wr8(REG_CTOUCH_EXTENDED, 1);
 
-  Disp->KbdDelete();
+  Disp->Kbd->Close();
   BdColor(DOT_COLOR);
   BgColor(BG_COLOR);
   TextFont(25);
@@ -84,13 +83,13 @@ void        EvTouchCal::drawEvent(void)
   Disp->DrawText(0, (mHeight / 2) - h, mWidth, h, mText[mInd > 3], DOT_COLOR, mStyle.font + 2, CENTER);
   Disp->TagValue(CANCEL_BTN);
   Disp->FillRectangle(x1, y, w, h, mTouchTag == CANCEL_BTN ? RGB555(100, 0, 0) : RGB555(200, 0, 0), mHeight);
-  Disp->DrawText(x1, y, w, h, mText[2], TEXT_COLOR, mStyle.font, CENTER);
+  Disp->DrawText(x1, y, w, h, mText[2], EV_BLACK, mStyle.font, CENTER);
   Disp->TagValue(RESTART_BTN);
   Disp->FillRectangle(x2, y, w, h, mTouchTag == RESTART_BTN ? RGB555(128, 85, 0) : RGB555(255, 165, 0), mHeight);
-  Disp->DrawText(x2, y, w, h, mText[3], TEXT_COLOR, mStyle.font, CENTER);
+  Disp->DrawText(x2, y, w, h, mText[3], EV_BLACK, mStyle.font, CENTER);
   Disp->TagValue(SAVE_BTN);
   Disp->FillRectangle(x3, y, w, h, mInd > 3 ? (mTouchTag == SAVE_BTN ? RGB555(30, 100, 30) : RGB555(60, 200, 60)) : RGB555(100, 100, 100), mHeight);
-  Disp->DrawText(x3, y, w, h, mText[4], TEXT_COLOR, mStyle.font, CENTER);
+  Disp->DrawText(x3, y, w, h, mText[4], EV_BLACK, mStyle.font, CENTER);
 
   if (mInd <= 3)
   {

@@ -63,7 +63,7 @@ void        EvTaskDMA::Update(void)
 
       if (mInProgress->Status == EvDMA::ABORT)
       {
-        EvOut->println("EvDMA ABORT");
+        EvErr->println("EvDMA ABORT");
         delete mInProgress;
         mInProgress = nullptr;
       }
@@ -79,7 +79,7 @@ void        EvTaskDMA::Update(void)
   { // transfer to MEDIAFIFO
     if ((free = mInProgress->Disp->MediaFifoFree(dst)) == 0)
     {
-      EvOut->println("Mediafifo FULL");
+      EvErr->println("Mediafifo FULL");
       return;
     }
 

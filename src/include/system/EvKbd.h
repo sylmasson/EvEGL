@@ -58,6 +58,7 @@ struct EvKeyboard
   uint8_t     keyShadow;
   uint8_t     overKeyFont;
   uint8_t     overKeyExtend;
+  uint16_t    overKeyBdColor;
   uint8_t     layoutCount;
   const EvKbdLayout *layout;
 };
@@ -75,6 +76,7 @@ class EvKbd : public EvSideBar
     void          SetLayout(uint8_t Layout);
     void          SetKeyboard(int Keyboard, bool OpenState = false);
     void          SetKeyboard(EvKeyboard *Keyboard, bool OpenState = false);
+    void          SetKeyboard(EvKeyboard *Landscape, EvKeyboard *Portrait);
     void          SetOnTouch(void (*OnTouch)(EvKbd *Sender, const EvTouchEvent *Touch));
 
   protected:

@@ -1,30 +1,110 @@
 
 #include    <EvGUI.h>
 
-#define     TEXT_COLOR      RGB555(255, 255, 255)
-
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
- * @brief      Create a new instance of the standard Label.
+ * @brief      Create a new instance of the standard **EvLabel**.
  * 
- * A new standard Label is created at the specified size and relative position
+ * A new standard **EvLabel** is created at the specified size and relative position
  * of its owner Dest.
  * 
- * @param[in]  Left    The left position of Label.
- * @param[in]  Top     The top position of Label.
- * @param[in]  Width   The width of Label.
- * @param[in]  Height  The height of Label.
- * @param[out] *Dest   The address pointer of the EvPanel destination. Cannot be nullptr.
- * @param[in]  Tag     The tag name of the Label. If nullptr, the default tag name is "EvLabel".
- * @param[in]  State   The initial state of the Label. Default is set to VISIBLE_OBJ.
+ * @param[in]  Left    The left position of **EvLabel**.
+ * @param[in]  Top     The top position of **EvLabel**.
+ * @param[in]  Width   The width of **EvLabel**.
+ * @param[in]  Height  The height of **EvLabel**.
+ * @param[out] *Dest   The address pointer of the **EvPanel** destination. Cannot be nullptr.
+ * @param[in]  Tag     The tag name of the **EvLabel**. If nullptr, the default tag name is **"EvLabel"**.
+ * @param[in]  State   The initial state of the **EvLabel**. Default is set to VISIBLE_OBJ.
  *
- * @return     EvLabel address pointer on success, otherwise returns nullptr.
+ * @return     **EvLabel** address pointer on success, otherwise returns nullptr.
  * 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 EvLabel     *EvLabel::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag, uint16_t State)
 {
-  return !Dest ? nullptr : (EvLabel *)EvObj::TryCreate(new EvLabel(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvLabel" : Tag, State), Dest);
+  EvLabel   *obj = nullptr;
+
+  if (Dest != nullptr && (obj = (EvLabel *)EvObj::TryCreate(new EvLabel(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvLabel" : Tag, State), Dest)) != nullptr)
+  {
+    obj->TextLabel(obj->Tag);
+    obj->TextAlign(RIGHT_CENTER);
+  }
+
+  return obj;
+}
+
+/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *
+ * @brief      Create a new instance of the standard **EvLabel**.
+ * 
+ * A new standard **EvLabel** is created at relative position of its owner Dest.
+ * 
+ * @param[in]  Left    The left position of **EvLabel**.
+ * @param[in]  Top     The top position of **EvLabel**.
+ * @param[in]  Label   The object **EvLabel**.
+ * @param[in]  Font    The font size of **EvLabel**.
+ * @param[out] *Dest   The address pointer of the **EvPanel** destination. Cannot be nullptr.
+ * @param[in]  Tag     The tag name of the **EvLabel**. If nullptr, the default tag name is **"EvLabel"**.
+ * @param[in]  State   The initial state of the **EvLabel**. Default is set to VISIBLE_OBJ.
+ *
+ * @return     **EvLabel** address pointer on success, otherwise returns nullptr.
+ * 
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+EvLabel     *EvLabel::Create(int16_t Left, int16_t Top, const char *Label, uint8_t Font, EvPanel *Dest, const char *Tag, uint16_t State)
+{
+  EvLabel   *obj = nullptr;
+
+  if (Dest != nullptr && (obj = (EvLabel *)EvObj::TryCreate(new EvLabel(Left, Top, 0, 0, Dest->Disp, !Tag ? (!Label ? "EvLabel" : Label) : Tag, State), Dest)) != nullptr)
+  {
+    obj->TextFont(Font);
+    obj->TextLabel(Label);
+    obj->mHeight = 10 * ((obj->TextHeight(Font) + 5) / 10);
+    obj->mWidth = obj->TextWidth(Label);
+    obj->SetView();
+  }
+
+  return obj;
+}
+
+/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *
+ * @brief      Create a new instance of the standard **EvLabel**.
+ * 
+ * A new standard **EvLabel** is created at relative position of its owner Dest.
+ * 
+ * @param[in]  Left    The left position of **EvLabel**.
+ * @param[in]  Top     The top position of **EvLabel**.
+ * @param[in]  Label   The object **EvLabel**.
+ * @param[in]  *Src    The address pointer of the **EvLabel**. source model.
+ * @param[out] *Dest   The address pointer of the **EvPanel** destination. Cannot be nullptr.
+ * @param[in]  Tag     The tag name of the **EvLabel**. If nullptr, the default tag name is **"EvLabel"**.
+ * @param[in]  State   The initial state of the **EvLabel**. Default is set to VISIBLE_OBJ.
+ *
+ * @return     **EvLabel** address pointer on success, otherwise returns nullptr.
+ * 
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+EvLabel     *EvLabel::Create(int16_t Left, int16_t Top, const char *Label, const EvLabel *Src, EvPanel *Dest, const char *Tag, uint16_t State)
+{
+  EvLabel   *obj = nullptr;
+
+  if (Dest != nullptr && Src != nullptr && (obj = (EvLabel *)EvObj::TryCreate(new EvLabel(Left, Top, Src->mWidth, Src->mHeight, Dest->Disp, !Tag ? (!Label ? "EvLabel" : Label) : Tag, State), Dest)) != nullptr)
+  {
+    obj->TextLabel(Label);
+    obj->mStyle = Src->mStyle;
+    obj->mOpacity = Src->mOpacity;
+    obj->mBgColor = Src->mBgColor;
+    obj->mBgColorA = Src->mBgColorA;
+    obj->mBdShape = Src->mBdShape;
+    obj->mBdRadius = Src->mBdRadius;
+    obj->mBdWidth = Src->mBdWidth;
+    obj->mBdColor = Src->mBdColor;
+    obj->mWidth = obj->TextWidth(Label);
+    obj->SetView();
+  }
+
+  return obj;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -34,10 +114,6 @@ EvLabel::EvLabel(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvD
   mTouchFlag(false),
   mOnTouch(nullptr)
 {
-  TextFont(25);
-  TextLabel("Label");
-  TextAlign(RIGHT_CENTER);
-  TextColor(TEXT_COLOR);
 }
 
 /// @copydoc EvButton::SetOnTouch()

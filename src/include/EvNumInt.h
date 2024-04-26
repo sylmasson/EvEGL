@@ -48,8 +48,11 @@ class EvNumInt : public EvObj
     void          (*mOnTouch)(EvNumInt *Sender, const EvTouchEvent *Touch);
     void          (*mOnChange)(EvNumInt *Sender, int32_t Value);
 
+    void          printValue(int32_t Value);
+
   public:
     static EvNumInt *Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ | FILTER_DIS_OBJ);
+    static EvNumInt *Create(int16_t Left, int16_t Top, int32_t Value, const EvNumInt *Src, EvPanel *Dest, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ | FILTER_DIS_OBJ);
 };
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
