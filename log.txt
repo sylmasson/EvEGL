@@ -1,3 +1,9 @@
+commit 885a42bead7ae805e1a26d49c7f818b65026f9e1
+Author: Sylvain Masson <sylvainmasson@Sylvains-Mac-mini.local>
+Date:   Fri Apr 26 08:52:21 2024 -0400
+
+    Overall: Optimization, cleanup and minor fixes following the creation of the TextBlock and Terminal demos
+
 commit a037004286d1c9f78bee648dce7521838778fcc7
 Author: Sylvain Masson <sylvainmasson@Sylvains-Mac-mini.local>
 Date:   Wed Apr 10 16:49:52 2024 -0400

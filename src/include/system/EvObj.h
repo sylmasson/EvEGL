@@ -146,6 +146,9 @@ class EvObj : public Stream
     void          LostKbdFocus(void);
     EvObj         *GetKbdFocus(void);
     bool          IsOnKbdFocus(void);
+    uint16_t      TouchCnt(void);
+    uint16_t      TouchMax(void);
+    uint16_t      TouchMax(uint16_t Max);
 
     virtual void    Show(void);
     virtual void    Hide(void);
@@ -196,7 +199,6 @@ class EvObj : public Stream
     void          DisplayTagList(Stream *Out);
     bool          TouchStart(void);
     void          TouchEnd(void);
-    void          TouchMax(uint8_t Max);
     void          TouchUpdate(const EvTouchEvent *Touch);
     virtual EvObj *Touching(const EvTouchEvent *Touch);
     virtual void  SetDisplay(EvDisplay *Disp);

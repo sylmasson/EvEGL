@@ -45,6 +45,7 @@ class EvSlider : public EvObj
     uint16_t      mColorUpper;
     uint16_t      mColorKnob;
     bool          mTouchKnob;
+    bool          mBusy;
 
     virtual void  drawEvent(void);
     virtual void  resizeEvent(void);
@@ -59,6 +60,7 @@ class EvSlider : public EvObj
 
   public:
     static EvSlider *Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ);
+    static EvSlider *Create(int16_t Left, int16_t Top, int32_t Value, const EvSlider *Src, EvPanel *Dest, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ);
 };
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

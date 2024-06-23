@@ -21,10 +21,6 @@
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-static const char   bitPixel[18] = {16, 1, 4, 8, 8, 8, 16, 16, 0, 0, 0, 0, 0, 0, 8, 8, 8, 2};
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
 EvEVE::EvEVE(const uint32_t *Config, uint8_t CS, uint8_t RST, uint32_t Baudrate, SPIClass *Spi)
 {
   uint32_t  reg;
@@ -155,9 +151,9 @@ const EvMem *EvEVE::LoadBmp(const EvBmp *Bmp, uint32_t Options)
 {
   EvMem     *ptr;
 
-  if (Bmp->Layout > L2 || ((Options & OPT_FLASH) != 0 && ChipID < 0x815))
+  if (ChipID < 0x815 && (Bmp->Layout > L2 || (Options & OPT_FLASH) != 0))
   {
-    EvErr->println("LoadBmp: Options not supported");
+    EvErr->println("EvEVE: LoadBmp format not supported");
     return nullptr;
   }
 
@@ -285,13 +281,6 @@ void        EvEVE::Begin(uint8_t Prim)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvEVE::BitmapExtFormat(uint16_t Format)
-{
-  wrCmdBufDL(EV_BITMAP_EXT_FORMAT(Format));
-}
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
 void        EvEVE::BitmapHandle(uint8_t Handle)
 {
   if ((Handle &= 0x1F) != mActiveContext.handle)
@@ -305,10 +294,29 @@ void        EvEVE::BitmapHandle(uint8_t Handle)
 
 void        EvEVE::BitmapLayout(uint8_t Format, uint16_t Width, uint16_t Height)
 {
-  uint16_t  Linestride = (((uint32_t)Width * bitPixel[Format]) + 7) / 8;
+  int16_t   linestride = -1;
+  static const int8_t  astcBlockX[14] = {4, 5, 5, 6, 6, 8, 8, 8, 10, 10, 10, 10, 12, 12};
+  static const int8_t  astcBlockY[14] = {4, 4, 5, 5, 6, 5, 6, 8,  5,  6,  8, 10, 10, 12};
+  static const int8_t  bitPerPixel[18] = {16, 1, 4, 8, 8, 8, 16, 16, -1, 0, 0, 0, -1, -1, 8, 8, 8, 2};
 
-  wrCmdBufDL(EV_BITMAP_LAYOUT_H(Linestride, Height));
-  wrCmdBufDL(EV_BITMAP_LAYOUT(Format, Linestride, Height));
+  if (ChipID >= 815 && Format >= 31 && Format <= 44)
+  {
+    Format -= 31;
+    linestride = ((Width + astcBlockX[Format] - 1) / astcBlockX[Format]) * 16;
+    Height = (Height + astcBlockY[Format] - 1) / astcBlockY[Format];
+    wrCmdBufDL(EV_BITMAP_EXT_FORMAT(Format + 37808));
+    Format = 31;
+  }
+  else if (Format <= L2 && (linestride = bitPerPixel[Format]) > 0)
+    linestride = (((uint32_t)Width * linestride) + 7) / 8;
+
+  if (linestride < 0)
+    EvErr->println("EvEVE: BitmapLayout format not supoorted");
+  else
+  {
+    wrCmdBufDL(EV_BITMAP_LAYOUT_H(linestride, Height));
+    wrCmdBufDL(EV_BITMAP_LAYOUT(Format, linestride, Height));
+  }
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -847,7 +855,7 @@ void        EvEVE::CmdGradient(int16_t X0, int16_t Y0, uint32_t Color0, int16_t 
 void        EvEVE::CmdGradientA(int16_t X0, int16_t Y0, uint32_t Color0, int16_t X1, int16_t Y1, uint32_t Color1)
 {
   if (ChipID < 0x815)
-    EvErr->println("CMD_GRADIENTA not supported");
+    EvErr->println("EvEVE: CMD_GRADIENTA not supported");
   else
   {
     wrCmdBuf32(CMD_GRADIENTA);
@@ -874,7 +882,7 @@ void        EvEVE::CmdInflate(uint32_t Addr)
 void        EvEVE::CmdInflate2(uint32_t Addr, uint32_t Options)
 {
   if (ChipID < 0x815)
-    EvErr->println("CMD_INFLATE2 not supported");
+    EvErr->println("EvEVE: CMD_INFLATE2 not supported");
   else
   {
     wrCmdBuf32(CMD_INFLATE2);
@@ -1040,7 +1048,7 @@ void        EvEVE::CmdSwap(void)
 void        EvEVE::CmdSync(void)
 {
   if (ChipID < 0x817)
-    EvErr->println("CMD_SYNC not supported");
+    EvErr->println("EvEVE: CMD_SYNC not supported");
   else
     wrCmdBuf32(CMD_SYNC);
 }
@@ -1060,7 +1068,7 @@ void        EvEVE::checkDL(void)
 {
   if (mDL > 6500)
   {
-    EvErr->print(mDL >= 8000 ? "Error limit: DL = " : "Warning: DL = ");
+    EvErr->print(mDL >= 8000 ? "EvEVE: Error limit: DL = " : "EvEVE: Warning: DL = ");
     EvErr->println(mDL);
   }
 }

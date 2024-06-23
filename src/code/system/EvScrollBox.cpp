@@ -34,7 +34,10 @@ EvScrollBox::EvScrollBox(int16_t Left, int16_t Top, uint16_t Width, uint16_t Hei
   EvPanel(Left, Top, Width, Height, Disp, Tag, State),
   mPageWidth(Width),
   mPageHeight(Height),
-  mTouchFlag(false)
+  mPageOffsetX(0),
+  mPageOffsetY(0),
+  mTouchFlag(false),
+  mOnTouch(nullptr)
 {
   mScrollBarX = EvScrollBar::Create(0, 0, Width, 20, this, nullptr, VISIBLE_OBJ | FIXED_OBJ | SYSTEM_OBJ);
   mScrollBarY = EvScrollBar::Create(0, 0, 20, Height, this, nullptr, VISIBLE_OBJ | FIXED_OBJ | SYSTEM_OBJ);
@@ -102,7 +105,26 @@ void        EvScrollBox::SetPageSize(uint16_t PageWidth, uint16_t PageHeight)
 {
   mPageWidth = PageWidth;
   mPageHeight = PageHeight;
+  mPageOffsetX = 0;
+  mPageOffsetY = 0;
   resize();
+}
+
+/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *
+ * @brief      Sets the scrolling offset of the ScrollBox page.
+ * 
+ * The two ScrollBars are adjusted according to the size of the page.
+ * 
+ * @param[in]  PageOffsetX  The page offsetX of the ScrollBox page.
+ * @param[in]  PageOffsetY  The page offsetY of the ScrollBox page.
+ * 
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+void        EvScrollBox::SetPageOffset(int16_t PageOffsetX, int16_t PageOffsetY)
+{
+  mPageOffsetX = PageOffsetX;
+  mPageOffsetY = PageOffsetY;
 }
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -151,6 +173,13 @@ void        EvScrollBox::SetBarStyle(uint8_t Mode, uint8_t Thickness, uint8_t Pa
   mBarThickness = Thickness;
   mBarPadding = Padding;
   resize();
+}
+
+/// @copydoc EvButton::SetOnTouch()
+
+void        EvScrollBox::SetOnTouch(void (*OnTouch)(EvScrollBox *Sender, const EvTouchEvent *Touch))
+{
+  mOnTouch = OnTouch;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -206,6 +235,12 @@ void        EvScrollBox::refreshEvent(void)
 void        EvScrollBox::touchEvent(const EvTouchEvent *Touch)
 {
   EvTouchEvent  *touch = (EvTouchEvent *)Touch;
+
+  if (mOnTouch != nullptr)
+    mOnTouch(this, Touch);
+
+  if (touch->event == 0)
+    return;
 
   if (touch->obj != nullptr)
   {
@@ -281,7 +316,7 @@ void        EvScrollBox::scrollX(int16_t X)
 {
   if (X != 0 && SCROLLX)
   {
-    int16_t left = X + mOffsetX;
+    int16_t left = X + mPanelOffsetX + mPageOffsetX;
 
     if (X > 0)
     {
@@ -297,7 +332,7 @@ void        EvScrollBox::scrollX(int16_t X)
       left = mWidth - mPageWidth;
     }
 
-    if (left != mOffsetX)
+    if (left != mPanelOffsetX)
     {
       mScrollBarX->SetValue(-left);
       mScrollBarY->WakeUp();
@@ -311,7 +346,7 @@ void        EvScrollBox::scrollY(int16_t Y)
 {
   if (Y != 0 && SCROLLY)
   {
-    int16_t top = Y + mOffsetY;
+    int16_t top = Y + mPanelOffsetY + mPageOffsetY;
 
     if (Y > 0)
     {
@@ -327,7 +362,7 @@ void        EvScrollBox::scrollY(int16_t Y)
       top = mHeight - mPageHeight;
     }
 
-    if (top != mOffsetY)
+   if (top != mPanelOffsetY)
     {
       mScrollBarY->SetValue(-top);
       mScrollBarY->WakeUp();
@@ -341,7 +376,7 @@ void        EvScrollBox::sOnChangeScrollBarX(EvScrollBar *Sender, int32_t Value)
 {
   EvScrollBox *Owner = (EvScrollBox *)Sender->GetOwner();
 
-  Owner->mOffsetX = -Value;
+  Owner->mPanelOffsetX = -Value - Owner->mPageOffsetX;
   Owner->SetView();
   Owner->Modified();
 }
@@ -352,7 +387,7 @@ void        EvScrollBox::sOnChangeScrollBarY(EvScrollBar *Sender, int32_t Value)
 {
   EvScrollBox *Owner = (EvScrollBox *)Sender->GetOwner();
 
-  Owner->mOffsetY = -Value;
+  Owner->mPanelOffsetY = -Value - Owner->mPageOffsetY;
   Owner->SetView();
   Owner->Modified();
 }

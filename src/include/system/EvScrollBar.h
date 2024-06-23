@@ -30,6 +30,8 @@
 
 class EvScrollBar : public EvObj
 {
+  friend class EvScrollBox;
+
   protected:
     EvScrollBar(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ);
 
@@ -40,7 +42,8 @@ class EvScrollBar : public EvObj
     int16_t       Scrolling(void);
     void          ToBeginning(bool Wakeup = true);
     void          ToTheEnd(bool Wakeup = true);
-    bool          SetValue(int16_t Value, bool Wakeup = true);
+    bool          SetValue(int16_t Value);
+    bool          SetValue(int16_t Value, bool Wakeup, bool Change = false);
     void          SetScrollBarSync(EvScrollBar *ScrollBarSync);
     void          SetPageSize(uint16_t PageSize, uint16_t ViewSize);
     void          SetBarColor(uint16_t ColorKnob, uint16_t ColorTouch, uint8_t Opacity = 128);

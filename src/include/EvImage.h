@@ -6,8 +6,7 @@
 
 #define     RESIZE_NONE             0
 #define     RESIZE_PROPORTIONAL     1
-#define     RESIZE_STRETCH          2
-#define     RESIZE_ON_LOAD          4
+#define     RESIZE_ON_LOAD          2
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
@@ -23,6 +22,8 @@
 
 class EvImage : public EvObj
 {
+  friend class EvViewer;
+
   protected:
     EvImage(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag = nullptr, uint16_t State = VISIBLE_DIS_OBJ);
 
@@ -33,14 +34,14 @@ class EvImage : public EvObj
     const EvBmp   *Load(const EvBmp *Bmp, uint32_t Options = 0);
     const EvBmp   *Load(const char *Filename, SDClass &Dev = SD, uint32_t Options = 0);
     void          ModifiedCoeff(void);
-    void          Scale(float ScaleXY);
-    void          ScaleX(float Scale);
-    void          ScaleY(float Scale);
+    float         Scale(float Scale);
+    float         ScaleToFit(uint16_t Width, uint16_t Height);
     void          Rotate(float A);
     void          RotateAdd(float A);
     void          RotateAround(int16_t X, int16_t Y);
-    void          RotateAround(int16_t X, int16_t Y, float A, float ScaleXY);
+    void          RotateAround(int16_t X, int16_t Y, float A, float Scale);
     void          SetMode(uint8_t ResizeMode, uint8_t FilterMode = NEAREST);
+    void          SetColor(uint8_t Red, uint8_t Green, uint8_t Blue);
     void          SetOnTouch(void (*OnTouch)(EvImage *Sender, const EvTouchEvent *Touch));
 
   protected:
@@ -55,15 +56,18 @@ class EvImage : public EvObj
     bool          mResizeLock;
     uint8_t       mResizeMode;
     uint8_t       mFilterMode;
-    int16_t       mOffsetX;
-    int16_t       mOffsetY;
+    uint8_t       mRed;
+    uint8_t       mGreen;
+    uint8_t       mBlue;
+    int16_t       mShiftX;
+    int16_t       mShiftY;
     int16_t       mPivotX;
     int16_t       mPivotY;
     float         mSinA;
     float         mCosA;
     float         mAngle;
-    float         mScaleX;
-    float         mScaleY;
+    float         mScale;
+    float         mScaleMax;
     int32_t       mCoeff[6];    // 0-5 -> A-F
 
     EvDMA         *mLoadDMA;
@@ -73,7 +77,7 @@ class EvImage : public EvObj
   private:
     void          (*mOnTouch)(EvImage *Sender, const EvTouchEvent *Touch);
 
-    static void   onLoading(EvDMA *Data);
+    static void   sOnLoading(EvDMA *Data);
 
     const EvBmp   *load(const EvBmp *Bmp, uint32_t Options);
 
@@ -85,6 +89,7 @@ class EvImage : public EvObj
 
 bool        IsValidJPEG(const uint8_t *Data, uint32_t DataSize, EvBmp *Bmp = nullptr, const char *Tag = nullptr);
 bool        IsValidPNG(const uint8_t *Data, uint32_t DataSize, EvBmp *Bmp = nullptr, const char *Tag = nullptr);
+bool        IsValidASTC(uint8_t *Data, uint32_t DataSize, EvBmp *Bmp = nullptr, const char *Tag = nullptr);
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 

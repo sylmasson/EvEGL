@@ -27,7 +27,9 @@ class EvNumInt : public EvObj
 
   public:
     int32_t       Value(void);
+    bool          IncValue(int32_t Inc);
     bool          SetValue(int32_t Value);
+    void          SetTurnOver(bool TurnOver);
     void          SetFormat(const char *Format);
     void          SetRange(int32_t Min, int32_t Max);
     void          SetOnTouch(void (*OnTouch)(EvNumInt *Sender, const EvTouchEvent *Touch));
@@ -38,7 +40,9 @@ class EvNumInt : public EvObj
     int32_t       mMin;
     int32_t       mMax;
     int8_t        mInc;
+    bool          mBusy;
     bool          mSkipUp;
+    bool          mTurnOver;
     const char    *mFormat;
 
     virtual void  drawEvent(void);

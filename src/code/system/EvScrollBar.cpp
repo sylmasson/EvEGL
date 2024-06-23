@@ -156,25 +156,43 @@ void        EvScrollBar::ToTheEnd(bool Wakeup)
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
+ * @brief      Sets the position value of the ScrollBar and Wakeup.
+ * 
+ * The value of the range is from 0 to (PageSize - ViewSize). See SetPageSize().
+ * 
+ * @param[in]  Value   The position value of the ScrollBar.
+ * 
+ * @return     true if the position value is changed, otherwise returns false.
+ * 
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+bool        EvScrollBar::SetValue(int16_t Value)
+{
+  return SetValue(Value, true, false);
+}
+
+/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *
  * @brief      Sets the position value of the ScrollBar.
  * 
  * The value of the range is from 0 to (PageSize - ViewSize). See SetPageSize().
  * 
  * @param[in]  Value   The position value of the ScrollBar.
  * @param[in]  Wakeup  On change, WakeUp the ScrollBar if true.
+ * @param[in]  Change  Skip checking for value change if true.
  * 
  * @return     true if the position value is changed, otherwise returns false.
  * 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-bool        EvScrollBar::SetValue(int16_t Value, bool Wakeup)
+bool        EvScrollBar::SetValue(int16_t Value, bool Wakeup, bool Change)
 {
   if (Value < 0)
     Value = 0;
   else if (Value > mPageSize - mViewSize)
     Value = mPageSize - mViewSize;
 
-  if (mValue == Value)
+  if (mValue == Value && !Change)
     return false;
 
   mScrolling |= SCROLL_MOVING;

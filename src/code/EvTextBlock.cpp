@@ -207,11 +207,11 @@ void        EvTextBlock::drawEvent(void)
   if ((lineHeight = TextHeight() + mLineSpacing) < mMinLineHeight)
     lineHeight = mMinLineHeight;
 
-  line = -mOffsetY / lineHeight;
+  line = -mPanelOffsetY / lineHeight;
 
-  for (y = mOffsetY + (line * lineHeight) + mStyle.padY; y < mHeight && line < mLinesCount; y += lineHeight, line++)
+  for (y = mPanelOffsetY + (line * lineHeight) + mStyle.padY; y < mHeight && line < mLinesCount; y += lineHeight, line++)
     if (line >= 0)
-      DrawText(mOffsetX, y, mPageWidth, lineHeight, c_str(getLine(line)), mStyle.color, mStyle.font, (mStyle.align & 3) | 4, mStyle.padX, 0);
+      DrawText(mPanelOffsetX, y, mPageWidth, lineHeight, c_str(getLine(line)), mStyle.color, mStyle.font, (mStyle.align & 3) | 4, mStyle.padX, 0);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

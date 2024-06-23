@@ -70,8 +70,8 @@ class EvPanel : public EvObj
     int16_t       OffsetY();
 
   protected:
-    int16_t       mOffsetX;
-    int16_t       mOffsetY;
+    int16_t       mPanelOffsetX;
+    int16_t       mPanelOffsetY;
     Node          *mFirst;
     Node          *mLast;
 

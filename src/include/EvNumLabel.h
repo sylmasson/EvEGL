@@ -14,7 +14,7 @@
  * ~~~
  * EvNumLabel *myNum = EvNumLabel::Create(50, 50, 100, 50, myPanel, "MyNumLabel");
  * myNum->SetFormat("%.2f%%");
- * myNum->SetValueFloat(66.66);
+ * myNum->SetValue(66.66);
  * ~~~
  *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -25,22 +25,20 @@ class EvNumLabel : public EvLabel
     EvNumLabel(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ);
 
   public:
-    int32_t       Value(void);
-    float         ValueFloat(void);
-    bool          SetValue(int32_t Value);
-    bool          SetValueFloat(float Value);
+    float         Value(void);
+    bool          SetValue(float Value);
     void          SetFormat(const char *Format);
 
   protected:
-    union
-    {
-      int32_t     i;
-      float       f;
-    } mValue;
     const char    *mFormat;
+    float         mValue;
+
+  private:
+    void          printValue(float Value);
 
   public:
     static EvNumLabel *Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ);
+    static EvNumLabel *Create(int16_t Left, int16_t Top, float Value, const EvNumLabel *Src, EvPanel *Dest, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ);
 };
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

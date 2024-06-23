@@ -10,28 +10,85 @@
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
- * @brief      Create a new instance of a standard Slider.
+ * @brief      Create a new instance of a standard **EvSlider**.
  * 
- * A new Slider is created at the specified size and relative position
+ * A new **EvSlider** is created at the specified size and relative position
  * of its owner Dest.
  *
- * @note       If the height is greater than the width, the Slider works vertically.
+ * @note       If the height is greater than the width, the **EvSlider** works vertically.
  *             
- * @param[in]  Left    The left position of the Slider.
- * @param[in]  Top     The top position of the Slider.
- * @param[in]  Width   The width of the Slider.
- * @param[in]  Height  The height of the Slider.
- * @param[out] *Dest   The address pointer of the EvPanel destination. Cannot be nullptr.
- * @param[in]  Tag     The tag name of the Slider. If nullptr, the default tag name is "EvSlider".
- * @param[in]  State   The initial state of the Slider. Default is set to VISIBLE_OBJ.
+ * @param[in]  Left    The left position of the **EvSlider**.
+ * @param[in]  Top     The top position of the **EvSlider**.
+ * @param[in]  Width   The width of the **EvSlider**.
+ * @param[in]  Height  The height of the **EvSlider**.
+ * @param[out] *Dest   The address pointer of the **EvPanel** destination. Cannot be nullptr.
+ * @param[in]  Tag     The tag name of the **EvSlider**. If nullptr, the default tag name is **"EvSlider"**.
+ * @param[in]  State   The initial state of the **EvSlider**. Default is set to VISIBLE_OBJ.
  *
- * @return     EvSlider address pointer on success, otherwise returns nullptr.
+ * @return     **EvSlider** address pointer on success, otherwise returns nullptr.
  * 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 EvSlider    *EvSlider::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag, uint16_t State)
 {
-  return !Dest ? nullptr : (EvSlider *)EvObj::TryCreate(new EvSlider(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvSlider" : Tag, State), Dest);
+  EvSlider  *obj = nullptr;
+
+  if (Dest != nullptr && (obj = (EvSlider *)EvObj::TryCreate(new EvSlider(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvSlider" : Tag, State), Dest)) != nullptr)
+  {
+    obj->BdShape(ROUND_CORNERS);
+    obj->resizeEvent();
+  }
+
+  return obj;
+}
+
+/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *
+ * @brief      Create a new instance of a standard **EvSlider**.
+ * 
+ * A new **EvSlider** is created at the specified size and relative position
+ * of its owner Dest.
+ *
+ * @note       If the height is greater than the width, the **EvSlider** works vertically.
+ *             
+ * @param[in]  Left    The left position of the **EvSlider**.
+ * @param[in]  Top     The top position of the **EvSlider**.
+ * @param[in]  Value   The value of the **EvSlider**.
+ * @param[in]  *Src    The address pointer of the **EvSlider** source model.
+ * @param[out] *Dest   The address pointer of the **EvPanel** destination. Cannot be nullptr.
+ * @param[in]  Tag     The tag name of the **EvSlider**. If nullptr, the default tag name is **"EvSlider"**.
+ * @param[in]  State   The initial state of the **EvSlider**. Default is set to VISIBLE_OBJ.
+ *
+ * @return     **EvSlider** address pointer on success, otherwise returns nullptr.
+ * 
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+EvSlider    *EvSlider::Create(int16_t Left, int16_t Top, int32_t Value, const EvSlider *Src, EvPanel *Dest, const char *Tag, uint16_t State)
+{
+  EvSlider  *obj = nullptr;
+
+  if (Dest != nullptr && Src != nullptr && (obj = (EvSlider *)EvObj::TryCreate(new EvSlider(Left, Top, Src->mWidth, Src->mHeight, Dest->Disp, !Tag ? "EvSlider" : Tag, State), Dest)) != nullptr)
+  {
+    obj->mStyle = Src->mStyle;
+    obj->mOpacity = Src->mOpacity;
+    obj->mBgColor = Src->mBgColor;
+    obj->mBgColorA = Src->mBgColorA;
+    obj->mBdShape = Src->mBdShape;
+    obj->mBdRadius = Src->mBdRadius;
+    obj->mBdWidth = Src->mBdWidth;
+    obj->mBdColor = Src->mBdColor;
+    obj->mSliderDelay = Src->mSliderDelay;
+    obj->mColorLower = Src->mColorLower;
+    obj->mColorUpper = Src->mColorUpper;
+    obj->mColorKnob = Src->mColorKnob;
+    obj->mMin = Src->mMin;
+    obj->mMax = Src->mMax;
+    obj->resizeEvent();
+    obj->setValue(obj->mSetPoint = Value);
+    obj->mValue = obj->mSetPoint;
+  }
+
+  return obj;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -42,16 +99,15 @@ EvSlider::EvSlider(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, E
   mMin(0),
   mMax(100),
   mSetPoint(0),
+  mSliderDelay(SLIDER_DELAY * 1000L),
   mColorLower(COLOR_LOWER),
   mColorUpper(COLOR_UPPER),
   mColorKnob(COLOR_KNOB),
   mTouchKnob(false),
+  mBusy(false),
   mOnTouch(nullptr),
   mOnChange(nullptr)
 {
-  BdShape(ROUND_CORNERS);
-  SetDelay(SLIDER_DELAY);
-  resizeEvent();
 }
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -304,14 +360,16 @@ bool        EvSlider::setValue(int32_t Value)
       mSetPoint = Value = mMin;
   }
 
-  if (mValue == Value)
+  if (mValue == Value || mBusy)
     return false;
 
   mValue = Value;
+  mBusy = true;
   Modified();
 
   if (mOnChange != nullptr)
     mOnChange(this, mValue);
 
+  mBusy = false;
   return true;
 }

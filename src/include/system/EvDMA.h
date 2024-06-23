@@ -37,7 +37,7 @@ class EvTaskDMA
     void            Update(void);
     bool            Busy(void) { return mBusy; };
     void            Start(void) { mBusy = true; };
-    bool            Empty(void) { return (mFirst == nullptr); };
+    bool            InQueues(void) { return (mInProgress != nullptr || mFirst != nullptr); };
     EvDMA           *Add(EvDisplay *Disp, uint8_t *Src, uint32_t Cnt, void *Tag = nullptr, void *Sender = nullptr, void (*OnEvent)(EvDMA *Data) = nullptr, EvMem *Dst = nullptr);
 
   protected:

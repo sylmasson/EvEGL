@@ -164,7 +164,18 @@ bool        EvDisplay::Update(void)
     sDispList[i]->update();
 #endif
 
-  TaskDMA.Update();
+  if (TaskDMA.InQueues())
+  {
+    uint32_t  timeFrame, maxByteTranfer;
+
+    timeFrame = PERIOD_REFRESH - (micros() - sUpdateTimer) - 500;
+    maxByteTranfer = (((EvSPI::baudrate / 1000) * timeFrame) / 8000) & ~1023;
+    // EvDbg->printf("maxByteTranfer = %d, timeFrame = %d usec\n", maxByteTranfer, timeFrame);
+
+    if (maxByteTranfer > 0)
+      TaskDMA.Update();
+  }
+
   return true;
 }
 

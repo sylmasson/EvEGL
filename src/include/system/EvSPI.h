@@ -35,7 +35,7 @@ class EvSPI
     uint16_t      wrCmdBufFreeSpace(void);
     uint16_t      wrCmdBufFreeSpace(uint16_t FreeSpace);
 
-  private:
+  protected:
     uint8_t       rstPin;
     uint8_t       csPin;
     uint16_t      wrPtr;

@@ -27,8 +27,10 @@ class EvScrollBox : public EvPanel
     bool          Scrolling(void);
     void          SetScrollSpeed(uint8_t Speed, uint16_t Period = 640);
     void          SetPageSize(uint16_t PageWidth, uint16_t PageHeight);
+    void          SetPageOffset(int16_t PageOffsetX, int16_t PageOffsetY);
     void          SetBarColor(uint16_t ColorKnob, uint16_t ColorTouch, uint8_t Opacity = 128);
     void          SetBarStyle(uint8_t Mode, uint8_t Thickness = 8, uint8_t Padding = 6, uint16_t Delay = 1500);
+    void          SetOnTouch(void (*OnTouch)(EvScrollBox *Sender, const EvTouchEvent *Touch));
 
     virtual EvObj *Touching(const EvTouchEvent *Touch);
     virtual void  Draw(void);
@@ -38,6 +40,8 @@ class EvScrollBox : public EvPanel
     int16_t       mSpeedY;
     uint16_t      mPageWidth;
     uint16_t      mPageHeight;
+    int16_t       mPageOffsetX;
+    int16_t       mPageOffsetY;
     uint8_t       mBarThickness;
     uint8_t       mBarPadding;
     bool          mTouchFlag;
@@ -57,6 +61,8 @@ class EvScrollBox : public EvPanel
 
     static void   sOnChangeScrollBarX(EvScrollBar *Sender, int32_t Value);
     static void   sOnChangeScrollBarY(EvScrollBar *Sender, int32_t Value);
+
+    void          (*mOnTouch)(EvScrollBox *Sender, const EvTouchEvent *Touch);
 
   public:
     static EvScrollBox *Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ | CONTROL_OBJ);

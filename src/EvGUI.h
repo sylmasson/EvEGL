@@ -47,6 +47,7 @@ class       EvPixelBox;
 class  			EvPlayer;
 class       EvSmeter;
 class  			EvVideo;
+class  			EvViewer;
 class       EvVuBar;
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -92,6 +93,7 @@ class       EvVuBar;
 #include    <include/EvPixelBox.h>
 #include  	<include/EvPlayer.h>
 #include		<include/EvVideo.h>
+#include		<include/EvViewer.h>
 #include    <include/EvVuBar.h>
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

@@ -26,18 +26,18 @@
 
 EvNumInt  *EvNumInt::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag, uint16_t State)
 {
-  EvNumInt  *num = nullptr;
+  EvNumInt  *obj = nullptr;
 
-  if (Dest != nullptr && (num = (EvNumInt *)EvObj::TryCreate(new EvNumInt(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvNumInt" : Tag, State), Dest)) != nullptr)
+  if (Dest != nullptr && (obj = (EvNumInt *)EvObj::TryCreate(new EvNumInt(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvNumInt" : Tag, State), Dest)) != nullptr)
   {
-    num->TextFont(25);
-    num->TextPadding(5, 0);
-    num->TextAlign(RIGHT_CENTER);
-    num->BdShape(FIXED_CORNERS);
-    num->SetValue(0);
+    obj->TextFont(25);
+    obj->TextPadding(5, 0);
+    obj->TextAlign(RIGHT_CENTER);
+    obj->BdShape(FIXED_CORNERS);
+    obj->SetValue(0);
   }
 
-  return num;
+  return obj;
 }
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -72,6 +72,7 @@ EvNumInt  *EvNumInt::Create(int16_t Left, int16_t Top, int32_t Value, const EvNu
     obj->mBdRadius = Src->mBdRadius;
     obj->mBdWidth = Src->mBdWidth;
     obj->mBdColor = Src->mBdColor;
+    obj->mTurnOver = Src->mTurnOver;
     obj->mFormat = Src->mFormat;
     obj->mMin = Src->mMin;
     obj->mMax = Src->mMax;
@@ -90,7 +91,9 @@ EvNumInt::EvNumInt(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, E
   mMin(0),
   mMax(1000),
   mInc(0),
+  mBusy(false),
   mSkipUp(false),
+  mTurnOver(false),
   mFormat("%ld"),
   mOnTouch(nullptr),
   mOnChange(nullptr)
@@ -108,6 +111,37 @@ EvNumInt::EvNumInt(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, E
 int32_t     EvNumInt::Value(void)
 {
   return mValue;
+}
+
+/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *
+ * @brief      Increment the value of the NumInt.
+ * 
+ * If the Value is changed, the OnChange callback function is called.
+ * 
+ * Define OnChange callback function with SetOnChange function.
+ *
+ * @param[in]  Inc     The increment value of the NumInt.
+ * 
+ * @return     true if the value is changed, otherwise returns false.
+ * 
+ * @see        SetOnChange
+ * 
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+bool        EvNumInt::IncValue(int32_t Inc)
+{
+  int32_t   value = mValue + Inc;
+
+  if (mTurnOver)
+  {
+    if (Inc < 0 && value < mMin)
+      value += mMax - mMin + 1;
+    else if (Inc > 0 && value > mMax)
+      value -= mMax - mMin + 1;
+  }
+
+  return SetValue(value);
 }
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -133,15 +167,30 @@ bool        EvNumInt::SetValue(int32_t Value)
   else if (Value > mMax)
     Value = mMax;
 
-  if (mValue == Value || mFormat == nullptr)
+  if (mValue == Value || mFormat == nullptr || mBusy)
     return false;
 
+  mBusy = true;
   printValue(mValue = Value);
 
   if (mOnChange != nullptr)
     mOnChange(this, Value);
 
+  mBusy = false;
   return true;
+}
+
+/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *
+ * @brief      Set or Clear the TurnOver flag.
+ * 
+ * @param[in]  TurnOver   The TurnOver flag value.
+ * 
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+void        EvNumInt::SetTurnOver(bool TurnOver)
+{
+  mTurnOver = TurnOver;
 }
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -235,13 +284,13 @@ void        EvNumInt::touchEvent(const EvTouchEvent *Touch)
       {
         mInc = -1;
         bdColor = BD_DEC_COLOR;
-        delta = ((relY - mHeight) > 25) ? 25 : relY - mHeight;
+        delta = ((relY - mHeight) > 75) ? 75 : relY - mHeight;
       }
       else if (relY < 0)
       {
         mInc = 1;
         bdColor = BD_INC_COLOR;
-        delta = (relY < -25) ? 25 : -relY;
+        delta = (relY < -75) ? 75 : -relY;
       }
       else
       {
@@ -250,29 +299,7 @@ void        EvNumInt::touchEvent(const EvTouchEvent *Touch)
         bdColor = BD_SEL_COLOR;
       }
 
-/*      if (relX < 0)
-      {
-        mInc = -1;
-        bdColor = BD_DEC_COLOR;
-        delta = (relX <= -25) ? 25 : -relX;
-      }
-      else if (relX > mWidth)
-      {
-        mInc = 1;
-        bdColor = BD_INC_COLOR;
-        delta = ((relX - mWidth) > 25) ? 25 : relX - mWidth;
-      }
-      else
-      {
-        mInc = 0;
-        delta = 0;
-        bdColor = BD_SEL_COLOR;
-      } */
-
-      if (delta == 25)
-        mInc *= 2;
-
-      Touch->repeatDelay = 250 - (delta << 3);
+      Touch->repeatDelay = 333 - (delta << 2);
       BdColor(bdColor);
       Touch->event = 0;
       break;
@@ -284,13 +311,13 @@ void        EvNumInt::touchEvent(const EvTouchEvent *Touch)
       break;
 
     case TOUCH_REPEAT:
-      SetValue(mValue + mInc);
+      IncValue(mInc);
       Touch->event = 0;
       break;
 
     case TOUCH_END:
       if (!mSkipUp && (uint16_t)relX <= mWidth && (uint16_t)relY <= mHeight)
-        SetValue(mValue + (relX < mWidth / 2 ? -1 : 1));
+        IncValue(relX < mWidth / 2 ? -1 : 1);
 
     case TOUCH_CANCEL:
       BdWidth(0);

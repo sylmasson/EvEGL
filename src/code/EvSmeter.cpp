@@ -24,15 +24,11 @@ EvSmeter::EvSmeter(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, E
     abortCreate();
   else
   {
-/*    mValue = 0;
-    mAngle = 0;
-    mLock = false;*/
     mBG->SetMode(RESIZE_PROPORTIONAL, BILINEAR);
     mNeedle->SetMode(RESIZE_PROPORTIONAL, BILINEAR);
     mNeedle->RotateAround(sSmeterNeedle.Width / 2, sSmeterNeedle.Height - 6);
     BgColor(RGB555(0, 0, 0));
     resizeEvent();
-//    SetOnTouch(nullptr);
     SetValue(-1000);
   }
 }
@@ -91,11 +87,11 @@ EvNeedle::EvNeedle(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, E
 
 void        EvNeedle::drawEvent(void)
 {
-  Disp->ScissorSize(mView.w, mView.h - (17 * mScaleY));
+  Disp->ScissorSize(mView.w, mView.h - (17 * mScale));
   drawSetup();
   Disp->ColorRGB(RGB555(255, 255, 255));
   Disp->ColorA(64);
-  Disp->Vertex2ii(0, 20 * mScaleY);
+  Disp->Vertex2ii(0, 20 * mScale);
   Disp->ColorA(255);
   Disp->Vertex2f(0, 0);
 }

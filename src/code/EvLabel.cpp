@@ -100,7 +100,8 @@ EvLabel     *EvLabel::Create(int16_t Left, int16_t Top, const char *Label, const
     obj->mBdRadius = Src->mBdRadius;
     obj->mBdWidth = Src->mBdWidth;
     obj->mBdColor = Src->mBdColor;
-    obj->mWidth = obj->TextWidth(Label);
+    if ((obj->mStyle.align & 3) == 0)
+      obj->mWidth = obj->TextWidth(Label);
     obj->SetView();
   }
 

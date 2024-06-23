@@ -106,7 +106,7 @@ void        EvTextBox::TextClear(void)
 {
   Unselect();
   mLabel = "";
-  mOffsetX = 0;
+  mPanelOffsetX = 0;
   mCursorIndex = 0;
   SetEditedText();
 }
@@ -118,7 +118,7 @@ void        EvTextBox::TextLabel(const char *Label)
   TextClear();
   write((const uint8_t *)Label, strlen(Label));
   mCursorIndex = 0;
-  mOffsetX = 0;
+  mPanelOffsetX = 0;
 }
 
 /// @copydoc EvObj::TextLabel()
@@ -326,7 +326,7 @@ size_t      EvTextBox::write(const uint8_t *Buffer, size_t Count)
 
 void        EvTextBox::selectWord(const EvTouchEvent *Touch)
 {
-  int16_t   c, x = textLeft() + mOffsetX;
+  int16_t   c, x = textLeft() + mPanelOffsetX;
   uint16_t  ind = 0, length = mLabel.length();
 
   Unselect();
@@ -363,7 +363,7 @@ void        EvTextBox::selectWord(const EvTouchEvent *Touch)
 
 void        EvTextBox::moveToWord(const EvTouchEvent *Touch)
 {
-  int16_t   c, x = textLeft() + mOffsetX;
+  int16_t   c, x = textLeft() + mPanelOffsetX;
   uint16_t  ind = 0, length = mLabel.length();
 
   Unselect();
@@ -394,7 +394,7 @@ void        EvTextBox::moveToWord(const EvTouchEvent *Touch)
 
 void        EvTextBox::moveToChar(const EvTouchEvent *Touch)
 {
-  int16_t   x = textLeft() + mOffsetX;
+  int16_t   x = textLeft() + mPanelOffsetX;
   uint16_t  length = mLabel.length();
 
   if (mSelectCount)
@@ -425,12 +425,12 @@ void        EvTextBox::moveCursor(void)
   y = textTop() - ((cursorHeight - textHeight) / 2);
   x = textLeft() + w;
 
-  if (x + mOffsetX < mStyle.padX)
-    mOffsetX = -w;
-  else if (x + mOffsetX > mWidth - mStyle.padX)
-    mOffsetX = mWidth - w - (mStyle.padX * 2) - 1;
+  if (x + mPanelOffsetX < mStyle.padX)
+    mPanelOffsetX = -w;
+  else if (x + mPanelOffsetX > mWidth - mStyle.padX)
+    mPanelOffsetX = mWidth - w - (mStyle.padX * 2) - 1;
 
-  Cursor->MoveTo(x + mOffsetX, y);
+  Cursor->MoveTo(x + mPanelOffsetX, y);
   Cursor->ReSize(cursorWidth, cursorHeight);
   ClrMoveCursor();
 }
@@ -489,10 +489,10 @@ void        EvTextBox::drawEvent(void)
     int16_t   x = textLeft() + TextWidth(str, mStyle.font, mSelectBegin);
     int16_t   w = TextWidth(str + mSelectBegin, mStyle.font, mSelectCount);
 
-    FillRectangle(x + mOffsetX, textTop(), w, TextHeight(), SELECT_COLOR);
+    FillRectangle(x + mPanelOffsetX, textTop(), w, TextHeight(), SELECT_COLOR);
   }
 
-  DrawText(mOffsetX, 0, mWidth, mHeight, c_str(Label));
+  DrawText(mPanelOffsetX, 0, mWidth, mHeight, c_str(Label));
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -549,7 +549,7 @@ void        EvTextBox::lostKbdFocusEvent(void)
   BdColor(BD_COLOR);
   TextAlign(mAlign);
   mCursorIndex = 0;
-  mOffsetX = 0;
+  mPanelOffsetX = 0;
 
   if (mOnLostKbdFocus != nullptr)
     mOnLostKbdFocus(this);

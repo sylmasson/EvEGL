@@ -709,6 +709,27 @@ bool        EvObj::IsOnKbdFocus(void)
   return GetKbdFocus() == this;
 }
 
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+uint16_t    EvObj::TouchCnt(void)
+{
+  return mTouchCnt;
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+uint16_t    EvObj::TouchMax(void)
+{
+  return mTouchMax;
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+uint16_t    EvObj::TouchMax(uint16_t Max)
+{
+  return mTouchMax = (Max > 5) ? 5 : Max;
+}
+
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
  * @brief      Sets the Object as visible.
@@ -1369,13 +1390,6 @@ void        EvObj::TouchEnd(void)
 {
   if (mTouchCnt > 0)
     mTouchCnt--;
-}
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-void        EvObj::TouchMax(uint8_t Max)
-{
-  mTouchMax = (Max > 5) ? 5 : Max;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

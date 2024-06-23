@@ -19,14 +19,18 @@
 #define     EV_TRANSPARENT  ((uint16_t)0)
 #define     EV_BLACK        RGB555(  0,   0,   0)
 #define     EV_WHITE        RGB555(255, 255, 255)
+#define     EV_WHITE_SMOKE  RGB555(245, 245, 245)
 #define     EV_RED          RGB555(255,   0,   0)
 #define     EV_LIME         RGB555(  0, 255,   0)
 #define     EV_BLUE         RGB555(  0,   0, 255)
 #define     EV_YELLOW       RGB555(255, 255,   0)
 #define     EV_CYAN         RGB555(  0, 255, 255)
 #define     EV_MAGENTA      RGB555(255,   0, 255)
-#define     EV_SILVER       RGB555(192, 192, 192)
+#define     EV_DIM_GRAY     RGB555(105, 105, 105)
 #define     EV_GRAY         RGB555(128, 128, 128)
+#define     EV_DARK_GRAY    RGB555(169, 169, 169)
+#define     EV_SILVER       RGB555(192, 192, 192)
+#define     EV_LIGHT_GRAY   RGB555(211, 211, 211)
 #define     EV_MAROON       RGB555(128,   0,   0)
 #define     EV_OLIVE        RGB555(128, 128,   0)
 #define     EV_GREEN        RGB555(  0, 128,   0)
@@ -319,7 +323,7 @@
 #define     EV_BITMAP_LAYOUT(fmt,ls,h)     ((0x07UL << 24) | (((fmt) & 0x1F) << 19) | (((ls) & 0x3FF) << 9) | ((h) & 0x1FF))
 #define     EV_BITMAP_LAYOUT_H(ls,h)       ((0x28UL << 24) | (((ls) >> 10) << 2) | (((h) >> 9) & 3))
 #define     EV_BITMAP_SIZE(ft,wx,wy,w,h)   ((0x08UL << 24) | (((ft) & 1) << 20) | (((wx) & 1) << 19) | (((wy) & 1) << 18) | (((w) & 0x1FF) << 9) | ((h) & 0x1FF))
-#define     EV_BITMAP_SIZE_H(w,h)          ((0x29UL << 24) | (((w) >> 9) << 2) | (((h) >> 9) & 3))
+#define     EV_BITMAP_SIZE_H(w,h)          ((0x29UL << 24) | ((((w) >> 9) & 3) << 2) | (((h) >> 9) & 3))
 #define     EV_BITMAP_SOURCE(addr)         ((0x01UL << 24) | ((addr) & 0xFFFFFF))
 #define     EV_BITMAP_SWIZZLE(r,g,b,a)     ((0x2FUL << 24) | ((((r) & 7) << 9) | (((g) & 7) << 6) | (((b) & 7) << 3) | ((a) & 7)))
 #define     EV_BITMAP_TRANSFORM_A(coeff)   ((0x15UL << 24) | ((coeff) & 0x3FFFF))
@@ -426,7 +430,6 @@ class EvEVE : public EvSPI
     // Display list command supported
     void          AlphaFunc(uint8_t Func, uint8_t Ref);
     void          Begin(uint8_t Prim);
-    void          BitmapExtFormat(uint16_t Format);
     void          BitmapHandle(uint8_t Handle);
     void          BitmapLayout(uint8_t Format, uint16_t Width, uint16_t Height);
     void          BitmapSize(uint8_t Filter, uint8_t WrapX, uint8_t WrapY, uint16_t Width, uint16_t Height);

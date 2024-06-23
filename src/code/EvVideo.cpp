@@ -353,9 +353,9 @@ void        EvVideo::refreshEvent(void)
   {
     if (mSkip)
       mSkip--;
-    else if (mCtrl & (VIDEO_RUN | VIDEO_LOAD))
+    else if (mCtrl & (VIDEO_RUN | VIDEO_LOAD) && loadFrame() == true)
     {
-      if (loadFrame() == false || mFrame.Nbr >= mAviInfo.FrameCount || mSpeed == 0)
+      if (mFrame.Nbr >= mAviInfo.FrameCount || mSpeed == 0)
         mCtrl = 0;
       else
       {

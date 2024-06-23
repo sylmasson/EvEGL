@@ -34,7 +34,7 @@ class       EvObj;
 struct EvBmp
 {
   uint8_t         Format;     // 0 = RAW, 1 = JPEG, 2 = ZIP, 3 = PNG
-  uint8_t         Layout;     // Layout of Bitmap
+  uint8_t         Layout;     // Layout of Bitmap (31-44 must be translate to 37808-37821 EXT_FORMAT)
   uint16_t        Width;      // Width of Bitmap
   uint16_t        Height;     // Height of Bitmap
   uint16_t        PalSize;    // Palette size (Included at start of compressed data)

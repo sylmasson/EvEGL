@@ -3,8 +3,6 @@
 
 // #define     VERBOSE
 
-#define     SCALE_LIMIT(x)      ((x < 0.01) ? 0.01 : x)
-
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
  * @brief      Create a new instance of the standard Image.
@@ -37,13 +35,15 @@ EvImage::EvImage(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvD
   mResizeLock(false),
   mResizeMode(RESIZE_PROPORTIONAL | RESIZE_ON_LOAD),
   mFilterMode(NEAREST),
-  mOffsetX(0),
-  mOffsetY(0),
+  mRed(255),
+  mGreen(255),
+  mBlue(255),
+  mShiftX(0),
+  mShiftY(0),
   mPivotX(0),
   mPivotY(0),
   mAngle(-1),
-  mScaleX(1.0),
-  mScaleY(1.0),
+  mScale(1.0),
   mLoadDMA(nullptr),
   mLoad(nullptr),
   mBmp(nullptr),
@@ -86,11 +86,16 @@ const EvBmp *EvImage::Load(const EvBmp *Bmp, uint32_t Options)
 {
   if (Bmp != nullptr && Bmp->Layout != PALETTED8)
   {
+    mScaleMax = 2045.0 / sqrt((Bmp->Width * Bmp->Width) + (Bmp->Height * Bmp->Height));
+
+    if (Bmp->Layout >= 31)
+      Options = 0;
+
     if (Options == 0)
       return (load(Bmp, Options));
 
     if (Options == OPT_MEDIAFIFO && mLoadDMA == nullptr)
-      if ((mLoadDMA = TaskDMA.Add(Disp, (uint8_t *)Bmp->Data, Bmp->DataSize, (void *)Bmp, (void *)this, onLoading)) != nullptr)
+      if ((mLoadDMA = TaskDMA.Add(Disp, (uint8_t *)Bmp->Data, Bmp->DataSize, (void *)Bmp, (void *)this, sOnLoading)) != nullptr)
         return Bmp;
   }
 
@@ -133,7 +138,7 @@ const EvBmp *EvImage::Load(const char *Filename, SDClass &Dev, uint32_t Options)
         EvOut->printf("\nReading file %s in %lu msec\n", Filename, millis() - msec);
       #endif
 
-      if (IsValidJPEG(data, fileSize, bmp, Filename) || IsValidPNG(data, fileSize, bmp, Filename))
+      if (IsValidJPEG(data, fileSize, bmp, Filename) || IsValidPNG(data, fileSize, bmp, Filename) || IsValidASTC(data, fileSize, bmp, Filename))
       {
         #ifdef  VERBOSE
           EvOut->printf("Width = %u Height = %u\n", bmp->Width, bmp->Height);
@@ -172,42 +177,36 @@ void        EvImage::ModifiedCoeff(void)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvImage::Scale(float ScaleXY)
+float       EvImage::Scale(float Scale)
 {
-  float     scale = SCALE_LIMIT(ScaleXY);
+  if (Scale < 0.1)
+    Scale = 0.1;
+  else if (Scale > mScaleMax)
+    Scale = mScaleMax;
 
-  if (mScaleX != scale || mScaleY != scale)
+  if (mScale != Scale)
   {
-    mScaleX = scale;
-    mScaleY = scale;
+    mScale = Scale;
     ModifiedCoeff();
+    refreshEvent();
   }
+
+  return mScale;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvImage::ScaleX(float Scale)
+float       EvImage::ScaleToFit(uint16_t Width, uint16_t Height)
 {
-  float     scale = SCALE_LIMIT(Scale);
-
-  if (mScaleX != scale)
+  if (mBmp != nullptr && mBmp->Width != 0 && mBmp->Height != 0)
   {
-    mScaleX = scale;
-    ModifiedCoeff();
+    float   scaleW = (float)(Width - 1) / mBmp->Width;
+    float   scaleH = (float)(Height - 1) / mBmp->Height;
+
+    Scale((scaleH > scaleW) ? scaleW : scaleH);
   }
-}
 
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-void        EvImage::ScaleY(float Scale)
-{
-  float     scale = SCALE_LIMIT(Scale);
-
-  if (mScaleY != scale)
-  {
-    mScaleY = scale;
-    ModifiedCoeff();
-  }
+  return mScale;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -217,7 +216,7 @@ void        EvImage::Rotate(float A)
   if (mAngle != A)
   {
     mAngle = A;
-    A *= M_PI / 180.0;
+    A *= -M_PI / 180.0;
     mSinA = sin(A);
     mCosA = cos(A);
     ModifiedCoeff();
@@ -245,11 +244,11 @@ void        EvImage::RotateAround(int16_t X, int16_t Y)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvImage::RotateAround(int16_t X, int16_t Y, float A, float ScaleXY)
+void        EvImage::RotateAround(int16_t X, int16_t Y, float A, float Scale)
 {
-  Rotate(A);
-  Scale(ScaleXY);
   RotateAround(X, Y);
+  Rotate(A);
+  EvImage::Scale(Scale);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -258,6 +257,16 @@ void        EvImage::SetMode(uint8_t ResizeMode, uint8_t FilterMode)
 {
   mResizeMode = ResizeMode;
   mFilterMode = FilterMode;
+  Modified();
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+void        EvImage::SetColor(uint8_t Red, uint8_t Green, uint8_t Blue)
+{
+  mRed = Red;
+  mGreen = Green;
+  mBlue = Blue;
   Modified();
 }
 
@@ -278,12 +287,12 @@ void        EvImage::resize(void)
     int16_t right, bottom;
     int16_t x = mBmp->Width - 1;
     int16_t y = mBmp->Height - 1;
-    float   coeffA = mCosA * mScaleX;
-    float   coeffB = -mSinA * mScaleY;
-    float   coeffD = mSinA * mScaleX;
-    float   coeffE = mCosA * mScaleY;
-    float   coeffC = (mPivotX * mScaleX) - ((mPivotX * coeffA) + (mPivotY * coeffB));
-    float   coeffF = (mPivotY * mScaleY) - ((mPivotX * coeffD) + (mPivotY * coeffE));
+    float   coeffA = mCosA * mScale;
+    float   coeffB = -mSinA * mScale;
+    float   coeffD = mSinA * mScale;
+    float   coeffE = coeffA;
+    float   coeffC = (mPivotX * mScale) - ((mPivotX * coeffA) + (mPivotY * coeffB));
+    float   coeffF = (mPivotY * mScale) - ((mPivotX * coeffD) + (mPivotY * coeffE));
     int16_t corner[4][2] = {{0, 0}, {x, 0}, {x, y}, {0, y}};
 
     mResizeLock = true;
@@ -307,13 +316,13 @@ void        EvImage::resize(void)
     right = (right + 15) >> 4;
     bottom = (bottom + 15) >> 4;
 
-    x = mOffsetX;
-    y = mOffsetY;
-    mOffsetX = left;
-    mOffsetY = top;
+    x = mShiftX;
+    y = mShiftY;
+    mShiftX = left;
+    mShiftY = top;
 
     ReSize(right - left + 1, bottom - top + 1);
-    MoveRel(mOffsetX - x, mOffsetY - y);
+    MoveRel(mShiftX - x, mShiftY - y);
     mResizeLock = false;
   }
 }
@@ -355,7 +364,7 @@ void        EvImage::drawEvent(void)
   if (mBmp != nullptr)
   {
     drawSetup();
-    Disp->ColorRGB(RGB555(255, 255, 255));
+    Disp->ColorRGB(mRed, mGreen, mBlue);
     Disp->Vertex2f(0, 0);
   }
 }
@@ -374,25 +383,13 @@ void        EvImage::resizeEvent(void)
         mResizeLock = false;
         break;
 
-      case RESIZE_STRETCH:
-        ScaleX((float)mWidth / mBmp->Width);
-        ScaleY((float)mHeight / mBmp->Height);
-        break;
-
       case RESIZE_PROPORTIONAL:
-        float   widthRatio = (float)mWidth / mBmp->Width;
-        float   heightRatio = (float)mHeight / mBmp->Height;
+        float   scaleW = (float)mWidth / mBmp->Width;
+        float   scaleH = (float)mHeight / mBmp->Height;
 
-        if (widthRatio > heightRatio)
-        {
-          mWidth = mBmp->Width * heightRatio;
-          Scale(heightRatio);
-        }
-        else
-        {
-          mHeight = mBmp->Height * widthRatio;
-          Scale(widthRatio);
-        }
+        Scale((scaleW > scaleH) ? scaleH : scaleW);
+        mWidth = mBmp->Width * mScale;
+        mHeight = mBmp->Height * mScale;
         break;
     }
 
@@ -409,19 +406,13 @@ void        EvImage::refreshEvent(void)
     float   pivotX, pivotY;
 
     resize();
-    pivotX = mPivotX - (mOffsetX / mScaleX);
-    pivotY = mPivotY - (mOffsetY / mScaleY);
-    mCoeff[0] = s15f16(mCosA / mScaleX);
-    mCoeff[1] = s15f16(mSinA / mScaleX);
+    pivotX = mPivotX - (mShiftX / mScale);
+    pivotY = mPivotY - (mShiftY / mScale);
+    mCoeff[1] = s15f16(mSinA / mScale);
     mCoeff[2] = s15f16(mPivotX - ((pivotX * mCosA) + (pivotY * mSinA)));
-    mCoeff[3] = s15f16(-mSinA / mScaleY);
-    mCoeff[4] = s15f16(mCosA  / mScaleY);
+    mCoeff[3] = s15f16(-mSinA / mScale);
+    mCoeff[4] = mCoeff[0] = s15f16(mCosA / mScale);
     mCoeff[5] = s15f16(mPivotY - ((pivotX * -mSinA) + (pivotY * mCosA)));
-
-//  --> mCoeff[2] and mCoeff[5] valid only when mScaleX equal mScaleY
-
-//  EvOut->printf("coeffC = %d - ((%d + %.3f) * %.3f) - ((%d + %.3f) * %.3f) = %.3f\n", mPivotX, mPivotX, offsetX, mCosA, mPivotY, offsetY, mSinA, (float)(mCoeff[2]) / 65536.0);
-//  EvOut->printf("coeffF = %d - ((%d + %.3f) * %.3f) - ((%d + %.3f) * %.3f) = %.3f\n", mPivotY, mPivotX, offsetX, -mSinA, mPivotY, offsetY, mCosA, (float)(mCoeff[5]) / 65536.0);
 
     mRefreshCoeff = false;
     Modified();
@@ -448,12 +439,12 @@ const EvBmp *EvImage::load(const EvBmp *Bmp, uint32_t Options)
     {
       ReSize(Bmp->Width, Bmp->Height);
       RotateAround(Bmp->Width >> 1, Bmp->Height >> 1, 0.0, 1.0);
-      SetMode(RESIZE_PROPORTIONAL | RESIZE_ON_LOAD, NEAREST);
+      SetMode(RESIZE_PROPORTIONAL | RESIZE_ON_LOAD, BILINEAR);
     }
 
     Modified();
     mBmp = Bmp;
-    return Bmp;
+    return mBmp;
   }
 
   return nullptr;
@@ -461,7 +452,7 @@ const EvBmp *EvImage::load(const EvBmp *Bmp, uint32_t Options)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvImage::onLoading(EvDMA *Data)
+void        EvImage::sOnLoading(EvDMA *Data)
 {
   EvImage   *Sender = (EvImage *)Data->Sender;
 
@@ -655,6 +646,104 @@ bool        IsValidPNG(const uint8_t *Data, uint32_t DataSize, EvBmp *Bmp, const
 
         return true;
       }
+    }
+  }
+
+  return false;
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+bool        IsValidASTC(uint8_t *Data, uint32_t DataSize, EvBmp *Bmp, const char *Tag)
+{
+  uint16_t    i, texelX, texelY;
+  uint32_t    width, height, length;
+  uint8_t     layout, block_x, block_y;
+  static const char magicNumber[4] = {0x13, 0xAB, 0xA1, 0x5C};
+
+  struct ASTC_HEADER
+  {
+    uint8_t   magic[4];
+    uint8_t   block_x;
+    uint8_t   block_y;
+    uint8_t   block_z;
+    uint8_t   dim_x[3];
+    uint8_t   dim_y[3];
+    uint8_t   dim_z[3];
+  } *astc = (ASTC_HEADER *)Data;
+
+  struct TEXEL
+  {
+    uint64_t  lsb;
+    uint64_t  msb;
+  } *texel, *buf;
+
+  if (DataSize >= sizeof(ASTC_HEADER) && memcmp(astc->magic, magicNumber, sizeof(magicNumber)) == 0) // Check magicNumber
+  {
+    #ifdef  VERBOSE
+      EvOut->print("ASTC file signature found\n");
+    #endif
+
+    block_x = astc->block_x;
+    block_y = astc->block_y;
+    width = astc->dim_x[0] + (astc->dim_x[1] << 8) + (astc->dim_x[2] << 16);
+    height = astc->dim_y[0] + (astc->dim_y[1] << 8) + (astc->dim_y[2] << 16);
+
+    switch (block_x)
+    {
+      case 4:  layout = (block_y == 4) ? 31 : 0; break;
+      case 5:  layout = (block_y == 4) ? 32 : ((block_y == 5) ? 33 : 0); break;
+      case 6:  layout = (block_y == 5) ? 34 : ((block_y == 6) ? 35 : 0); break;
+      case 8:  layout = (block_y == 5) ? 36 : ((block_y == 6) ? 37 : ((block_y == 8) ? 38 : 0)); break;
+      case 10: layout = (block_y == 5) ? 39 : ((block_y == 6) ? 40 : ((block_y == 8) ? 41 : ((block_y == 10) ? 42 : 0))); break;
+      case 12: layout = (block_y == 10) ? 43 : ((block_y == 12) ? 44 : 0); break;
+      default: layout = 0; break;
+    }
+
+    if (layout == 0 || astc->block_z != 1 || astc->dim_z[0] != 1 || astc->dim_z[1] != 0 || astc->dim_z[2] != 0)
+      return false;
+
+    Data += sizeof(ASTC_HEADER);
+    DataSize -= sizeof(ASTC_HEADER);
+    texelX = (width + block_x - 1) / block_x;
+    texelY = (height + block_y - 1) / block_y;
+    length = texelX * texelY * 16;
+
+    if (length == DataSize && (buf = (TEXEL *)malloc(texelX * 2 * sizeof(TEXEL))) != nullptr)
+    {
+      // bitmap texel remapping according to EVE decoder (2x2 tiles)
+
+      for (texel = (TEXEL *)Data; texelY >= 2; texelY -= 2)
+      {
+        memcpy(buf, texel, texelX * 2 * sizeof(TEXEL));
+
+        for (i = 0; i < (texelX & ~1); texel += 4)
+        {
+          texel[0] = buf[i];
+          texel[1] = buf[texelX + i++];
+          texel[2] = buf[texelX + i];
+          texel[3] = buf[i++];
+        }
+
+        if (i < texelX)
+        {
+          texel[0] = buf[i];
+          texel[1] = buf[texelX + i];
+          texel += 2;
+        }
+      }
+
+      Bmp->Format = RAW_DATA;
+      Bmp->Layout = layout;
+      Bmp->Width = width;
+      Bmp->Height = height;
+      Bmp->PalSize = 0;
+      Bmp->BmpSize = DataSize;
+      Bmp->DataSize = DataSize;
+      Bmp->Data = Data;
+      Bmp->Tag = Tag;
+      free(buf);
+      return true;
     }
   }
 
