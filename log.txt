@@ -1,3 +1,21 @@
+commit 175d36443bc0af0a29e2b307eb651518cbf32c59
+Author: Sylvain Masson <sylvainmasson@Sylvains-Mac-mini.local>
+Date:   Sun Jun 23 09:58:30 2024 -0400
+
+    EvViewer: New class allowing you to view, enlarge and rotate an image
+    
+    EvImage: Add SetColor method in addition to supporting ASTC file
+    
+    EvEVE: Change BitmapLayout to support ASTC format
+    
+    EvPanel: Rename mOffsetX/Y member to mPanelOffsetX/Y
+    
+    EvScrollBar: Add Change flag to the SetValue method
+    
+    EvNumInt: Add the IncValue and SetTurnOver method
+    
+    EvNumLabel, EvSlider: Add a Create method with the properties of an object of the same class
+
 commit 885a42bead7ae805e1a26d49c7f818b65026f9e1
 Author: Sylvain Masson <sylvainmasson@Sylvains-Mac-mini.local>
 Date:   Fri Apr 26 08:52:21 2024 -0400
