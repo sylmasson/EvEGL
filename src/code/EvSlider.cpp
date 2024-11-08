@@ -4,10 +4,6 @@
 #define     KNOB_TAG        100
 #define     SLIDER_DELAY    150
 
-#define     COLOR_LOWER     RGB555(  0,   0, 160)
-#define     COLOR_UPPER     RGB555(210, 210, 210)
-#define     COLOR_KNOB      RGB555(255, 255, 255)
-
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
  * @brief      Create a new instance of a standard **EvSlider**.
@@ -100,9 +96,9 @@ EvSlider::EvSlider(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, E
   mMax(100),
   mSetPoint(0),
   mSliderDelay(SLIDER_DELAY * 1000L),
-  mColorLower(COLOR_LOWER),
-  mColorUpper(COLOR_UPPER),
-  mColorKnob(COLOR_KNOB),
+  mColorLower(CL_SLIDER_LOWER),
+  mColorUpper(CL_SLIDER_UPPER),
+  mColorKnob(CL_SLIDER_KNOB),
   mTouchKnob(false),
   mBusy(false),
   mOnTouch(nullptr),
@@ -174,13 +170,8 @@ void        EvSlider::SetDelay(uint16_t Msec)
 
 void        EvSlider::SetColor(uint16_t ColorLower, uint16_t ColorUpper, uint16_t ColorKnob)
 {
-  if (mColorLower != ColorLower || mColorUpper != ColorUpper || mColorKnob != ColorKnob)
-  {
-    mColorLower = ColorLower;
-    mColorUpper = ColorUpper;
-    mColorKnob = ColorKnob;
+  if (mColorLower.Set(ColorLower) | mColorUpper.Set(ColorUpper) | mColorKnob.Set(ColorKnob))
     Modified();
-  }
 }
 
 /// @copydoc EvNumInt::SetRange()
@@ -228,25 +219,25 @@ void        EvSlider::drawEvent(void)
 
   if (mWidth >= mHeight)
   {
-    FillRectangle2f(8, y, (mWidth - 1) << 4, mThickness, mColorUpper, radius);
-    FillRectangle2f(8, y, knobPos + (mKnobSize >> 1), mThickness, mColorLower, radius);
+    FillRectangle2f(8, y, (mWidth - 1) << 4, mThickness, mColorUpper.Get(), radius);
+    FillRectangle2f(8, y, knobPos + (mKnobSize >> 1), mThickness, mColorLower.Get(), radius);
     Disp->TagValue(KNOB_TAG);
-    FillRectangle2f(knobPos, 0, mKnobSize, mSliderWidth, mColorKnob, mBdRadius, border, mColorUpper);
+    FillRectangle2f(knobPos, 0, mKnobSize, mSliderWidth, mColorKnob.Get(), mBdRadius, border, mColorUpper.Get());
   }
   else
   {
     y = (mHeight << 4) - knobPos - (mKnobSize >> 1);
-    FillRectangle2f(x, 8, mThickness, (mHeight - 1) << 4, mColorUpper, radius);
-    FillRectangle2f(x, y, mThickness, ((mHeight - 1) << 4) - y, mColorLower, radius);
+    FillRectangle2f(x, 8, mThickness, (mHeight - 1) << 4, mColorUpper.Get(), radius);
+    FillRectangle2f(x, y, mThickness, ((mHeight - 1) << 4) - y, mColorLower.Get(), radius);
     Disp->TagValue(KNOB_TAG);
-    FillRectangle2f(0, y - (mKnobSize >> 1), mSliderWidth, mKnobSize, mColorKnob, mBdRadius, border, mColorUpper);
+    FillRectangle2f(0, y - (mKnobSize >> 1), mSliderWidth, mKnobSize, mColorKnob.Get(), mBdRadius, border, mColorUpper.Get());
   }
 
   if (!IsEnabled())
   {
     Disp->ColorA(150);
     Disp->StencilFunc(GREATER, 0, 255);
-    FillRectangle(0, 0, mWidth, mHeight, RGB555(230, 230, 230), mBdRadius);
+    FillRectangle(0, 0, mWidth, mHeight, CL_WHITE_SMOKE, mBdRadius);
   }
 }
 

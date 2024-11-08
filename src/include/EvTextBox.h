@@ -16,6 +16,7 @@ class EvTextBox : public EvPanel
     void          TextLabel(const char *Label);
     void          TextLabel(const String &Label);
     void          SetMaxLength(uint16_t MaxLength);
+    void          SetColor(uint16_t ColorBd, uint16_t ColorBdFocus = CL_TEXTBOX_FOCUS, uint16_t ColorTextSelect = CL_TEXTBOX_SELECT);
     void          SetOnTouch(void (*OnTouch)(EvTextBox *Sender, const EvTouchEvent *Touch));
     void          SetOnChange(void (*OnChange)(EvTextBox *Sender, const String &Str));
     void          SetOnReturn(void (*OnChange)(EvTextBox *Sender, const String &Str));
@@ -49,6 +50,9 @@ class EvTextBox : public EvPanel
     uint8_t       mFlags;
     uint8_t       mAlign;
     uint16_t      mMaxLength;
+    color16       mColorBd;
+    color16       mColorBdFocus;
+    color16       mColorTextSelect;
     uint16_t      mCursorIndex;
     int16_t       mSelectBegin;
     int16_t       mSelectCount;

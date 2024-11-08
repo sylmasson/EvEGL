@@ -41,8 +41,8 @@ EvTextBlock::EvTextBlock(int16_t Left, int16_t Top, uint16_t Width, uint16_t Hei
   TextFont(24);
   TextPadding(5, 5);
   TextAlign(LEFT_CENTER);
-  TextColor(RGB555(0, 0, 0));
-  BgColor(RGB555(255, 255, 255));
+  TextColor(CL_DEFAULT_TEXT);
+  BgColor(CL_PANEL_BG);
   BdShape(FIXED_CORNERS);
 }
 
@@ -211,7 +211,7 @@ void        EvTextBlock::drawEvent(void)
 
   for (y = mPanelOffsetY + (line * lineHeight) + mStyle.padY; y < mHeight && line < mLinesCount; y += lineHeight, line++)
     if (line >= 0)
-      DrawText(mPanelOffsetX, y, mPageWidth, lineHeight, c_str(getLine(line)), mStyle.color, mStyle.font, (mStyle.align & 3) | 4, mStyle.padX, 0);
+      DrawText(mPanelOffsetX, y, mPageWidth, lineHeight, c_str(getLine(line)), mStyle.color.Get(), mStyle.font, (mStyle.align & 3) | 4, mStyle.padX, 0);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

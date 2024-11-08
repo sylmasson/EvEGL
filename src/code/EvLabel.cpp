@@ -27,6 +27,7 @@ EvLabel     *EvLabel::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t
   if (Dest != nullptr && (obj = (EvLabel *)EvObj::TryCreate(new EvLabel(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvLabel" : Tag, State), Dest)) != nullptr)
   {
     obj->TextLabel(obj->Tag);
+    obj->TextColor(CL_LABEL_TEXT);
     obj->TextAlign(RIGHT_CENTER);
   }
 
@@ -59,6 +60,7 @@ EvLabel     *EvLabel::Create(int16_t Left, int16_t Top, const char *Label, uint8
   {
     obj->TextFont(Font);
     obj->TextLabel(Label);
+    obj->TextColor(CL_LABEL_TEXT);
     obj->mHeight = 10 * ((obj->TextHeight(Font) + 5) / 10);
     obj->mWidth = obj->TextWidth(Label);
     obj->SetView();

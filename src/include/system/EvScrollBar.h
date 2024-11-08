@@ -46,7 +46,7 @@ class EvScrollBar : public EvObj
     bool          SetValue(int16_t Value, bool Wakeup, bool Change = false);
     void          SetScrollBarSync(EvScrollBar *ScrollBarSync);
     void          SetPageSize(uint16_t PageSize, uint16_t ViewSize);
-    void          SetBarColor(uint16_t ColorKnob, uint16_t ColorTouch, uint8_t Opacity = 128);
+    void          SetBarColor(uint16_t ColorKnob, uint8_t Opacity = 128);
     void          SetBarStyle(uint8_t Mode, uint8_t Padding = 6, uint16_t Delay = 1500);
     void          SetOnChange(void (*OnChange)(EvScrollBar *Sender, int32_t Value));
 
@@ -57,8 +57,7 @@ class EvScrollBar : public EvObj
     uint16_t      mPageSize;
     uint16_t      mViewSize;
     uint16_t      mDelay;
-    uint16_t      mColorKnob;
-    uint16_t      mColorTouch;
+    color16       mColorKnob;
     uint16_t      mKnobZone;
     uint16_t      mKnobSize;
     uint8_t       mOpacityKnob;

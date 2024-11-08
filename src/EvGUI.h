@@ -55,6 +55,7 @@ class       EvVuBar;
 #include    <SD.h>
 #include    <Arduino.h>
 
+#include    <include/system/EvColor.h>
 #include    <include/system/EvSerial.h>
 #include    <include/system/EvEVE.h>
 #include  	<include/system/EvDMA.h>
@@ -95,10 +96,6 @@ class       EvVuBar;
 #include		<include/EvVideo.h>
 #include		<include/EvViewer.h>
 #include    <include/EvVuBar.h>
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-extern EvTaskDMA  TaskDMA;
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 

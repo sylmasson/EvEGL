@@ -48,7 +48,7 @@ EvDisplay::EvDisplay(uint16_t Width, uint16_t Height, const char *Tag, const uin
 #endif
 
   Kbd = EvKbd::Create(0, 0, 0, 0, this, "KbdSystem", SYSTEM_OBJ);
-  BgColor(RGB555(0, 0, 0));
+  BgColor(CL_DISPLAY_BG);
   Rotate(rd8(REG_ROTATE));
   Brightness(64);
 }
@@ -152,6 +152,10 @@ bool        EvDisplay::Update(void)
   sUpdateTimer = usec;
   sFrameNumber++;
 
+  if (SystemColor.IsModified(true))
+    for (i = 0; i < sDispCount; i++)
+      sDispList[i]->ModifiedAll();
+
 #ifdef DEBUG
   digitalWrite(28, HIGH);
   sDispList[0]->update();
@@ -194,7 +198,7 @@ void        EvDisplay::update(void)
 
   Opacity(OPACITY_MAX);
   ColorA(255);
-  ClearColorRGB(EV_TRANSPARENT);
+  ClearColorRGB(CL_NOCOLOR);
   ClearStencil(0);
   ClearTag(255);
   Clear();

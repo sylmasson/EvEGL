@@ -91,8 +91,8 @@ struct EvTextStyle
   uint8_t     align;        ///< Text alignment. see EvObj::TextAlign()
   int8_t      padX;         ///< Horizontal text padding.
   int8_t      padY;         ///< Vertical text padding.
-  uint16_t    color;        ///< Normal text color.
-  uint16_t    color2;       ///< Second text color option. See object details.
+  color16     color;        ///< Normal text color.
+  color16     color2;       ///< Second text color option. See object details.
 };
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -133,7 +133,8 @@ class EvObj : public Stream
     void          BdRadius(uint16_t Radius);  // 1/16 pixel
     void          BdWidth(uint16_t Width);    // 1/16 pixel
     void          BdColor(uint16_t Color);
-    void          BgColor(uint16_t Color, uint8_t Alpha = 255);
+    void          BgColor(uint16_t Color);
+    void          BgColor(uint16_t Color, uint8_t Alpha);
     void          MoveRel(int16_t X, int16_t Y);
     void          MoveTo(int16_t Left, int16_t Top);
     void          MoveTo(EvPanel *Dest);
@@ -169,7 +170,8 @@ class EvObj : public Stream
     void          TextFont(uint8_t Font);
     void          TextAlign(uint8_t Align);
     void          TextPadding(int8_t X, int8_t Y);
-    void          TextColor(uint16_t Color, uint16_t Color2 = 0);
+    void          TextColor(uint16_t Color);
+    void          TextColor(uint16_t Color, uint16_t Color2);
     void          TextLabel(const char *Label);
     void          TextLabel(const String &Label);
     int16_t       TextHeight(uint8_t Font = 0);
@@ -225,12 +227,12 @@ class EvObj : public Stream
     uint8_t       mTouchCnt;
     uint8_t       mTouchMax;
 
-    uint16_t      mBgColor;
+    color16       mBgColor;
     uint8_t       mBgColorA;
     uint8_t       mBdShape;
     uint16_t      mBdRadius;  // 1/16 pixel
     uint16_t      mBdWidth;   // 1/16 pixel
-    uint16_t      mBdColor;
+    color16       mBdColor;
 
     String        mLabel;
     EvView        mView;

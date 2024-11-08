@@ -1,12 +1,6 @@
 
 #include    <EvGUI.h>
 
-#define     COLOR_CHECK     RGB555(  0,   0, 160)
-#define     COLOR_UNCHECK   RGB555(255, 255, 255)
-#define     COLOR_BORDER    RGB555(160, 160, 160)
-#define     COLOR_TEXT      RGB555(  0,   0,   0)
-#define     COLOR_TEXT_2    RGB555(150, 150, 150)
-
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
  * @brief      Create a new instance of a standard **EvCheckBox**.
@@ -33,7 +27,7 @@ EvCheckBox  *EvCheckBox::Create(int16_t Left, int16_t Top, uint16_t Width, uint1
   if (Dest != nullptr && (obj = (EvCheckBox *)EvObj::TryCreate(new EvCheckBox(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvCheckBox" : Tag, State), Dest)) != nullptr)
   {
     obj->TextLabel(obj->Tag);
-    obj->TextColor(COLOR_TEXT, COLOR_TEXT_2);
+    obj->TextColor(CL_CHECKBOX_TEXT, CL_CHECKBOX_TEXT2);
     obj->BdShape(RATIO_CORNERS);
   }
 
@@ -67,7 +61,7 @@ EvCheckBox  *EvCheckBox::Create(int16_t Left, int16_t Top, const char *Label, ui
     obj->TextFont(Font);
     obj->TextLabel(Label);
     obj->TextPadding(5, 0);
-    obj->TextColor(COLOR_TEXT, COLOR_TEXT_2);
+    obj->TextColor(CL_CHECKBOX_TEXT, CL_CHECKBOX_TEXT2);
     obj->mHeight = 10 * ((obj->TextHeight(Font) + 5) / 10);
     obj->mWidth = obj->TextWidth(Label) + obj->mHeight + obj->mStyle.padX + 10;
     obj->BdShape(RATIO_CORNERS);
@@ -125,9 +119,9 @@ EvCheckBox  *EvCheckBox::Create(int16_t Left, int16_t Top, const char *Label, co
 EvCheckBox::EvCheckBox(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) :
   EvObj(Left, Top, Width, Height, Disp, Tag, State),
   mValue(true),
-  mColorCheck(COLOR_CHECK),
-  mColorUncheck(COLOR_UNCHECK),
-  mColorBorder(COLOR_BORDER),
+  mColorCheck(CL_CHECKBOX_TRUE),
+  mColorUncheck(CL_CHECKBOX_FALSE),
+  mColorBorder(CL_CHECKBOX_BD),
   mTouchFlag(false),
   mOnTouch(nullptr),
   mOnChange(nullptr)
@@ -191,13 +185,8 @@ bool        EvCheckBox::SetValue(int16_t Value)
 
 void        EvCheckBox::SetColor(uint16_t ColorCheck, uint16_t ColorUncheck, uint16_t ColorBorder)
 {
-  if (mColorCheck != ColorCheck || mColorUncheck != ColorUncheck || mColorBorder != ColorBorder)
-  {
-    mColorCheck = ColorCheck;
-    mColorUncheck = ColorUncheck;
-    mColorBorder = ColorBorder;
+  if (mColorCheck.Set(ColorCheck) | mColorUncheck.Set(ColorUncheck) | mColorBorder.Set(ColorBorder))
     Modified();
-  }
 }
 
 /// @copydoc EvButton::SetOnTouch()
@@ -223,19 +212,19 @@ void        EvCheckBox::drawEvent(void)
 
   if (!mValue)
   {
-    FillRectangle(0, 0, size, size, mColorBorder, radius);
+    FillRectangle(0, 0, size, size, mColorBorder.Get(), radius);
     Disp->ColorA(255 >> mTouchFlag);
     if ((bd = size >> 2) < 16) bd = 16;
     if ((radius -= bd) < 16) radius = 16;
-    FillRectangle2f(bd, bd, (size << 4) - (bd * 2), (size << 4) - (bd * 2), mColorUncheck, radius);
+    FillRectangle2f(bd, bd, (size << 4) - (bd * 2), (size << 4) - (bd * 2), mColorUncheck.Get(), radius);
     Disp->ColorA(255);
   }
   else
   {
     Disp->ColorA(255 >> mTouchFlag);
-    FillRectangle(0, 0, size, size, mColorCheck, radius);
+    FillRectangle(0, 0, size, size, mColorCheck.Get(), radius);
     Disp->ColorA(255);
-    Disp->ColorRGB(mColorUncheck);
+    Disp->ColorRGB(mStyle.color2.Get());
     Disp->Begin(LINE_STRIP);
     Disp->LineWidth(1 * size);
     Disp->Vertex2f(4 * size, 9 * size);
@@ -243,12 +232,12 @@ void        EvCheckBox::drawEvent(void)
     Disp->Vertex2f(12 * size, 5 * size);
   }
 
-  DrawText(size + 4, 0, mWidth - (size + 4), mHeight, c_str(Label), IsEnabled() ? mStyle.color : mStyle.color2);
+  DrawText(size + 4, 0, mWidth - (size + 4), mHeight, c_str(Label), IsEnabled() ? mStyle.color.Get() : CL_GRAY);
 
   if (!IsEnabled())
   {
     Disp->ColorA(150);
-    FillRectangle(0, 0, size, size, RGB555(230, 230, 230), radius);
+    FillRectangle(0, 0, size, size, CL_WHITE_SMOKE, radius);
   }
 }
 

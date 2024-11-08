@@ -1,8 +1,6 @@
 
 #include    <EvGUI.h>
 
-#define     CURSOR_COLOR    RGB555(  0,   0, 160)
-
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
  * @brief      Create a new instance of the standard Text Cursor.
@@ -37,7 +35,7 @@ EvTextCursor::EvTextCursor(int16_t Left, int16_t Top, uint16_t Width, uint16_t H
   SetOpacity(128 << 1);
   SetStyle(CURSOR_SMOOTH);
   BdShape(ROUND_CORNERS);
-  BgColor(CURSOR_COLOR);
+  BgColor(CL_TEXTCURSOR);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

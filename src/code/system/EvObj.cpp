@@ -14,12 +14,12 @@ EvObj::EvObj(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDispl
   mHeight(Height),
   mTouchCnt(0),
   mTouchMax(1),
-  mBgColor(EV_TRANSPARENT),
+  mBgColor(CL_NOCOLOR),
   mBgColorA(0),
   mBdShape(SQUARE_CORNERS),
   mBdRadius(0),
   mBdWidth(0),
-  mBdColor(0),
+  mBdColor(CL_NOCOLOR),
   mLabel(""),
   mOwner(nullptr),
   mCache(nullptr),
@@ -31,8 +31,7 @@ EvObj::EvObj(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDispl
   mStyle.align = LEFT_CENTER;
   mStyle.padX = 0;
   mStyle.padY = 0;
-  mStyle.color = EV_BLACK;
-  mStyle.color2 = 0;
+  TextColor(CL_DEFAULT_TEXT, CL_REVERSE_TEXT);
   ModifiedText();
   SetView();
 }
@@ -403,7 +402,7 @@ void        EvObj::BdWidth(uint16_t Width)
  * 
  * @param[in]  Color    The border color of the Object.
  * 
- * Color are defined in RGB555 format. The default is EV_TRANSPARENT.
+ * Color are defined in RGB555 format. The default is CL_NOCOLOR.
  * 
  * A border color is drawing only if BdWidth has been defined.
  * 
@@ -413,9 +412,25 @@ void        EvObj::BdWidth(uint16_t Width)
 
 void        EvObj::BdColor(uint16_t Color)
 {
-  if (mBdColor != Color)
+  if (mBdColor.Set(Color))
+    Modified();
+}
+
+/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *
+ * @brief      Sets the background color of the Object.
+ * 
+ * @param[in]  Color    The background color of the Object.
+ * 
+ * Color are defined in RGB555 format. The default is CL_NOCOLOR.
+ * 
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+void        EvObj::BgColor(uint16_t Color)
+{
+  if (mBgColor.Set(Color) | (mBgColorA != 0xFF))
   {
-    mBdColor = Color;
+    mBgColorA = 0xFF;
     Modified();
   }
 }
@@ -425,23 +440,17 @@ void        EvObj::BdColor(uint16_t Color)
  * @brief      Sets the background color of the Object.
  * 
  * @param[in]  Color    The background color of the Object.
+ * @param[in]  Aplha    The background colorA of the Object..
  * 
- * Color are defined in RGB555 format. The default is EV_TRANSPARENT.
+ * Color are defined in RGB555 format. The default is CL_NOCOLOR.
  * 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 void        EvObj::BgColor(uint16_t Color, uint8_t Aplha)
 {
-  if (!(Color & 0x8000))
-    Aplha = 0;
-  else if (Aplha == 0)
-    Color &= ~0x8000;
-
-  if (mBgColor != Color || mBgColorA != Aplha)
+  if (mBgColor.Set(Color) | (mBgColorA != Aplha))
   {
-
     mBgColorA = Aplha;
-    mBgColor = Color;
     Modified();
   }
 }
@@ -897,6 +906,22 @@ void        EvObj::TextPadding(int8_t X, int8_t Y)
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
+ * @brief      Sets only the normal text color of the Object.
+ * 
+ * The colors are defined in RGB555 format.
+ *
+ * @param[in]  Color      Normal text color.
+ * 
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+void        EvObj::TextColor(uint16_t Color)
+{
+  if (mStyle.color.Set(Color))
+    Modified();
+}
+
+/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *
  * @brief      Sets the text colors of the Object.
  * 
  * The colors are defined in RGB555 format.
@@ -908,12 +933,8 @@ void        EvObj::TextPadding(int8_t X, int8_t Y)
 
 void        EvObj::TextColor(uint16_t Color, uint16_t Color2)
 {
-  if (mStyle.color != Color || mStyle.color2 != Color2)
-  {
-    mStyle.color = Color;
-    mStyle.color2 = Color2;
+  if (mStyle.color.Set(Color) | mStyle.color2.Set(Color2))
     Modified();
-  }
 }
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -1068,7 +1089,7 @@ int16_t     EvObj::TextCursorWidth(uint8_t Font)
 
 void        EvObj::DrawText(int16_t Left, int16_t Top, int16_t Width, int16_t Height, const char *Str)
 {
-  return DrawText(Left, Top, Width, Height, Str, mStyle.color, mStyle.font, mStyle.align, mStyle.padX, mStyle.padY);
+  return DrawText(Left, Top, Width, Height, Str, mStyle.color.Get(), mStyle.font, mStyle.align, mStyle.padX, mStyle.padY);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -1552,8 +1573,8 @@ void        EvObj::Draw(void)
       Disp->Opacity(mOpacity);
       Disp->ClearPrimitive();
 
-      if ((mBgColor & 0x8000) != 0 && Disp->ColorA(mBgColorA) != 0)
-        FillRectangle2f(0, 0, mWidth << 4, mHeight << 4, mBgColor, mBdRadius);
+      if (mBgColor.Get() != 0 && Disp->ColorA(mBgColorA) != 0)
+        FillRectangle2f(0, 0, mWidth << 4, mHeight << 4, mBgColor.Get(), mBdRadius);
 
       if (Disp->ColorA(255) != 0)
       {
@@ -1563,7 +1584,7 @@ void        EvObj::Draw(void)
         if (mBdWidth)
         {
           Disp->TagMask(0);
-          FillRectangle2f(0, 0, mWidth << 4, mHeight << 4, 0, mBdRadius, mBdWidth, mBdColor);
+          FillRectangle2f(0, 0, mWidth << 4, mHeight << 4, 0, mBdRadius, mBdWidth, mBdColor.Get());
         }
 
         if ((mStatus & (DISABLED_OBJ | FILTER_DIS_OBJ)) == (DISABLED_OBJ | FILTER_DIS_OBJ))

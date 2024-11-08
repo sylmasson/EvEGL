@@ -4,7 +4,8 @@
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-static EvKeyboard     *sKeyboard[2] = {&Keyboard800x220, &Keyboard480x230};
+static EvKeyboard     *sKeyboard[2] = {&Keyboard1066x276, &Keyboard600x252};
+//static EvKeyboard     *sKeyboard[2] = {&Keyboard800x220, &Keyboard480x230};
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
@@ -140,7 +141,8 @@ void        EvKbd::SetOnTouch(void (*OnTouch)(EvKbd *Sender, const EvTouchEvent 
 
 void        EvKbd::drawEvent(void)
 {
-  uint16_t    i, c, color;
+  uint16_t    i, c;
+  color16     color;
   char        str[2] = "?";
   const EvKbdMapping  *map;
   const EvKeyStyle    *style;
@@ -153,7 +155,7 @@ void        EvKbd::drawEvent(void)
     for (i = 0, map = layout->kbdMap; i < layout->keyCount; i++, map++)
     {
       style = &layout->keyStyle[map->style];
-      FillRectangle(map->left, map->top, style->width, style->height + mKb->keyShadow, RGB555(0, 0, 0), style->radius);
+      FillRectangle(map->left, map->top, style->width, style->height + mKb->keyShadow, CL_BLACK, style->radius);
     }
 
     Disp->ColorA(255);
@@ -165,7 +167,7 @@ void        EvKbd::drawEvent(void)
     c = layout->keyChar[i];
     style = &layout->keyStyle[map->style];
     color = (c == SHIFT_KEY && mShiftKey) ? style->colorDown : style->colorUp;
-    FillRectangle(map->left, map->top, style->width, style->height, color, style->radius);
+    FillRectangle(map->left, map->top, style->width, style->height, color.Get(), style->radius);
   }
 
   Disp->TagMask(0);
@@ -191,7 +193,10 @@ void        EvKbd::drawEvent(void)
     }
 
     if (label)
-      DrawText(map->left, map->top, style->width, style->height, label, style->textColorUp, map->font, CENTER);
+    {
+      color = style->textColorUp;
+      DrawText(map->left, map->top, style->width, style->height, label, color.Get(), map->font, CENTER);
+    }
   }
 }
 

@@ -28,7 +28,7 @@ class EvScrollBox : public EvPanel
     void          SetScrollSpeed(uint8_t Speed, uint16_t Period = 640);
     void          SetPageSize(uint16_t PageWidth, uint16_t PageHeight);
     void          SetPageOffset(int16_t PageOffsetX, int16_t PageOffsetY);
-    void          SetBarColor(uint16_t ColorKnob, uint16_t ColorTouch, uint8_t Opacity = 128);
+    void          SetBarColor(uint16_t ColorKnob, uint8_t Opacity = 128);
     void          SetBarStyle(uint8_t Mode, uint8_t Thickness = 8, uint8_t Padding = 6, uint16_t Delay = 1500);
     void          SetOnTouch(void (*OnTouch)(EvScrollBox *Sender, const EvTouchEvent *Touch));
 

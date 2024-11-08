@@ -6,38 +6,6 @@
 #include    <include/system/EvSPI.h>
 #include    <include/system/EvMalloc.h>
 
-// Color constant
-
-#define     OPACITY_MAX     256
-#define     C8(c5)          (((((c5) & 0x1F) * 527) + 23) >> 6)
-#define     C5(c8)          (((((c8) & 0xFF) * 249) + 1014) >> 11)
-#define     RGB555(r,g,b)   ((uint16_t)((C5(r) << 10) | (C5(g) << 5) | C5(b) | 0x8000))
-#define     ARGB(a,r,g,b)   ((uint32_t)((((a) & 0xFFL) << 24) | (((r) & 0xFFL) << 16) | (((g) & 0xFFL) << 8) | ((b) & 0xFFL)))
-
-// Basic color constant
-
-#define     EV_TRANSPARENT  ((uint16_t)0)
-#define     EV_BLACK        RGB555(  0,   0,   0)
-#define     EV_WHITE        RGB555(255, 255, 255)
-#define     EV_WHITE_SMOKE  RGB555(245, 245, 245)
-#define     EV_RED          RGB555(255,   0,   0)
-#define     EV_LIME         RGB555(  0, 255,   0)
-#define     EV_BLUE         RGB555(  0,   0, 255)
-#define     EV_YELLOW       RGB555(255, 255,   0)
-#define     EV_CYAN         RGB555(  0, 255, 255)
-#define     EV_MAGENTA      RGB555(255,   0, 255)
-#define     EV_DIM_GRAY     RGB555(105, 105, 105)
-#define     EV_GRAY         RGB555(128, 128, 128)
-#define     EV_DARK_GRAY    RGB555(169, 169, 169)
-#define     EV_SILVER       RGB555(192, 192, 192)
-#define     EV_LIGHT_GRAY   RGB555(211, 211, 211)
-#define     EV_MAROON       RGB555(128,   0,   0)
-#define     EV_OLIVE        RGB555(128, 128,   0)
-#define     EV_GREEN        RGB555(  0, 128,   0)
-#define     EV_PURPLE       RGB555(128,   0, 128)
-#define     EV_TEAL         RGB555(  0, 128, 128)
-#define     EV_NAVY         RGB555(  0,   0, 128)
-
 // Fixed point convertion
 
 #define     s7f8(x)         ((uint16_t)((int16_t)((float)(x) * 256.0) & 0xFFFF))
@@ -529,7 +497,6 @@ class EvEVE : public EvSPI
     Context       mStackContext[4];
     int16_t       mStackContextCount;
     uint32_t      mColorCalibration;
-    uint32_t      mConvertToGray;
     MediaFifo     mMediaFifo;
 };
 

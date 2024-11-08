@@ -37,7 +37,7 @@ class EvSelector : public EvObj
     void          ShowDelimiter(void);
     void          HideDelimiter(void);
     bool          SetBmp(const EvBmp *Bmp, uint16_t Count);
-    void          SetColor(uint16_t ColorNone, uint16_t ColorSelect, uint16_t ColorNew);
+    void          SetColor(uint16_t ColorBg, uint16_t ColorSelect = CL_SELECTOR_TRUE, uint16_t ColorNew = CL_SELECTOR_NEW);
     void          SetOnTouch(void (*OnTouch)(EvSelector *Sender, const EvTouchEvent *Touch));
     void          SetOnChange(void (*OnChange)(EvSelector *Sender, int32_t Value));
 
@@ -48,9 +48,9 @@ class EvSelector : public EvObj
     uint16_t      mCount;
     int16_t       mNewVal;
     uint16_t      mOption;
-    uint16_t      mColorNew;
-    uint16_t      mColorNone;
-    uint16_t      mColorSelect;
+    color16       mColorBg;
+    color16       mColorNew;
+    color16       mColorSelect;
     const EvMem   *mDest;
     const EvBmp   *mBmp;
 

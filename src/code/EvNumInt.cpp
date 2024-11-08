@@ -1,10 +1,6 @@
 
 #include    <EvGUI.h>
 
-#define     BD_SEL_COLOR    RGB555(  0,   0, 160)
-#define     BD_INC_COLOR    RGB555(  0, 200, 100)
-#define     BD_DEC_COLOR    RGB555(230,   0,   0)
-
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
  * @brief      Create a new instance of the standard **EvNumInt** class.
@@ -32,7 +28,9 @@ EvNumInt  *EvNumInt::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t 
   {
     obj->TextFont(25);
     obj->TextPadding(5, 0);
+    obj->TextColor(CL_NUMINT_TEXT);
     obj->TextAlign(RIGHT_CENTER);
+    obj->BgColor(CL_NUMINT_BG);
     obj->BdShape(FIXED_CORNERS);
     obj->SetValue(0);
   }
@@ -70,9 +68,10 @@ EvNumInt  *EvNumInt::Create(int16_t Left, int16_t Top, int32_t Value, const EvNu
     obj->mBgColorA = Src->mBgColorA;
     obj->mBdShape = Src->mBdShape;
     obj->mBdRadius = Src->mBdRadius;
-    obj->mBdWidth = Src->mBdWidth;
-    obj->mBdColor = Src->mBdColor;
     obj->mTurnOver = Src->mTurnOver;
+    obj->mColorHold = Src->mColorHold;
+    obj->mColorInc = Src->mColorInc;
+    obj->mColorDec = Src->mColorDec;
     obj->mFormat = Src->mFormat;
     obj->mMin = Src->mMin;
     obj->mMax = Src->mMax;
@@ -94,10 +93,14 @@ EvNumInt::EvNumInt(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, E
   mBusy(false),
   mSkipUp(false),
   mTurnOver(false),
+  mColorHold(CL_NUMINT_HOLD),
+  mColorInc(CL_NUMINT_INC),
+  mColorDec(CL_NUMINT_DEC),
   mFormat("%ld"),
   mOnTouch(nullptr),
   mOnChange(nullptr)
 {
+  BdWidth(24);
 }
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -231,6 +234,19 @@ void        EvNumInt::SetRange(int32_t Min, int32_t Max)
     SetValue(Max);
 }
 
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+void        EvNumInt::SetColor(uint16_t ColorHold, uint16_t ColorInc, uint16_t ColorDec)
+{
+  if (mColorHold != ColorHold || mColorInc != ColorInc || mColorDec != ColorDec)
+  {
+    mColorHold = ColorHold;
+    mColorInc = ColorInc;
+    mColorDec = ColorDec;
+    Modified();
+  }
+}
+
 /// @copydoc EvButton::SetOnTouch()
 
 void        EvNumInt::SetOnTouch(void (*OnTouch)(EvNumInt *Sender, const EvTouchEvent *Touch))
@@ -269,8 +285,7 @@ void        EvNumInt::touchEvent(const EvTouchEvent *Touch)
     case TOUCH_START:
       mInc = 0;
       mSkipUp = false;
-      BdWidth(24);
-      BdColor(relX < mWidth / 2 ? BD_DEC_COLOR : BD_INC_COLOR);
+      BdColor(relX < mWidth / 2 ? mColorDec : mColorInc);
       Touch->repeatTimer = 250;
       Touch->repeatDelay = 250;
       Touch->event = 0;
@@ -283,20 +298,20 @@ void        EvNumInt::touchEvent(const EvTouchEvent *Touch)
       if (relY > mHeight)
       {
         mInc = -1;
-        bdColor = BD_DEC_COLOR;
+        bdColor = mColorDec;
         delta = ((relY - mHeight) > 75) ? 75 : relY - mHeight;
       }
       else if (relY < 0)
       {
         mInc = 1;
-        bdColor = BD_INC_COLOR;
+        bdColor = mColorInc;
         delta = (relY < -75) ? 75 : -relY;
       }
       else
       {
         mInc = 0;
         delta = 0;
-        bdColor = BD_SEL_COLOR;
+        bdColor = mColorHold;
       }
 
       Touch->repeatDelay = 333 - (delta << 2);
@@ -305,7 +320,7 @@ void        EvNumInt::touchEvent(const EvTouchEvent *Touch)
       break;
 
     case TOUCH_HOLD:
-      BdColor(BD_SEL_COLOR);
+      BdColor(mColorHold);
       mSkipUp = true;
       Touch->event = 0;
       break;
@@ -320,7 +335,7 @@ void        EvNumInt::touchEvent(const EvTouchEvent *Touch)
         IncValue(relX < mWidth / 2 ? -1 : 1);
 
     case TOUCH_CANCEL:
-      BdWidth(0);
+      BdColor(CL_NOCOLOR);
       Touch->event = 0;
       break;
   }

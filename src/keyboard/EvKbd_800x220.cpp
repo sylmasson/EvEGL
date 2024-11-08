@@ -4,19 +4,6 @@
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#define     BG_COLOR              RGB555(213, 215, 220)
-#define     OVER_KEY_BD_COLOR     RGB555(179, 183, 192)
-#define     STD_KEY_COLOR_UP      RGB555(255, 255, 255)
-#define     STD_KEY_COLOR_DOWN    RGB555(255, 255, 255)
-#define     CTRL_KEY_COLOR_UP     RGB555(179, 183, 192)
-#define     CTRL_KEY_COLOR_DOWN   RGB555(255, 255, 255)
-#define     SPACE_KEY_COLOR_UP    RGB555(255, 255, 255)
-#define     SPACE_KEY_COLOR_DOWN  RGB555(179, 183, 192)
-#define     TEXT_COLOR_UP         RGB555(  0,   0,   0)
-#define     TEXT_COLOR_DOWN       RGB555(  0,   0,   0)
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
 static const char   sKeyAlpha[] = "qwertyuiopasdfghjklzxcvbnm, .\n\b\4\3\1";
 static const char   sKeyNum[]   = "1234567890#$%():!\'\"*-+/=;?, .\n\b\4\2\5";
 static const char   sKeyExtra[] = "1234567890~|@[]{}\'\"^_&\\<>?, .\n\b\4\2\6";
@@ -28,10 +15,10 @@ static const char   *sKeyLabel[16] =
 
 static const EvKeyStyle     sKeyStyle800x220[4] =
 {
-  { 72, 44, 6 << 4, STD_KEY_COLOR_UP, STD_KEY_COLOR_DOWN, TEXT_COLOR_UP, TEXT_COLOR_DOWN},    // Standard Key
-  { 72, 44, 6 << 4, CTRL_KEY_COLOR_UP, CTRL_KEY_COLOR_DOWN, TEXT_COLOR_UP, TEXT_COLOR_DOWN},  // Small Control Key
-  {111, 44, 6 << 4, CTRL_KEY_COLOR_UP, CTRL_KEY_COLOR_DOWN, TEXT_COLOR_UP, TEXT_COLOR_DOWN},  // Large Control Key
-  {384, 44, 6 << 4, SPACE_KEY_COLOR_UP, SPACE_KEY_COLOR_DOWN, TEXT_COLOR_UP, TEXT_COLOR_DOWN} // Spacebar Key
+  { 72, 44, 8 << 4, CL_KBD_STD_KEY_UP, CL_KBD_STD_KEY_DOWN, CL_KBD_TEXT_UP, CL_KBD_TEXT_DOWN},    // Standard Key
+  { 72, 44, 8 << 4, CL_KBD_CTRL_KEY_UP, CL_KBD_CTRL_KEY_DOWN, CL_KBD_TEXT_UP, CL_KBD_TEXT_DOWN},  // Small Control Key
+  {111, 44, 8 << 4, CL_KBD_CTRL_KEY_UP, CL_KBD_CTRL_KEY_DOWN, CL_KBD_TEXT_UP, CL_KBD_TEXT_DOWN},  // Large Control Key
+  {384, 44, 8 << 4, CL_KBD_SPACE_KEY_UP, CL_KBD_SPACE_KEY_DOWN, CL_KBD_TEXT_UP, CL_KBD_TEXT_DOWN} // Spacebar Key
 };
 
 static const EvKbdMapping   sKbdMapping800x220[34] =
@@ -59,5 +46,5 @@ static const EvKbdLayout    sKbdLayout800x220[3] =
 
 EvKeyboard                  Keyboard800x220 =
 {
-  0, 0, 800, 220, BG_COLOR, 0, 2, 28, 85, OVER_KEY_BD_COLOR, 3, sKbdLayout800x220
+  0, 0, 800, 220, CL_KBD_BG, 0, 2, 28, 85, CL_KBD_KEY_BD, 3, sKbdLayout800x220
 };

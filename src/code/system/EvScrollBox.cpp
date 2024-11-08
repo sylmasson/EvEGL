@@ -134,15 +134,13 @@ void        EvScrollBox::SetPageOffset(int16_t PageOffsetX, int16_t PageOffsetY)
  * The colors are defined in RGB555 format.
  *
  * @param[in]  ColorKnob    The color of the two ScrollBars knob when are visible and released.
- * @param[in]  ColorTouch   The color of the two ScrollBars knob when are visible and touched.
  * @param[in]  Opacity      The opacity of the two ScrollBars knob.
  * 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvScrollBox::SetBarColor(uint16_t ColorKnob, uint16_t ColorTouch, uint8_t Opacity)
+void        EvScrollBox::SetBarColor(uint16_t ColorKnob, uint8_t Opacity)
 {
-  mScrollBarX->SetBarColor(ColorKnob, ColorTouch, Opacity);
-  mScrollBarY->SetBarColor(ColorKnob, ColorTouch, Opacity);
+  mScrollBarX->SetBarColor(ColorKnob, Opacity);
 }
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *

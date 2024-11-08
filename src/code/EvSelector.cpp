@@ -1,12 +1,6 @@
 
 #include    <EvGUI.h>
 
-#define     COLOR_SELNONE   RGB555(210, 210, 210)
-#define     COLOR_SELECT    RGB555(  0,   0, 160)
-#define     COLOR_SELNEW    RGB555(160, 160, 210)
-#define     TEXT_SELNONE    EV_BLACK
-#define     TEXT_SELECT     EV_WHITE
-
 #define     SEPARATOR_ON    (1 << 0)
 #define     TAB_STYLE       (1 << 1)
 #define     TAB_LEFT_TOP    (1 << 2)
@@ -43,7 +37,6 @@ EvTab::EvTab(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDispl
   EvSelector(Left, Top, Width, Height, Disp, Tag, State)
 {
   mOption = TAB_STYLE | TAB_LEFT_TOP | SEPARATOR_ON;
-  TextColor(EV_BLACK, EV_BLACK);
   BdShape(RATIO_CORNERS);
 }
 
@@ -127,16 +120,16 @@ EvSelector::EvSelector(int16_t Left, int16_t Top, uint16_t Width, uint16_t Heigh
   mCount(0),
   mNewVal(-2),
   mOption(0),
-  mColorNew(COLOR_SELNEW),
-  mColorNone(COLOR_SELNONE),
-  mColorSelect(COLOR_SELECT),
+  mColorBg(CL_SELECTOR_BG),
+  mColorNew(CL_SELECTOR_NEW),
+  mColorSelect(CL_SELECTOR_TRUE),
   mDest(nullptr),
   mBmp(nullptr),
   mOnTouch(nullptr),
   mOnChange(nullptr)
 {
   TextAlign(CENTER);
-  TextColor(TEXT_SELNONE, TEXT_SELECT);
+  TextColor(CL_SELECTOR_TEXT, CL_SELECTOR_TEXT2);
   BdShape(FIXED_CORNERS);
   Items.SetOnChange(sOnStringListChange, this);
 }
@@ -261,18 +254,18 @@ bool        EvSelector::SetBmp(const EvBmp *Bmp, uint16_t Count)
  * 
  * The colors are defined in RGB555 format.
  *
- * @param[in]  ColorNone    The color of the unselected items.
+ * @param[in]  ColorBg      The color of the unselected items.
  * @param[in]  ColorSelect  The color of the selected item.
  * @param[in]  ColorNew     The color of the coming selected item.
  * 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvSelector::SetColor(uint16_t ColorNone, uint16_t ColorSelect, uint16_t ColorNew)
+void        EvSelector::SetColor(uint16_t ColorBg, uint16_t ColorSelect, uint16_t ColorNew)
 {
-  mColorSelect = ColorSelect;
-  mColorNone = ColorNone;
-  mColorNew = ColorNew;
-  Modified();
+  if (mColorBg.Set(ColorBg) | mColorSelect.Set(ColorSelect) | mColorNew.Set(ColorNew))
+    Modified();
+
+  BgColor(CL_NOCOLOR);
 }
 
 /// @copydoc EvButton::SetOnTouch()
@@ -323,19 +316,19 @@ void        EvSelector::drawEvent(void)
       h <<= 1;
     }
 
-    FillRectangle2f(x, y, w, h, mColorNone, mBdRadius);
+    FillRectangle2f(x, y, w, h, mColorBg.Get(), mBdRadius);
 
     if (mCount > 0)
     {
       size = w / mCount;
 
       if (mNewVal >= 0 && mNewVal != mValue)
-        FillRectangle2f(mNewVal * size, y, size, h, mColorNew, mBdRadius);
+        FillRectangle2f(mNewVal * size, y, size, h, mColorNew.Get(), mBdRadius);
 
       if (!drawBmp(mValue * size, y, size, h))
         for (i = 0; i < mCount; i++)
           if (i < mCount)
-            DrawText((i * size) >> 4 , 0, size >> 4, mHeight, c_str(Items[i]), (i == mValue) ? mStyle.color2 : mStyle.color);
+            DrawText((i * size) >> 4 , 0, size >> 4, mHeight, c_str(Items[i]), (i == mValue) ? mStyle.color2.Get() : mStyle.color.Get());
 
       if ((mOption & SEPARATOR_ON) != 0 && mCount > 2)
       {
@@ -343,7 +336,7 @@ void        EvSelector::drawEvent(void)
         y = mHeight << 2;
         h = mHeight << 3;
         Disp->LineWidth(8);
-        Disp->ColorRGB(mStyle.color);
+        Disp->ColorRGB(mStyle.color.Get());
         Disp->Begin(LINES);
 
         for (i = 0; i < mCount - 1; i++, x += size)
@@ -363,19 +356,19 @@ void        EvSelector::drawEvent(void)
       w <<= 1;
     }
 
-    FillRectangle2f(x, y, w, h, mColorNone, mBdRadius);
+    FillRectangle2f(x, y, w, h, mColorBg.Get(), mBdRadius);
 
     if (mCount > 0)
     {
       size = h / mCount;
 
       if (mNewVal >= 0 && mNewVal != mValue)
-        FillRectangle2f(x, mNewVal * size, w, size, mColorNew, mBdRadius);
+        FillRectangle2f(x, mNewVal * size, w, size, mColorNew.Get(), mBdRadius);
 
       if (!drawBmp(x, mValue * size, w, size))
         for (i = 0; i < mCount; i++)
           if (i < mCount)
-            DrawText(0, (i * size) >> 4 , mWidth, size >> 4, c_str(Items[i]), (i == mValue) ? mStyle.color2 : mStyle.color);
+            DrawText(0, (i * size) >> 4 , mWidth, size >> 4, c_str(Items[i]), (i == mValue) ? mStyle.color2.Get() : mStyle.color.Get());
 
       if ((mOption & SEPARATOR_ON) != 0 && mCount > 2)
       {
@@ -383,7 +376,7 @@ void        EvSelector::drawEvent(void)
         x = mWidth << 2;
         w = mWidth << 3;
         Disp->LineWidth(8);
-        Disp->ColorRGB(mStyle.color);
+        Disp->ColorRGB(mStyle.color.Get());
         Disp->Begin(LINES);
 
         for (i = 0; i < mCount - 1; i++, y += size)
@@ -470,21 +463,21 @@ bool        EvSelector::drawBmp(int16_t Left, int16_t Top, uint16_t Width, uint1
     if (mBmp->PalSize > 0)
       Disp->PaletteSource(mDest->addr);
 
-    Disp->ColorRGB(mStyle.color);
+    Disp->ColorRGB(mStyle.color.Get());
     Disp->Vertex2ii(0, 0);
     Disp->SaveContext();
     Disp->StencilOp(INCR, INCR);
   }
 
   if (Left >= 0 && Top >= 0)
-    FillRectangle2f(Left, Top, Width, Height, mColorSelect, mBdRadius);
+    FillRectangle2f(Left, Top, Width, Height, mColorSelect.Get(), mBdRadius);
 
   if (mBmp == nullptr)
     return false;
 
   Disp->RestoreContext();
   Disp->StencilFunc(EQUAL, 1, 255);
-  Disp->ColorRGB(mStyle.color2);
+  Disp->ColorRGB(mStyle.color2.Get());
   Disp->Begin(BITMAPS);
   Disp->Vertex2ii(0, 0);
   Disp->StencilFunc(ALWAYS, 0, 255);

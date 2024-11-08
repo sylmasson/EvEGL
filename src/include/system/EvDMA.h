@@ -54,4 +54,6 @@ class EvTaskDMA
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+extern EvTaskDMA  TaskDMA;
+
 #endif  /* _EV_DMA_H_ */

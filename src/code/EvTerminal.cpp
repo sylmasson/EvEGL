@@ -1,8 +1,6 @@
 
 #include    <EvGUI.h>
 
-#define     BG_COLOR        RGB555(255, 255, 255)
-
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 extern const EvFont         *Menio20;
@@ -46,7 +44,8 @@ EvTerminal::EvTerminal(int16_t Left, int16_t Top, uint16_t Width, uint16_t Heigh
   WrapText(false);
   TextFont(17);
   TextPadding(7, 5);
-  BgColor(BG_COLOR);
+  TextColor(CL_TERMINAL_TEXT);
+  BgColor(CL_TERMINAL_BG);
   BdShape(FIXED_CORNERS);
   SetBufferSize(4 * 1024);
   Disp->UnloadFont(17);
@@ -80,7 +79,7 @@ void        EvTerminal::refreshEvent(void)
 
     Cursor->MoveTo(x + mStyle.padX, y + mStyle.padY + ((lineHeight - textHeight) >> 1));
     Cursor->ReSize(cursorWidth, textHeight);
-    Cursor->BgColor(mStyle.color);
+    Cursor->BgColor(mStyle.color.Get());
 
     if (!mScrolling || (mScrolling == 1 && !(mScrollBarY->Scrolling() & SCROLL_MOVING)))
     {

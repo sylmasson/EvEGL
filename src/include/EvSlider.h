@@ -25,7 +25,7 @@ class EvSlider : public EvObj
     int32_t       Value(void);
     bool          SetValue(int32_t Value);
     void          SetDelay(uint16_t Msec);
-    void          SetColor(uint16_t ColorLower, uint16_t ColorUpper, uint16_t ColorKnob);
+    void          SetColor(uint16_t ColorLower, uint16_t ColorUpper = CL_SLIDER_UPPER, uint16_t ColorKnob = CL_SLIDER_KNOB);
     void          SetRange(int32_t Min, int32_t Max);
     void          SetOnTouch(void (*OnTouch)(EvSlider *Sender, const EvTouchEvent *Touch));
     void          SetOnChange(void (*OnChange)(EvSlider *Sender, int32_t Value));
@@ -41,9 +41,9 @@ class EvSlider : public EvObj
     int16_t       mSliderWidth;
     int16_t       mSliderLength;
     uint32_t      mSliderDelay;     // usec
-    uint16_t      mColorLower;
-    uint16_t      mColorUpper;
-    uint16_t      mColorKnob;
+    color16       mColorLower;
+    color16       mColorUpper;
+    color16       mColorKnob;
     bool          mTouchKnob;
     bool          mBusy;
 

@@ -1,10 +1,6 @@
 
 #include    <EvGUI.h>
 
-#define     LOWER_COLOR     RGB555(  0, 200, 100)
-#define     UPPER_COLOR     RGB555(210, 210, 210)
-#define     BORDER_COLOR    RGB555(  0,   0,   0)
-
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
  * @brief      Create a new instance of a standard Progress Bar.
@@ -36,13 +32,13 @@ EvProgress  *EvProgress::Create(int16_t Left, int16_t Top, uint16_t Width, uint1
 EvProgress::EvProgress(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) :
   EvObj(Left, Top, Width, Height, Disp, Tag, State),
   mValue(-1),
-  mColorLower(LOWER_COLOR),
-  mColorUpper(UPPER_COLOR),
+  mColorLower(CL_PROGRESS_LOWER),
+  mColorUpper(CL_PROGRESS_UPPER),
   mOnTouch(nullptr)
 {
   TextAlign(CENTER);
-  BgColor(mColorUpper);
-  BdColor(BORDER_COLOR);
+  TextColor(CL_PROGRESS_TEXT);
+  BgColor(CL_PROGRESS_UPPER);
   BdShape(ROUND_CORNERS);
   SetFormat("%.0f%%");
   SetValue(0);
@@ -104,13 +100,10 @@ bool        EvProgress::SetValue(int16_t Value)
 
 void        EvProgress::SetColor(uint16_t ColorLower, uint16_t ColorUpper)
 {
-  if (mColorLower != ColorLower || mColorUpper != ColorUpper || mBgColor != mColorUpper)
-  {
-    mColorLower = ColorLower;
-    mColorUpper = ColorUpper;
-    BgColor(mColorUpper);
+  if (mColorLower.Set(ColorLower) | mColorUpper.Set(ColorUpper))
     Modified();
-  }
+
+  BgColor(ColorUpper);
 }
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -160,13 +153,13 @@ void        EvProgress::drawEvent(void)
     Disp->ColorMask(0, 0, 0, 0);
 
     if (mWidth >= mHeight)
-      FillRectangle(0, 0, length, mHeight, mColorLower, 0);
+      FillRectangle(0, 0, length, mHeight, mColorLower.Get(), 0);
     else
-      FillRectangle(0, mHeight - length, mWidth, length, mColorLower, 0);
+      FillRectangle(0, mHeight - length, mWidth, length, mColorLower.Get(), 0);
 
     Disp->StencilFunc(EQUAL, 1, 255);
     Disp->ColorMask(1, 1, 1, 1);
-    FillRectangle(0, 0, mWidth, mHeight, mColorLower, mBdRadius);
+    FillRectangle(0, 0, mWidth, mHeight, mColorLower.Get(), mBdRadius);
     Disp->RestoreContext();
   }
 

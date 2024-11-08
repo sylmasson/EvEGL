@@ -18,7 +18,8 @@ EvVuBar::EvVuBar(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvD
   mPeakTimer(0),
   mOnTouch(nullptr)
 {
-  SetColor(0, 0);
+  BgColor(CL_NOCOLOR);
+  SetColor(CL_NOCOLOR);
   SetFormat(12, 3, 5);
 }
 
@@ -63,14 +64,10 @@ void        EvVuBar::SetOnTouch(void (*OnTouch)(EvVuBar *Sender, const EvTouchEv
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvVuBar::SetColor(uint32_t Space, uint32_t Off, uint32_t Low, uint32_t Med, uint32_t High)
+void        EvVuBar::SetColor(uint16_t OffColor, uint16_t Low, uint16_t Med, uint16_t High)
 {
-  mSpColor = Space;
-  mOffColor = Off;
-  mDotColor[0] = Low;
-  mDotColor[1] = Med;
-  mDotColor[2] = High;
-  Modified();
+  if (mOffColor.Set(OffColor) | mDotColor[0].Set(Low) | mDotColor[1].Set(Med) | mDotColor[2].Set(High))
+    Modified();
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -90,8 +87,7 @@ bool        EvVuBar::SetFormat(uint8_t Low, uint8_t Med, uint8_t High, uint8_t S
 void        EvVuBar::drawEvent(void)
 {
   int16_t   i, j;
-  uint16_t  limit;
-  uint32_t  color;
+  uint16_t  color, limit;
   int32_t   x, y, count;
 
   if (mDotWidth > 0)
@@ -103,30 +99,14 @@ void        EvVuBar::drawEvent(void)
 
     if (mSpWidth > 0)
     { // Draw all separate blocks
-      if ((mSpColor & 0xFF000000) != 0)
-      {
-        Disp->ColorARGB(mSpColor);
-        Disp->Vertex2i(0, 0);
-        Disp->Vertex2i(mWidth - 1, mHeight - 1);
-      }
-
       for (i = 1, limit = mDotCnt[j = 0]; i <= mDotCount; i++)
       {
         while (i > limit && j < 2)
           limit += mDotCnt[++j];
 
-        color = (i > mDotValue && i != mPeakValue) ? mOffColor : mDotColor[j];
-
-        if ((color & 0xFF000000) == 0 || (color == mOffColor && mOffColor == mSpColor))
+        if ((color = (i > mDotValue && i != mPeakValue) ? mOffColor.Get() : mDotColor[j].Get()) != 0)
         {
-          if (!mVertical)
-            x += mDotWidth + mSpWidth;
-          else
-            y -= mDotWidth + mSpWidth;
-        }
-        else
-        {
-          Disp->ColorARGB(color);
+          Disp->ColorRGB(color);
 
           if (!mVertical)
           {
@@ -143,18 +123,18 @@ void        EvVuBar::drawEvent(void)
             y -= mSpWidth;
           }
         }
+        else
+        {
+          if (!mVertical)
+            x += mDotWidth + mSpWidth;
+          else
+            y -= mDotWidth + mSpWidth;
+        }
       }
     }
 
     else
     { // Optimize Vertex blocks when no space
-      if ((mOffColor & 0xFF000000) != 0 && mDotValue < mDotCount)
-      {
-        Disp->ColorARGB(mOffColor);
-        Disp->Vertex2i(0, 0);
-        Disp->Vertex2i(mWidth - 1, mHeight - 1);
-      }
-
       for (i = mDotValue, j = limit = 0; i > 0 && j <= 2; i -= count, j++)
         if ((count = mDotCnt[j]) > 0)
         {
@@ -163,8 +143,7 @@ void        EvVuBar::drawEvent(void)
           if (i < count)
            count = i;
 
-          color = mDotColor[j];
-          Disp->ColorARGB(color);
+          Disp->ColorRGB(mDotColor[j].Get());
 
           if (!mVertical)
           {
@@ -185,8 +164,7 @@ void        EvVuBar::drawEvent(void)
         for (limit = mDotCnt[j = 0]; mPeakValue > limit && j < 2; )
           limit += mDotCnt[++j];
 
-        color = mDotColor[j];
-        Disp->ColorARGB(color);
+        Disp->ColorRGB(mDotColor[j].Get());
 
         if (!mVertical)
         {
@@ -219,11 +197,11 @@ void        EvVuBar::refreshEvent(void)
   if (mPeakTimer == 0)
   {
     if (mDotValue < mPeakValue)
-      mPeakTimer = millis();
+      mPeakTimer = millis_nz();
   }
   else
   {
-    uint32_t  timer = millis() - mPeakTimer;
+    uint16_t  timer = millis_nz() - mPeakTimer;
 
     if (timer > 1000)
     {

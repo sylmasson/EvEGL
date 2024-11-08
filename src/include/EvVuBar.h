@@ -13,7 +13,7 @@ class EvVuBar : public EvObj
     bool          SetValue(int16_t Value);
     void          SetPeakDetect(bool Enabled);
     void          SetOnTouch(void (*OnTouch)(EvVuBar *Sender, const EvTouchEvent *Touch));
-    void          SetColor(uint32_t Space, uint32_t Off, uint32_t Low = 0xFF00C000, uint32_t Med = 0xFFC0C000, uint32_t High = 0xFFFF0000);
+    void          SetColor(uint16_t OffColor, uint16_t Low = RGB555(0, 192, 0), uint16_t Med = RGB555(192, 192, 0), uint16_t High = RGB555(255, 0, 0));
     bool          SetFormat(uint8_t Low, uint8_t Med, uint8_t High, uint8_t SpaceWidth = 4);
 
   protected:
@@ -25,10 +25,9 @@ class EvVuBar : public EvObj
     uint16_t      mDotCount;
     uint16_t      mSpWidth;    // '1/256'
     uint16_t      mDotWidth;   // '1/256'
-    uint32_t      mPeakTimer;
-    uint32_t      mSpColor;
-    uint32_t      mOffColor;
-    uint32_t      mDotColor[3];
+    uint16_t      mPeakTimer;
+    color16       mOffColor;
+    color16       mDotColor[3];
 
     virtual void  drawEvent(void);
     virtual void  resizeEvent(void);

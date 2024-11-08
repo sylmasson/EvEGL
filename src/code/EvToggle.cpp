@@ -4,10 +4,6 @@
 #define     KNOB_TAG        100
 #define     SLIDE_DELAY     150
 
-#define     COLOR_ON        RGB555(  0, 200, 100)
-#define     COLOR_OFF       RGB555(210, 210, 210)
-#define     COLOR_KNOB      RGB555(255, 255, 255)
-
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
  * @brief      Create a new instance of a standard Toggle switch.
@@ -37,9 +33,9 @@ EvToggle    *EvToggle::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_
 EvToggle::EvToggle(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) :
   EvObj(Left, Top, Width, Height, Disp, Tag, State),
   mValue(0),
-  mColorOn(COLOR_ON),
-  mColorOff(COLOR_OFF),
-  mColorKnob(COLOR_KNOB),
+  mColorOn(CL_TOGGLE_ON),
+  mColorOff(CL_TOGGLE_OFF),
+  mColorKnob(CL_TOGGLE_KNOB),
   mSkipUp(false),
   mPosKnob(0),
   mDirKnob(0),
@@ -89,12 +85,12 @@ bool        EvToggle::SetValue(int16_t Value)
   if (Value)
   {
     mPosKnob = SLIDE_DELAY;
-    BgColor(mColorOn);
+    BgColor(mColorOn.Raw());
   }
   else
   {
     mPosKnob = 0;
-    BgColor(mColorOff);
+    BgColor(mColorOff.Raw());
   }
 
   if (mValue == Value)
@@ -123,13 +119,8 @@ bool        EvToggle::SetValue(int16_t Value)
 
 void        EvToggle::SetColor(uint16_t ColorOn, uint16_t ColorOff, uint16_t ColorKnob)
 {
-  if (mColorOn != ColorOn || mColorOff != ColorOff || mColorKnob != ColorKnob)
-  {
-    mColorOn = ColorOn;
-    mColorOff = ColorOff;
-    mColorKnob = ColorKnob;
+  if (mColorOn.Set(ColorOn) | mColorOff.Set(ColorOff) | mColorKnob.Set(ColorKnob))
     Modified();
-  }
 }
 
 /// @copydoc EvButton::SetOnTouch()
@@ -168,9 +159,9 @@ void        EvToggle::drawEvent(void)
   Disp->Clear(0, 1, 1);
   Disp->TagValue(KNOB_TAG);
   Disp->ColorA(50);
-  FillCircle2f(x, y + border, RGB555(0, 0, 0), radius - border);
+  FillCircle2f(x, y + border, CL_BLACK, radius - border);
   Disp->ColorA(255);
-  FillCircle2f(x, y, mColorKnob, radius - (border * 2));
+  FillCircle2f(x, y, mColorKnob.Get(), radius - (border * 2));
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

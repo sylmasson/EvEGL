@@ -86,12 +86,8 @@ void          EvSpectrum::RawData(uint16_t X, uint8_t *Data, uint16_t Count)
 
 void          EvSpectrum::SetColor(uint16_t LineColor, uint16_t FillColor)
 {
-  if (mLineColor != LineColor || mFillColor != FillColor)
-  {
-    mLineColor = LineColor;
-    mFillColor = FillColor;
+  if (mLineColor.Set(LineColor) | mFillColor.Set(FillColor))
     Modified();
-  }
 }
 
 /// @copydoc EvButton::SetOnTouch()
@@ -140,9 +136,9 @@ void        EvSpectrum::drawEvent(void)
 
   if (vCnt)
   {
-    if (mFillColor == mBgColor)
+    if (mFillColor.Get() == mBgColor.Get())
     {
-      Disp->ColorRGB(mLineColor);
+      Disp->ColorRGB(mLineColor.Get());
       Disp->Begin(LINE_STRIP);
       Disp->LineWidth(16);
 
@@ -156,11 +152,11 @@ void        EvSpectrum::drawEvent(void)
           Disp->Vertex2f(xBuf[i], yBuf[i]);
       EndFunction(vCall, vCnt);
 
-      Disp->ColorRGB(mFillColor);
+      Disp->ColorRGB(mFillColor.Get());
       Disp->Begin(EDGE_STRIP_B);
       Disp->LineWidth(16);
       Disp->Call(vCall);
-      Disp->ColorRGB(mLineColor);
+      Disp->ColorRGB(mLineColor.Get());
       Disp->Begin(LINE_STRIP);
       Disp->LineWidth(16);
       Disp->Call(vCall);

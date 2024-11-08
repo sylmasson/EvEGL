@@ -56,7 +56,6 @@ EvEVE::EvEVE(const uint32_t *Config, uint8_t CS, uint8_t RST, uint32_t Baudrate,
     delay(10);
 
   wrCmdBufClear();
-  mConvertToGray = 0;
   mColorCalibration = 0;
   mStackContextCount = 0;
   mActiveContext.format = 4;
@@ -88,27 +87,6 @@ void        EvEVE::ClearPrimitive(void)
 {
   mActivePrim = 0xFF;
   mVertexCount = 0;
-}
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-void        EvEVE::ClearConvertToGray(void)
-{
-  mConvertToGray = 0;
-}
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-void        EvEVE::ConvertToGray(uint8_t Min, uint8_t Max)
-{
-  argb32    corr;
-  uint16_t  range = Max - Min + 1;
-
-  corr.a = Min;
-  corr.r = (77 * range) >> 8;
-  corr.g = (151 * range) >> 8;
-  corr.b = (28 * range) >> 8;
-  mConvertToGray = corr.argb;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -463,9 +441,9 @@ uint32_t    EvEVE::ClearColorRGB(uint16_t Color555)
 {
   argb32    color;
 
-  color.r = C8(Color555 >> 10);
-  color.g = C8(Color555 >> 5);
-  color.b = C8(Color555);
+  color.r = CL8(Color555 >> 10);
+  color.g = CL8(Color555 >> 5);
+  color.b = CL8(Color555);
   color.a = 0;
 
   return (ClearColorRGB(color.rgb));
@@ -543,9 +521,9 @@ uint32_t    EvEVE::ColorRGB(uint16_t Color555)
 {
   argb32    color;
 
-  color.r = C8(Color555 >> 10);
-  color.g = C8(Color555 >> 5);
-  color.b = C8(Color555);
+  color.r = CL8(Color555 >> 10);
+  color.g = CL8(Color555 >> 5);
+  color.b = CL8(Color555);
   color.a = 0;
 
   return (ColorRGB(color.rgb));
@@ -1105,31 +1083,13 @@ uint32_t    EvEVE::colorCorrection(uint32_t Color)
 {
   argb32    color, factor;
 
-  if (!mConvertToGray)
-  {
-    factor.rgb = mColorCalibration;
-    color.rgb = Color;
-    color.a = 0;
+  factor.rgb = mColorCalibration;
+  color.rgb = Color;
+  color.a = 0;
 
-    if (factor.r) color.r = (color.r * factor.r) >> 8;
-    if (factor.g) color.g = (color.g * factor.g) >> 8;
-    if (factor.b) color.b = (color.b * factor.b) >> 8;
-  }
-  else
-  {
-    uint16_t tmp;
-
-    factor.argb = mConvertToGray;
-    color.rgb = Color;
-
-    tmp  = color.r * factor.r;
-    tmp += color.g * factor.g;
-    tmp += color.b * factor.b;
-    tmp = (tmp >> 8) + factor.a;
-
-    color.r = color.g = color.b = tmp;
-    color.a = 0;
-  }
+  if (factor.r) color.r = (color.r * factor.r) >> 8;
+  if (factor.g) color.g = (color.g * factor.g) >> 8;
+  if (factor.b) color.b = (color.b * factor.b) >> 8;
 
   return color.rgb;
 }

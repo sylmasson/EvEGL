@@ -1,9 +1,6 @@
 
 #include    <EvGUI.h>
 
-#define     COLOR_BAR       RGB555( 92,  92,  92)
-#define     COLOR_TOUCH     RGB555( 30,  30,  30)
-
 #define     KNOB_MIN        (24 << 4)
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -41,13 +38,12 @@ EvScrollBar::EvScrollBar(int16_t Left, int16_t Top, uint16_t Width, uint16_t Hei
   mPageSize(0),
   mViewSize(0),
   mScrolling(0),
-  mTouchBar(false),
-  mScrollBarSync(nullptr)
+  mTouchBar(false)
 {
   mKinScroll.Setup(48);
   BdShape(ROUND_CORNERS);
   SetBarStyle(SCROLL_BAR_AUTO);
-  SetBarColor(COLOR_BAR, COLOR_TOUCH);
+  SetBarColor(CL_SCROLL_BAR);
   SetOnChange(nullptr);
 }
 
@@ -252,15 +248,13 @@ void        EvScrollBar::SetPageSize(uint16_t PageSize, uint16_t ViewSize)
  * The colors are defined in RGB555 format.
  *
  * @param[in]  ColorKnob    The color of the ScrollBar knob when is visible and released.
- * @param[in]  ColorTouch   The color of the ScrollBar knob when is visible and touched.
- * @param[in]  Opacity      The opacity of the ScrollBar knob.
+ * @param[in]  Opacity      The opacity of the ScrollBar knob. Default is 128.
  * 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvScrollBar::SetBarColor(uint16_t ColorKnob, uint16_t ColorTouch, uint8_t Opacity)
+void        EvScrollBar::SetBarColor(uint16_t ColorKnob, uint8_t Opacity)
 {
-  mColorKnob = ColorKnob;
-  mColorTouch = ColorTouch;
+  mColorKnob.Set(ColorKnob);
   mAlpha = mOpacityKnob = Opacity;
   Modified();
 }
@@ -339,7 +333,7 @@ void        EvScrollBar::drawEvent(void)
     if (w > 0 && h > 0)
     {
       Disp->ColorA(mAlpha);
-      FillRectangle2f(l, t, w, h, mTouchBar ? mColorTouch : mColorKnob, mBdRadius);
+      FillRectangle2f(l, t, w, h, mColorKnob.Get(), mBdRadius);
     }
   }
 }

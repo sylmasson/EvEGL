@@ -15,6 +15,7 @@ static EvCmd    sCmdList[] =
   {RADIX,    1,   "r", "radix",    "r, radix [b|w|d]      Change radix"},
   {EDITOR,   1,   "e", "editor",   "e, editor [close]     Open/close editor"},
   {TRACE,    1,   "t", "trace",    "t, trace opt          [modif|touch|fps|off]"},
+  {THEME,    1,  "th", "theme",    "th, theme 0-1         Change theme of display"},
   {ROTATE,   1, "rot", "rotate",   "rot, rotate 0-3       Set display orientation"},
   {CALIB,    0,    "", "calib",    "calib                 Touchscreen calibration"},
   {FONT,     0,    "", "font",     "font                  List font metrix block"},
@@ -197,6 +198,14 @@ void        EvShell::Input(const char C)
         case TRACE:
           if (argc)
             msg = !setTrace(arg[1], &Disp->sTraceFlags) ? InvalidArg : nullptr;
+          break;
+
+        case THEME:
+          if (argc == 1 && sscanf(arg[1], "%d%c", &i, &c) == 1 && (uint)i <= 1)
+          {
+            SystemColor.SelectTheme(i);
+            msg = nullptr;
+          }
           break;
 
         case ROTATE:

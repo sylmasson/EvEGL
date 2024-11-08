@@ -179,7 +179,7 @@ void        EvPixelBox::drawEvent(void)
   Disp->ColorMask(1);
   Disp->Clear();
   Disp->Begin(RECTS);
-  FillRectangle2f(0, 0, mWidth << 4, mHeight << 4, RGB555(255, 255, 255), mBdRadius);
+  FillRectangle2f(0, 0, mWidth << 4, mHeight << 4, CL_WHITE, mBdRadius);
   Disp->ColorMask(14);
   Disp->BlendFunc(DST_ALPHA, ONE_MINUS_DST_ALPHA);
   Disp->Begin(BITMAPS);

@@ -1,11 +1,6 @@
 
 #include    <EvGUI.h>
 
-#define     COLOR_UP        RGB555(210, 210, 210)
-#define     COLOR_DOWN      RGB555(170, 170, 170)
-#define     TEXT_UP         RGB555(0, 0, 0)
-#define     TEXT_DOWN       RGB555(0, 0, 0)
-
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
  * @brief      Create a new instance of a standard **EvButton**.
@@ -33,7 +28,7 @@ EvButton    *EvButton::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_
   {
     obj->TextAlign(CENTER);
     obj->TextLabel(obj->Tag);
-    obj->TextColor(TEXT_UP, TEXT_DOWN);
+    obj->TextColor(CL_BUTTON_TEXT, CL_BUTTON_TEXT_DOWN);
     obj->BdShape(FIXED_CORNERS | SHADOW);
   }
 
@@ -70,7 +65,7 @@ EvButton    *EvButton::Create(int16_t Left, int16_t Top, const char *Label, uint
     obj->TextFont(Font);
     obj->TextLabel(Label);
     obj->TextAlign(CENTER);
-    obj->TextColor(TEXT_UP, TEXT_DOWN);
+    obj->TextColor(CL_BUTTON_TEXT, CL_BUTTON_TEXT_DOWN);
     obj->mHeight = 10 * ((obj->TextHeight(Font) * 2) / 10);
     obj->mWidth = (obj->mHeight * 5) / 2;
     if ((w = obj->TextWidth(Label)) > obj->mWidth - 20)
@@ -128,8 +123,8 @@ EvButton    *EvButton::Create(int16_t Left, int16_t Top, const char *Label, cons
 EvButton::EvButton(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) :
   EvObj(Left, Top, Width, Height, Disp, Tag, State),
   mValue(0),
-  mColorUp(COLOR_UP),
-  mColorDown(COLOR_DOWN),
+  mColorUp(CL_BUTTON_FACE),
+  mColorDown(CL_BUTTON_FACE_DOWN),
   mTouchFlag(false),
   mOnTouch(nullptr),
   mOnChange(nullptr)
@@ -192,12 +187,8 @@ bool        EvButton::SetValue(int16_t Value)
 
 void        EvButton::SetColor(uint16_t ColorUp, uint16_t ColorDown)
 {
-  if (mColorUp != ColorUp || mColorDown != ColorDown)
-  {
-    mColorUp = ColorUp;
-    mColorDown = ColorDown;
+  if (mColorUp.Set(ColorUp) | mColorDown.Set(ColorDown))
     Modified();
-  }
 }
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -246,13 +237,6 @@ void        EvButton::SetOnChange(void (*OnChange)(EvButton *Sender, int32_t Val
 void        EvButton::drawEvent(void)
 {
   int16_t   y = 0, w = mWidth, h = mHeight;
-  uint16_t  colorButton = mColorUp, colorText = mStyle.color;
-
-  if (mValue)
-  {
-    colorButton = mColorDown;
-    colorText = mStyle.color2;
-  }
 
   if (mBdShape & SHADOW)
   {
@@ -261,14 +245,14 @@ void        EvButton::drawEvent(void)
     if (!mValue)
     {
       Disp->ColorA(100);
-      FillRectangle(0, y, w, h, RGB555(0, 0, 0), mBdRadius);
+      FillRectangle(0, y, w, h, CL_BLACK, mBdRadius);
       Disp->ColorA(255);
       y = 0;
     }
   }
 
-  FillRectangle(0, y, w, h, colorButton, mBdRadius);
-  DrawText(0, y, mWidth, h, c_str(Label), colorText);
+  FillRectangle(0, y, w, h, mValue ? mColorDown.Get() : mColorUp.Get(), mBdRadius);
+  DrawText(0, y, mWidth, h, c_str(Label), mValue ? mStyle.color2.Get() : mStyle.color.Get());
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

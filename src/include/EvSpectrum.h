@@ -20,8 +20,8 @@ class EvSpectrum : public EvObj
   protected:
     uint8_t       *mData;
     uint16_t      mDataSize;
-    uint16_t      mLineColor;
-    uint16_t      mFillColor;
+    color16      mLineColor;
+    color16      mFillColor;
 
     virtual void  drawEvent(void);
     virtual void  touchEvent(const EvTouchEvent *Touch);

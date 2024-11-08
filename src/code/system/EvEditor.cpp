@@ -2,16 +2,28 @@
 #include    <EvGUI.h>
 
 #define     BG_COLOR        RGB555(240, 240, 240)
-#define     PANEL_COLOR     RGB555(210, 210, 210)
-#define     NUM_COLOR       RGB555(255, 255, 255)
-#define     DOT_COLOR       RGB555(255,   0,   0)
-#define     TEXT_ERROR      RGB555(255,   0,   0)
-#define     TEXT_SELECT     RGB555(255, 255, 255)
+#define     PANEL_COLOR     CL_LIGHT_GRAY
+#define     NUM_COLOR       CL_WHITE
+#define     DOT_COLOR       CL_RED
+#define     TEXT_COLOR      CL_BLACK
+#define     TEXT_ERROR      CL_RED
+#define     TEXT_SELECT     CL_WHITE
 
-#define     COLOR_SELNONE   RGB555(255, 255, 255)
+#define     COLOR_SELNONE   CL_WHITE
 #define     COLOR_SELECT    RGB555(  0,   0, 160)
 #define     COLOR_SELNEW    RGB555(160, 160, 210)
 #define     COLOR_ICONS     RGB555(140, 140, 140)
+
+#define     TGL_EDIT_ON     RGB555( 50, 200, 100)
+#define     TGL_EDIT_OFF    CL_LIGHT_GRAY
+#define     TGL_EDIT_KNOB   CL_WHITE
+
+#define     BTN_UP          CL_LIGHT_GRAY
+#define     BTN_DOWN        CL_GRAY
+
+#define     NUM_INT_HOLD    RGB555(  0,   0, 160)
+#define     NUM_INT_INC     RGB555( 50, 200, 100)
+#define     NUM_INT_DEC     RGB555(230,   0,   0)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
@@ -110,6 +122,8 @@ EvEditor::EvEditor(EvDisplay *Disp, const char *Tag) :
   if (!(DotMove = (EvEditDot *)TryCreate(new EvEditDot(50, OnTouchDotMove, Disp, "DotMove"), this)) ||
       !(DotReSize = (EvEditDot *)TryCreate(new EvEditDot(50, OnTouchDotReSize, Disp, "DotReSize"), this)))
     abortCreate();
+
+  BgColor(CL_NOCOLOR);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -241,7 +255,7 @@ void        EvEditor::SelectObj(EvObj *Obj)
     property->NumWidth->SetValue(0);
     property->NumHeight->SetValue(0);
     property->NumFont->SetValue(0);
-    property->NumFont->TextColor(EV_BLACK);
+    property->NumFont->TextColor(CL_BLACK);
     property->NumPadX->SetValue(0);
     property->NumPadY->SetValue(0);
     property->SelShape->SetValue(-1);
@@ -296,7 +310,7 @@ void        EvEditor::SelectObj(EvObj *Obj)
     }
 
     property->LabTag->TextLabel(Obj->Tag);
-    property->LabTag->TextColor(EV_BLACK);
+    property->LabTag->TextColor(CL_BLACK);
   }
 }
 
@@ -396,10 +410,13 @@ EvEditProp::EvEditProp(EvDisplay *Disp, const char *Tag) :
   BtnMinimize->TextFont(27);
   BtnMinimize->TextAlign(LEFT_TOP);
   BtnMinimize->TextPadding(5, -17);
+  BtnMinimize->TextColor(TEXT_COLOR);
+  BtnMinimize->SetColor(BTN_UP, BTN_DOWN);
   BtnMinimize->SetOnChange(OnChangeMinimize);
 
   TabPanel->TextFont(25);
   TabPanel->TextAlign(CENTER);
+  TabPanel->TextColor(TEXT_COLOR, TEXT_COLOR);
   TabPanel->Items.Add("Obj|Text", '|');
   TabPanel->HideDelimiter();
   TabPanel->SetColor(0, PANEL_COLOR, COLOR_SELNEW);
@@ -414,25 +431,34 @@ EvEditProp::EvEditProp(EvDisplay *Disp, const char *Tag) :
   PanText->Hide();
 
   TglEdit->SetValue(true);
+  TglEdit->SetColor(TGL_EDIT_ON, TGL_EDIT_OFF, TGL_EDIT_KNOB);
   TglEdit->SetOnChange(OnChangeEdit);
 
   NumLeft->BgColor(NUM_COLOR);
   NumLeft->TextFont(26);
+  NumLeft->TextColor(TEXT_COLOR);
+  NumLeft->SetColor(NUM_INT_HOLD, NUM_INT_INC, NUM_INT_DEC);
   NumLeft->SetRange(-32768, 32767);
   NumLeft->SetOnChange(OnChangeLeft);
 
   NumTop->BgColor(NUM_COLOR);
   NumTop->TextFont(26);
+  NumTop->TextColor(TEXT_COLOR);
+  NumTop->SetColor(NUM_INT_HOLD, NUM_INT_INC, NUM_INT_DEC);
   NumTop->SetRange(-32768, 32767);
   NumTop->SetOnChange(OnChangeTop);
 
   NumWidth->BgColor(NUM_COLOR);
   NumWidth->TextFont(26);
+  NumWidth->TextColor(TEXT_COLOR);
+  NumWidth->SetColor(NUM_INT_HOLD, NUM_INT_INC, NUM_INT_DEC);
   NumWidth->SetRange(0, 2048);
   NumWidth->SetOnChange(OnChangeWidth);
 
   NumHeight->BgColor(NUM_COLOR);
   NumHeight->TextFont(26);
+  NumHeight->TextColor(TEXT_COLOR);
+  NumHeight->SetColor(NUM_INT_HOLD, NUM_INT_INC, NUM_INT_DEC);
   NumHeight->SetRange(0, 2048);
   NumHeight->SetOnChange(OnChangeHeight);
 
@@ -443,16 +469,22 @@ EvEditProp::EvEditProp(EvDisplay *Disp, const char *Tag) :
 
   NumFont->BgColor(NUM_COLOR);
   NumFont->TextFont(26);
+  NumFont->TextColor(TEXT_COLOR);
+  NumFont->SetColor(NUM_INT_HOLD, NUM_INT_INC, NUM_INT_DEC);
   NumFont->SetRange(1, 31);
   NumFont->SetOnChange(OnChangeFont);
 
   NumPadX->BgColor(NUM_COLOR);
   NumPadX->TextFont(26);
+  NumPadX->TextColor(TEXT_COLOR);
+  NumPadX->SetColor(NUM_INT_HOLD, NUM_INT_INC, NUM_INT_DEC);
   NumPadX->SetRange(-128, 127);
   NumPadX->SetOnChange(OnChangePadX);
 
   NumPadY->BgColor(NUM_COLOR);
   NumPadY->TextFont(26);
+  NumPadY->TextColor(TEXT_COLOR);
+  NumPadY->SetColor(NUM_INT_HOLD, NUM_INT_INC, NUM_INT_DEC);
   NumPadY->SetRange(-128, 127);
   NumPadY->SetOnChange(OnChangePadY);
 
@@ -465,6 +497,15 @@ EvEditProp::EvEditProp(EvDisplay *Disp, const char *Tag) :
   SelAlignY->TextColor(COLOR_ICONS, TEXT_SELECT);
   SelAlignY->SetColor(COLOR_SELNONE, COLOR_SELECT, COLOR_SELNEW);
   SelAlignY->SetOnChange(OnChangeAlignY);
+
+  LabTitle->TextColor(TEXT_COLOR);
+  LabLeft->TextColor(TEXT_COLOR);
+  LabTop->TextColor(TEXT_COLOR);
+  LabWidth->TextColor(TEXT_COLOR);
+  LabHeight->TextColor(TEXT_COLOR);
+  LabFont->TextColor(TEXT_COLOR);
+  LabPadX->TextColor(TEXT_COLOR);
+  LabPadY->TextColor(TEXT_COLOR);
 
   LabTag->TextFont(24);
   LabTag->TextAlign(LEFT_CENTER);
@@ -491,7 +532,7 @@ void        EvEditProp::refreshEvent(void)
     NumHeight->SetValue(editObj->Height());
     SelShape->SetValue((shape == USER_CORNERS ? -1 : shape));
     NumFont->SetValue(editObj->Style.font);
-    NumFont->TextColor(editObj->Disp->SystemFont[editObj->Style.font] == nullptr ? TEXT_ERROR : EV_BLACK);
+    NumFont->TextColor(editObj->Disp->SystemFont[editObj->Style.font] == nullptr ? TEXT_ERROR : CL_BLACK);
     NumPadX->SetValue(editObj->Style.padX);
     NumPadY->SetValue(editObj->Style.padY);
     SelAlignX->SetValue(editObj->Style.align & 3);
@@ -627,7 +668,7 @@ static void OnChangeFont(EvNumInt *Sender, int32_t Value)
 {
   if (editObj != nullptr)
   {
-    Sender->TextColor(editObj->Disp->SystemFont[Value] == 0 ? TEXT_ERROR : EV_BLACK);
+    Sender->TextColor(editObj->Disp->SystemFont[Value] == 0 ? TEXT_ERROR : CL_BLACK);
     editObj->TextFont(Value);
   }
 }

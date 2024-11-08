@@ -29,8 +29,8 @@ class EvButton : public EvObj
 
   protected:
     int16_t       mValue;
-    uint16_t      mColorUp;
-    uint16_t      mColorDown;
+    color16       mColorUp;
+    color16       mColorDown;
     bool          mTouchFlag;
 
     virtual void  drawEvent(void);

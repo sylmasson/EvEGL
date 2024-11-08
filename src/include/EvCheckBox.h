@@ -31,9 +31,9 @@ class EvCheckBox : public EvObj
 
   protected:
     int16_t       mValue;
-    uint16_t      mColorCheck;
-    uint16_t      mColorUncheck;
-    uint16_t      mColorBorder;
+    color16       mColorCheck;
+    color16       mColorUncheck;
+    color16       mColorBorder;
     bool          mTouchFlag;
 
     virtual void  drawEvent(void);

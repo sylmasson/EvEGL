@@ -32,6 +32,7 @@ class EvNumInt : public EvObj
     void          SetTurnOver(bool TurnOver);
     void          SetFormat(const char *Format);
     void          SetRange(int32_t Min, int32_t Max);
+    void          SetColor(uint16_t ColorHold, uint16_t ColorInc = CL_NUMINT_INC, uint16_t ColorDec = CL_NUMINT_DEC);
     void          SetOnTouch(void (*OnTouch)(EvNumInt *Sender, const EvTouchEvent *Touch));
     void          SetOnChange(void (*OnChange)(EvNumInt *Sender, int32_t Value));
 
@@ -43,6 +44,9 @@ class EvNumInt : public EvObj
     bool          mBusy;
     bool          mSkipUp;
     bool          mTurnOver;
+    uint16_t      mColorHold;
+    uint16_t      mColorInc;
+    uint16_t      mColorDec;
     const char    *mFormat;
 
     virtual void  drawEvent(void);

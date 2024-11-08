@@ -335,7 +335,7 @@ void        EvImage::drawSetup(void)
   {
     Disp->ColorMask(0, 0, 0, 1);
     Disp->Clear();
-    FillRectangle2f(0, 0, mWidth << 4, mHeight << 4, RGB555(255, 255, 255), mBdRadius);
+    FillRectangle2f(0, 0, mWidth << 4, mHeight << 4, CL_WHITE, mBdRadius);
     Disp->ColorMask(1, 1, 1, 0);
     Disp->BlendFunc(DST_ALPHA, ONE_MINUS_DST_ALPHA);
   }

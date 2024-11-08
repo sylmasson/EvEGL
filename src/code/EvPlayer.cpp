@@ -2,22 +2,12 @@
 #include    <EvGUI.h>
 
 #define     HIDE_DELAY      3000
-
-#define     TIMELINE_KNOB   RGB555(230, 230, 230)
-#define     TIMELINE_LOWER  RGB555(230,   0,   0)
-#define     TIMELINE_UPPER  TIMELINE_KNOB
-
-#define     PLAYBUTTON_BG   RGB555(  0,   0,   0)
-#define     PLAYBUTTON_ICON TIMELINE_KNOB
-
 #define     SIDEBAR_HEIGHT  50
 
 #define     PLAYBUTTON      0
 #define     FULLBUTTON      1
 #define     SPEEDBUTTON     2
 #define     TIMELAPSE       3
-
-#define     BG_COLOR        RGB555(20, 20, 20)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
@@ -63,15 +53,15 @@ EvPlayer::EvPlayer(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, E
 
   Video->SetOnLoadFrame(sOnLoadFrame);
 
-  TopBar->BgColor(RGB555(0, 0, 0), 128);
+  TopBar->BgColor(CL_BLACK, 128);
   TopBar->OwnerAlign(CENTER_TOP);
   TopBar->Setup(SIDEBAR_TOP);
 
-  BottomBar->BgColor(RGB555(0, 0, 0), 128);
+  BottomBar->BgColor(CL_BLACK, 128);
   BottomBar->OwnerAlign(CENTER_BOTTOM);
   BottomBar->Setup(SIDEBAR_BOTTOM);
 
-  TimeLine->SetColor(TIMELINE_LOWER, TIMELINE_UPPER, TIMELINE_KNOB);
+  TimeLine->SetColor(CL_PALYER_TIMELINE_LOWER, CL_PALYER_TIMELINE_UPPER, CL_PLAYER_TIMELINE_KNOB);
   TimeLine->BdShape(RATIO_CORNERS);
   TimeLine->SetOnChange(sOnChangeTimeLine);
   TimeLine->SetOnTouch(sOnTouchTimeLine);
@@ -81,26 +71,28 @@ EvPlayer::EvPlayer(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, E
   TimeLapse->TextFont(26);
   TimeLapse->TextLabel("");
   TimeLapse->TextAlign(CENTER);
-  TimeLapse->TextColor(TIMELINE_KNOB);
+  TimeLapse->TextColor(CL_PLAYER_TEXT);
   TimeLapse->SetOnTouch(sOnTouchTimeLapse);
   TimeLapse->TagId = TIMELAPSE;
 
   PlayButton->Hide();
   PlayButton->BdShape(ROUND_CORNERS);
+  PlayButton->TextColor(CL_PLAYER_ICON);
   PlayButton->SetOnTouch(sOnTouchPlayButton);
   PlayButton->TagId = PLAYBUTTON;
 
   FullButton->SetOnTouch(sOnTouchFullButton);
+  FullButton->TextColor(CL_PLAYER_ICON);
   FullButton->TagId = FULLBUTTON;
 
   SpeedButton->TextFont(25);
   SpeedButton->TextLabel("1 X");
   SpeedButton->TextAlign(CENTER);
-  SpeedButton->TextColor(TIMELINE_KNOB);
+  SpeedButton->TextColor(CL_PLAYER_TEXT);
   SpeedButton->SetOnTouch(sOnTouchSpeedButton);
   SpeedButton->TagId = SPEEDBUTTON;
 
-  BgColor(BG_COLOR);
+  BgColor(CL_PLAYER_BG);
   resize();
 }
 
@@ -197,7 +189,7 @@ void        EvPlayer::ScreenSize(void)
     SmallScreen();
 
   Video->SetOpacity(OPACITY_MAX);
-  BgColor(BG_COLOR);
+  BgColor(CL_PLAYER_BG);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -347,7 +339,7 @@ void        EvPlayer::Button::drawEvent(void)
       x = (mWidth - 24) / 2;
       y = (mHeight - 24) / 2;
 
-      Disp->ColorRGB(TIMELINE_KNOB);
+      Disp->ColorRGB(mStyle.color.Get());
       Disp->LineWidth(24);
       Disp->Begin(LINES);
 
@@ -400,11 +392,11 @@ void        EvPlayer::Button::drawEvent(void)
     case PLAYBUTTON:
       x = (mWidth - 40) / 2;
       y = (mHeight - 70) / 2;
-      BgColor(PLAYBUTTON_BG, mTouchFlag ? 200 : 128);
+      BgColor(CL_BLACK, mTouchFlag ? 200 : 128);
 
       if (((EvPlayer *)GetOwner())->IsRunning())
       { // Pause button
-        Disp->ColorRGB(TIMELINE_KNOB);
+        Disp->ColorRGB(mStyle.color.Get());
         Disp->LineWidth(16);
         Disp->Begin(RECTS);
         Disp->Vertex2i(x +  0, y +  0);
@@ -414,7 +406,7 @@ void        EvPlayer::Button::drawEvent(void)
       }
       else
       { // Play button
-        Disp->ColorRGB(TIMELINE_KNOB);
+        Disp->ColorRGB(mStyle.color.Get());
         Disp->StencilOp(INCR, INCR);
         Disp->ColorMask(0, 0, 0, 0);
         Disp->Begin(EDGE_STRIP_L);
@@ -516,14 +508,14 @@ static void sOnTouchTimeLapse(EvLabel *Sender, const EvTouchEvent *Touch)
     {
       case TOUCH_START:
         player->Video->SetOpacity(128);
-        player->BgColor(BG_COLOR, 64);
+        player->BgColor(CL_PLAYER_BG, 64);
         player->SetMovable(true);
         player->ToFront();
         break;
 
       case TOUCH_END:
         player->Video->SetOpacity(OPACITY_MAX);
-        player->BgColor(BG_COLOR);
+        player->BgColor(CL_PLAYER_BG);
         break;
 
       case TOUCH_MOVE:

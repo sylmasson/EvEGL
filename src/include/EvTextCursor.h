@@ -1,6 +1,6 @@
 
-#ifndef     _EV_CURSOR_H_
-#define     _EV_CURSOR_H_
+#ifndef     _TEXTCURSOR_H_
+#define     _TEXTCURSOR_H_
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
@@ -32,4 +32,4 @@ class EvTextCursor : public EvObj
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#endif  /* _EV_CURSOR_H_ */
+#endif  /* _TEXTCURSOR_H_ */

@@ -1,3 +1,9 @@
+commit 4175903d456144c7a501ac3bbdbf7b2f39ee1ebc
+Author: Sylvain Masson <sylvainmasson@Sylvains-Mac-mini.local>
+Date:   Wed Oct 23 15:57:44 2024 -0400
+
+    Before indexed color implementation
+
 commit 175d36443bc0af0a29e2b307eb651518cbf32c59
 Author: Sylvain Masson <sylvainmasson@Sylvains-Mac-mini.local>
 Date:   Sun Jun 23 09:58:30 2024 -0400

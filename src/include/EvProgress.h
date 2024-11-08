@@ -26,14 +26,14 @@ class EvProgress : public EvObj
   public:
     int16_t       Value(void);
     bool          SetValue(int16_t Value);
-    void          SetColor(uint16_t ColorLower, uint16_t ColorUpper);
+    void          SetColor(uint16_t ColorLower, uint16_t ColorUpper = CL_PROGRESS_UPPER);
     void          SetFormat(const char *Format, const float M = 0.1, const float B = 0.0);
     void          SetOnTouch(void (*OnTouch)(EvProgress *Sender, const EvTouchEvent *Touch));
 
   protected:
     int16_t       mValue;
-    uint16_t      mColorLower;
-    uint16_t      mColorUpper;
+    color16       mColorLower;
+    color16       mColorUpper;
     const char    *mFormat;    // must be valid float printf format
     float         mM, mB;
 

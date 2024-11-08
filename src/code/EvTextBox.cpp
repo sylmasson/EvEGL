@@ -1,12 +1,6 @@
 
 #include    <EvGUI.h>
 
-#define     BG_COLOR        RGB555(255, 255, 255)
-#define     BD_COLOR        RGB555(210, 210, 210)
-#define     FOCUS_COLOR     RGB555(  0,  51, 153)
-#define     CURSOR_COLOR    RGB555(  0,  51, 153)
-#define     SELECT_COLOR    RGB555(179, 204, 255)
-
 #define     ClrEditedText() (mFlags &= ~1)
 #define     ClrMoveCursor() (mFlags &= ~2)
 #define     ClrMoveToWord() (mFlags &= ~4)
@@ -52,6 +46,9 @@ EvTextBox::EvTextBox(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height,
   EvPanel(Left, Top, Width, Height, Disp, Tag, State),
   mFlags(0),
   mMaxLength(0),
+  mColorBd(CL_TEXTBOX_BD),
+  mColorBdFocus(CL_TEXTBOX_FOCUS),
+  mColorTextSelect(CL_TEXTBOX_SELECT),
   mCursorIndex(0),
   mSelectBegin(0),
   mSelectCount(0),
@@ -66,8 +63,9 @@ EvTextBox::EvTextBox(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height,
   TextClear();
   TextFont(26);
   TextPadding(10, 0);
-  BgColor(BG_COLOR);
-  BdColor(BD_COLOR);
+  TextColor(CL_TEXTBOX_TEXT);
+  BgColor(CL_TEXTBOX_BG);
+  BdColor(CL_TEXTBOX_BD);
   BdShape(FIXED_CORNERS);
   BdWidth(24);
 
@@ -75,7 +73,7 @@ EvTextBox::EvTextBox(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height,
     abortCreate();
   else
   {
-    Cursor->BgColor(CURSOR_COLOR);
+    Cursor->BgColor(CL_TEXTBOX_CURSOR);
     Cursor->SetStyle(CURSOR_SMOOTH);
   }
 }
@@ -141,6 +139,14 @@ void        EvTextBox::SetMaxLength(uint16_t MaxLength)
   }
 
   mMaxLength = MaxLength;
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+void        EvTextBox::SetColor(uint16_t ColorBd, uint16_t ColorBdFocus, uint16_t ColorTextSelect)
+{
+  if (mColorBd.Set(ColorBd) | mColorBdFocus.Set(ColorBdFocus) | mColorTextSelect.Set(ColorTextSelect))
+    Modified();
 }
 
 /// @copydoc EvButton::SetOnTouch()
@@ -489,7 +495,7 @@ void        EvTextBox::drawEvent(void)
     int16_t   x = textLeft() + TextWidth(str, mStyle.font, mSelectBegin);
     int16_t   w = TextWidth(str + mSelectBegin, mStyle.font, mSelectCount);
 
-    FillRectangle(x + mPanelOffsetX, textTop(), w, TextHeight(), SELECT_COLOR);
+    FillRectangle(x + mPanelOffsetX, textTop(), w, TextHeight(), mColorTextSelect.Get());
   }
 
   DrawText(mPanelOffsetX, 0, mWidth, mHeight, c_str(Label));
@@ -529,7 +535,7 @@ void        EvTextBox::refreshEvent(void)
 void        EvTextBox::setKbdFocusEvent(void)
 {
   Cursor->Show();
-  BdColor(FOCUS_COLOR);
+  BdColor(mColorBdFocus.Raw());
   mAlign = mStyle.align;
   TextAlign((mAlign & ~3) | ALIGNMENT_LOCK);
 
@@ -546,7 +552,7 @@ void        EvTextBox::lostKbdFocusEvent(void)
 {
   Unselect();
   Cursor->Hide();
-  BdColor(BD_COLOR);
+  BdColor(mColorBd.Raw());
   TextAlign(mAlign);
   mCursorIndex = 0;
   mPanelOffsetX = 0;

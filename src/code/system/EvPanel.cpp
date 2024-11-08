@@ -36,6 +36,7 @@ EvPanel::EvPanel(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvD
   mFirst(nullptr),
   mLast(nullptr)
 {
+  BgColor(CL_PANEL_BG);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

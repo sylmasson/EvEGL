@@ -1,8 +1,6 @@
 
 #include    <EvGUI.h>
 
-#define     BG_COLOR        RGB555( 50,  50,  50)
-
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
  * @brief      Create a new instance of the standard **EvViewer**.
@@ -43,7 +41,7 @@ EvViewer::EvViewer(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, E
   }
 
   TouchMax(2);
-  BgColor(BG_COLOR);
+  BgColor(CL_DEFAULT_BG);
   BdShape(FIXED_CORNERS);
 }
 

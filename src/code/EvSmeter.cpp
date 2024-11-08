@@ -27,7 +27,7 @@ EvSmeter::EvSmeter(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, E
     mBG->SetMode(RESIZE_PROPORTIONAL, BILINEAR);
     mNeedle->SetMode(RESIZE_PROPORTIONAL, BILINEAR);
     mNeedle->RotateAround(sSmeterNeedle.Width / 2, sSmeterNeedle.Height - 6);
-    BgColor(RGB555(0, 0, 0));
+    BgColor(CL_BLACK);
     resizeEvent();
     SetValue(-1000);
   }
@@ -89,7 +89,7 @@ void        EvNeedle::drawEvent(void)
 {
   Disp->ScissorSize(mView.w, mView.h - (17 * mScale));
   drawSetup();
-  Disp->ColorRGB(RGB555(255, 255, 255));
+  Disp->ColorRGB(CL_WHITE);
   Disp->ColorA(64);
   Disp->Vertex2ii(0, 20 * mScale);
   Disp->ColorA(255);
