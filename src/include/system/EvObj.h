@@ -9,12 +9,11 @@
 #define     DISABLED_OBJ    (1 << 2)
 #define     MOVED_OBJ       (1 << 3)
 #define     FIXED_OBJ       (1 << 4)
-#define     ABS_OBJ         (1 << 5)
-#define     FLOAT_OBJ       (1 << 6)
-#define     CONTROL_OBJ     (1 << 7)
-#define     MODIF_TEXT_OBJ  (1 << 8)
-#define     FUNCT_USED_OBJ  (1 << 9)
-#define     FULLSCREEN_OBJ  (1 << 10)
+#define     FLOATING_OBJ    (1 << 5)
+#define     CONTROL_OBJ     (1 << 6)
+#define     MODIF_TEXT_OBJ  (1 << 7)
+#define     FUNCT_USED_OBJ  (1 << 8)
+#define     FULLSCREEN_OBJ  (1 << 9)
 #define     FILTER_DIS_OBJ  (1 << 13)
 #define     ABORT_OBJ       (1 << 14)
 #define     SYSTEM_OBJ      (1 << 15) // reserved for GUI System
@@ -104,6 +103,7 @@ struct EvTextStyle
 class EvObj : public Stream
 {
   friend class EvPanel;
+  friend class EvShell;
 
   protected:
     EvObj(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ);
@@ -156,6 +156,7 @@ class EvObj : public Stream
     virtual void    ClearCache(void);
     virtual void    SetOpacity(uint16_t Opacity);
     virtual void    ModifiedAll(void) { Modified(); };
+    virtual bool    IsPanelObj(void) { return false; };
     virtual size_t  WriteKey(uint8_t Key, uint8_t Layout, uint8_t ShiftKey, bool DoubleTouch) { write(Key); return -1; };
 
     // Pure virtual Stream functions

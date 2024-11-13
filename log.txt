@@ -1,3 +1,11 @@
+commit 786e29a7569327a8366f0665fafce098122a5c5b
+Author: Sylvain Masson <sylvainmasson@Sylvains-Mac-mini.local>
+Date:   Fri Nov 8 15:12:11 2024 -0500
+
+    Overall: Creation of new classes EvColor and color16 for the implementation of indexed colors
+    
+    EvEve: remove ConvertToGray process option
+
 commit 4175903d456144c7a501ac3bbdbf7b2f39ee1ebc
 Author: Sylvain Masson <sylvainmasson@Sylvains-Mac-mini.local>
 Date:   Wed Oct 23 15:57:44 2024 -0400

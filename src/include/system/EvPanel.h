@@ -39,6 +39,8 @@
 
 class EvPanel : public EvObj
 {
+  friend class EvShell;
+
   struct Node
   {
     EvObj         *obj;
@@ -53,11 +55,11 @@ class EvPanel : public EvObj
 
     EvObj         *AddObj(EvObj *Obj, const char *Tag = nullptr);
     EvObj         *RemoveObj(EvObj *Obj);
-    EvObj         *FirstObj(void);
     virtual void  Hide(void);
     virtual void  ClearCache(void);
     virtual void  SetOpacity(uint16_t Opacity);
     virtual void  ModifiedAll(void);
+    virtual bool  IsPanelObj(void) { return true; };
 
   public:         // Public functions reserved for the system
     void          SetToFront(EvObj *Obj, bool AllOwner = true);

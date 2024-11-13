@@ -1477,11 +1477,11 @@ void        EvObj::SetView(void)
   EvView    p = mView;
   EvView    &v = mView;
 
-  if (mOwner != nullptr && !(mStatus & ABS_OBJ))
+  if (mOwner != nullptr)
   {
     v = mOwner->mView;
 
-    if (mStatus & FLOAT_OBJ)
+    if (mStatus & FLOATING_OBJ)
     {
       v.x1 = v.y1 = 0;
       v.x2 = Disp->Width() - 1;

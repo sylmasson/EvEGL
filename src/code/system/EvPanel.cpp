@@ -149,19 +149,6 @@ EvObj       *EvPanel::RemoveObj(EvObj *Obj)
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
- * @brief      Get the first visual object from the panel.
- *
- * @return     The address pointer of the first object on success, otherwise returns nullptr.
- * 
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-EvObj       *EvPanel::FirstObj(void)
-{
-  return (mFirst != nullptr) ? mFirst->obj : nullptr;
-}
-
-/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- *
  * @brief      Sets the Object as not visible.
  * 
  * If the Object is visible, change it to not visible Object.

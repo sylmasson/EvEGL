@@ -10,17 +10,18 @@ static void sOnSaveTouchCalibration(EvTouchCal *Sender, bool Save);
 static EvCmd    sCmdList[] =
 {
   {DC,       1,    "", "dc",       "dc [1-4|Name]         Display Change"},
-  {LIST,     1,   "l", "list",     "l, list [DL|Id|Tag]   List display memory"},
+  {LIST,     1,   "l", "list",     "l, list [DL|Id|Tag]   Show display memory"},
   {DUMP,     1,   "d", "dump",     "d, dump [0x|Id|Tag]   Dump display memory"},
   {RADIX,    1,   "r", "radix",    "r, radix [b|w|d]      Change radix"},
   {EDITOR,   1,   "e", "editor",   "e, editor [close]     Open/close editor"},
   {TRACE,    1,   "t", "trace",    "t, trace opt          [modif|touch|fps|off]"},
-  {THEME,    1,  "th", "theme",    "th, theme 0-1         Change theme of display"},
+  {THEME,    1,  "th", "theme",    "th, theme [0-1]       Change theme of display"},
   {ROTATE,   1, "rot", "rotate",   "rot, rotate 0-3       Set display orientation"},
   {CALIB,    0,    "", "calib",    "calib                 Touchscreen calibration"},
-  {FONT,     0,    "", "font",     "font                  List font metrix block"},
-  {ROMFONT,  0,    "", "romfont",  "romfont               List display romfont"},
-  {LISTSD,   1,  "ls", "dir",      "ls, dir               List SD card directory"},
+  {INFO,     0,    "", "info",     "info                  Show object information"},
+  {FONT,     0,    "", "font",     "font                  Show font metrix block"},
+  {ROMFONT,  0,    "", "romfont",  "romfont               Show display romfont"},
+  {LISTSD,   1,  "ls", "dir",      "ls, dir               Show SD card directory"},
   {CLRCACHE, 0,  "cc", "clrcache", "cc, clrcache          Clear display list cache"},
   {HELP,     0,   "h", "help",     "h, help               Show shell commands"}
 };
@@ -201,10 +202,15 @@ void        EvShell::Input(const char C)
           break;
 
         case THEME:
-          if (argc == 1 && sscanf(arg[1], "%d%c", &i, &c) == 1 && (uint)i <= 1)
+          if (argc == 1 && sscanf(arg[1], "%d%c", &i, &c) == 1 && (uint)i < 2)
           {
             SystemColor.SelectTheme(i);
-            msg = nullptr;
+            argc = 0;
+          }
+          if (argc == 0)
+          {
+            sprintf(str, "Active theme is %u", SystemColor.GetTheme());
+            msg = str;
           }
           break;
 
@@ -229,6 +235,11 @@ void        EvShell::Input(const char C)
           break;
 
         case INFO:
+          if (argc == 0)
+          {
+            displayObjectInformation(Disp);
+            msg = nullptr;
+          }
           break;
 
         case FONT:
@@ -675,6 +686,45 @@ void        EvShell::displayMallocBlock(EvDisplay *Disp)
     EvOut->println(str);
     snprintf(str, sizeof(str) - 1, "Free:   %7lu bytes (%.1f%%) in %u blocks", sumFree, sumFree * (100.0 / EV_MALLOC_SIZE), cntFree);
     EvOut->println(str);
+  }
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+void        EvShell::displayObjectInformation(EvObj *Obj, int16_t SpacesCnt)
+{
+  static const char  unknown[] = "Unknown";
+  static const char  *shapeName[8] = {"ROUND", "RATIO", "FIXED", "SQUARE", "USER", unknown, unknown, unknown};
+  static const char  *alignName[16] =
+  {
+    "LEFT_TOP", "CENTER_TOP", "RIGHT_TOP", "JUSTIFY_TOP",
+    "LEFT_CENTER", "CENTER_CENTER", "RIGHT_CENTER", "JUSTIFY_CENTER",
+    "LEFT_BOTTOM", "CENTER_BOTTOM", "RIGHT_BOTTOM", "JUSTIFY_BOTTOM",
+    unknown, unknown, unknown, unknown
+  };
+
+  if (Obj != nullptr)
+  {
+    if (SpacesCnt <= 0)
+      EvOut->printf(" Left  Top  Width  Height Corners Radius Font PadX PadY    Alignment   Status [%s]\n", Obj->Tag);
+    else if (!(Obj->mStatus & SYSTEM_OBJ))
+    {
+      EvOut->printf("%5d %5d %5d %5d ", Obj->mLeft, Obj->mTop, Obj->mWidth, Obj->mHeight);
+      EvOut->printf("%9s %5u ", shapeName[Obj->mBdShape & 0x07], Obj->mBdRadius);
+      EvOut->printf("%4u %4d %4d ", Obj->mStyle.font, Obj->mStyle.padX, Obj->mStyle.padY);
+      EvOut->printf("%14s ", alignName[Obj->mStyle.align & 0x0F]);
+      EvOut->printf("   %c%c   ", Obj->IsViewable() ? 'V' : (Obj->IsVisible() ? 'v' : '.'), Obj->IsEnabled() ? 'E' : 'D');
+
+      if (SpacesCnt > 0)
+        for (int i = 0; i < SpacesCnt; i += 4)
+          EvOut->print(i < SpacesCnt - 4 ? " |  " : " |--");
+
+      EvOut->printf("[%s]\n", Obj->Tag == nullptr ? unknown : Obj->Tag);
+    }
+
+    if (Obj->IsPanelObj())
+      for (EvPanel::Node *node = ((EvPanel *)Obj)->mFirst; node != nullptr; node = node->next)
+        displayObjectInformation(node->obj, SpacesCnt + 4);
   }
 }
 

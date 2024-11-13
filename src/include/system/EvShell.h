@@ -46,6 +46,7 @@ class EvShell
     void          displayObjectRamG(EvDisplay *Disp, uint32_t Addr, uint32_t RamDL, int32_t Count);
     void          displayListCommand(EvDisplay *Disp, uint32_t Addr, uint32_t RamDL);
     void          displayMallocBlock(EvDisplay *Disp);
+    void          displayObjectInformation(EvObj *Obj, int16_t SpacesCnt = 0);
     void          displayFontMetrixBlock(EvDisplay *Disp);
     void          displayRomFont(EvDisplay *Disp);
     bool          displayChange(char *Str);

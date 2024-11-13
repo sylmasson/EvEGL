@@ -42,7 +42,7 @@ EvKbd::EvKbd(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDispl
   mShiftKey(0),
   FocusObj(nullptr)
 {
-  if ((mOverKey = EvLabel::Create(0, 0, (uint16_t)0, 0, this, "OverKey", DISABLED_OBJ | FLOAT_OBJ | SYSTEM_OBJ)) == nullptr)
+  if ((mOverKey = EvLabel::Create(0, 0, (uint16_t)0, 0, this, "OverKey", DISABLED_OBJ | FLOATING_OBJ | SYSTEM_OBJ)) == nullptr)
   {
     abortCreate();
     return;
