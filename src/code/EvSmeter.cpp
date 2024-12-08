@@ -1,17 +1,19 @@
 
 #include    <EvGUI.h>
 
+const char * const EvSmeter::TypeName = "EvSmeter";
+
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 EvSmeter    *EvSmeter::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag, uint16_t State)
 {
-  return !Dest ? nullptr : (EvSmeter *)EvObj::TryCreate(new EvSmeter(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvSmeter" : Tag, State), Dest);
+  return !Dest ? nullptr : (EvSmeter *)EvObj::TryCreate(new EvSmeter(Left, Top, Width, Height, Dest->Disp, Tag, State), Dest);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 EvSmeter::EvSmeter(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) :
-  EvPanel(Left, Top, Width == 0 ? Smeter->Width : Width, Height == 0 ? Smeter->Height : Height, Disp, Tag, State),
+  EvPanel(Left, Top, Width == 0 ? Smeter->Width : Width, Height == 0 ? Smeter->Height : Height, Disp, !Tag ? TypeName : Tag, State),
   mLock(false),
   mValue(0),
   mAngle(0),

@@ -1,6 +1,8 @@
 
 #include    <EvGUI.h>
 
+const char * const EvNumLabel::TypeName = "EvNumLabel";
+
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
  * @brief      Create a new instance of the standard **EvNumLabel**.
@@ -24,7 +26,7 @@ EvNumLabel  *EvNumLabel::Create(int16_t Left, int16_t Top, uint16_t Width, uint1
 {
   EvNumLabel  *obj = nullptr;
 
-  if (Dest != nullptr && (obj = (EvNumLabel *)EvObj::TryCreate(new EvNumLabel(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvNumLabel" : Tag, State), Dest)) != nullptr)
+  if (Dest != nullptr && (obj = (EvNumLabel *)EvObj::TryCreate(new EvNumLabel(Left, Top, Width, Height, Dest->Disp, Tag, State), Dest)) != nullptr)
   {
     obj->BdShape(FIXED_CORNERS);
     obj->TextAlign(RIGHT_CENTER);
@@ -58,7 +60,7 @@ EvNumLabel  *EvNumLabel::Create(int16_t Left, int16_t Top, float Value, const Ev
 {
   EvNumLabel  *obj = nullptr;
 
-  if (Dest != nullptr && Src != nullptr && (obj = (EvNumLabel *)EvObj::TryCreate(new EvNumLabel(Left, Top, Src->mWidth, Src->mHeight, Dest->Disp, !Tag ? "EvNumLabel" : Tag, State), Dest)) != nullptr)
+  if (Dest != nullptr && Src != nullptr && (obj = (EvNumLabel *)EvObj::TryCreate(new EvNumLabel(Left, Top, Src->mWidth, Src->mHeight, Dest->Disp, Tag, State), Dest)) != nullptr)
   {
     obj->mStyle = Src->mStyle;
     obj->mOpacity = Src->mOpacity;
@@ -78,7 +80,7 @@ EvNumLabel  *EvNumLabel::Create(int16_t Left, int16_t Top, float Value, const Ev
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 EvNumLabel::EvNumLabel(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) :
-  EvLabel(Left, Top, Width, Height, Disp, Tag, State),
+  EvLabel(Left, Top, Width, Height, Disp, !Tag ? TypeName : Tag, State),
   mFormat("%.0f"),
   mValue(-1)
 {

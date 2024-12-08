@@ -3,6 +3,8 @@
 
 //#define     VERBOSE
 
+const char * const EvPanel::TypeName = "EvPanel";
+
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
  * @brief      Create a new instance of a standard Panel.
@@ -24,13 +26,13 @@
 
 EvPanel     *EvPanel::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag, uint16_t State)
 {
-  return !Dest ? nullptr : (EvPanel *)EvObj::TryCreate(new EvPanel(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvPanel" : Tag, State), Dest);
+  return !Dest ? nullptr : (EvPanel *)EvObj::TryCreate(new EvPanel(Left, Top, Width, Height, Dest->Disp, Tag, State), Dest);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 EvPanel::EvPanel(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) :
-  EvObj(Left, Top, Width, Height, Disp, Tag, State),
+  EvObj(Left, Top, Width, Height, Disp, !Tag ? TypeName : Tag, State),
   mPanelOffsetX(0),
   mPanelOffsetY(0),
   mFirst(nullptr),

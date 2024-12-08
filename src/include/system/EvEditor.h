@@ -18,20 +18,23 @@ class EvEditor : public EvPanel
   public:
     virtual       ~EvEditor(void);
 
-    EvEditDot     *DotMove;
-    EvEditDot     *DotReSize;
-
   protected:
     virtual void  drawEvent(void);
     virtual void  refreshEvent(void);
 
   public:
-    static bool         Close(void);
-    static bool         Open(EvDisplay *Disp);
-    static bool         IsAlreadyOpen(void);
-    static void         SelectObj(EvObj *Obj);
-    static void         DestroyedObj(EvObj *Obj);
-    static void         AlwaysToFront(void);
+    EvEditDot     *DotMove;
+    EvEditDot     *DotReSize;
+
+    static const  char *const TypeName;
+    virtual const char *TypeObj(void) { return TypeName; };
+
+    static bool   Close(void);
+    static bool   Open(EvDisplay *Disp);
+    static bool   IsAlreadyOpen(void);
+    static void   SelectObj(EvObj *Obj);
+    static void   DestroyedObj(EvObj *Obj);
+    static void   AlwaysToFront(void);
 };
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -43,15 +46,18 @@ class EvEditDot : public EvObj
   protected:
     EvEditDot(uint16_t Size, void (*OnTouch)(EvEditDot *Sender, const EvTouchEvent *Touch), EvDisplay *Disp, const char *Tag);
 
-  public:
-    int16_t       X, Y;
-
   protected:
     virtual void  drawEvent(void);
     virtual void  touchEvent(const EvTouchEvent *Touch);
 
   private:
     void          (*mOnTouch)(EvEditDot *Sender, const EvTouchEvent *Touch);
+
+  public:
+    int16_t       X, Y;
+
+    static const  char *const TypeName;
+    virtual const char *TypeObj(void) { return TypeName; };
 };
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -66,6 +72,15 @@ class EvEditProp : public EvPanel
   public:
     virtual       ~EvEditProp(void);
 
+  protected:
+    virtual void  refreshEvent(void);
+    virtual void  touchEvent(const EvTouchEvent *Touch);
+
+  private:
+    static int16_t    sLeft;
+    static int16_t    sTop;
+
+  public:
     bool          Minimized;
 
     EvLabel       *LabTitle;
@@ -82,13 +97,8 @@ class EvEditProp : public EvPanel
     EvNumInt      *NumFont, *NumPadX, *NumPadY;
     EvSelector    *SelShape, *SelAlignX, *SelAlignY;
 
-  protected:
-    virtual void  refreshEvent(void);
-    virtual void  touchEvent(const EvTouchEvent *Touch);
-
-  private:
-    static int16_t    sLeft;
-    static int16_t    sTop;
+    static const  char *const TypeName;
+    virtual const char *TypeObj(void) { return TypeName; };
 };
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

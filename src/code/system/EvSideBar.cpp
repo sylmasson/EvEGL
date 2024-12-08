@@ -3,6 +3,8 @@
 
 // #define     SIDEBAR_DEBUG   SIDEBAR_RIGHT
 
+const char * const EvSideBar::TypeName = "EvSideBar";
+
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
  * @brief      Create a new instance of the standard SideBar.
@@ -24,13 +26,13 @@
 
 EvSideBar   *EvSideBar::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag, uint16_t State)
 {
-  return !Dest ? nullptr : (EvSideBar *)EvObj::TryCreate(new EvSideBar(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvSideBar" : Tag, State), Dest);
+  return !Dest ? nullptr : (EvSideBar *)EvObj::TryCreate(new EvSideBar(Left, Top, Width, Height, Dest->Disp, Tag, State), Dest);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 EvSideBar::EvSideBar(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) :
-  EvPanel(Left, Top, Width, Height, Disp, Tag, State)
+  EvPanel(Left, Top, Width, Height, Disp, !Tag ? TypeName : Tag, State)
 {
   Setup(SIDEBAR_TOP);
 }

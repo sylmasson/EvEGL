@@ -1,6 +1,8 @@
 
 #include    <EvGUI.h>
 
+const char * const EvViewer::TypeName = "EvViewer";
+
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
  * @brief      Create a new instance of the standard **EvViewer**.
@@ -22,13 +24,13 @@
 
 EvViewer  *EvViewer::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag, uint16_t State)
 {
-  return !Dest ? nullptr : (EvViewer *)EvObj::TryCreate(new EvViewer(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvViewer" : Tag, State), Dest);
+  return !Dest ? nullptr : (EvViewer *)EvObj::TryCreate(new EvViewer(Left, Top, Width, Height, Dest->Disp, Tag, State), Dest);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 EvViewer::EvViewer(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) :
-  EvScrollBox(Left, Top, Width, Height, Disp, Tag, State),
+  EvScrollBox(Left, Top, Width, Height, Disp, !Tag ? TypeName : Tag, State),
   mScale(1.0),
   mAngle(0.0),
   mOnScaling(nullptr),

@@ -4,6 +4,8 @@
 #define     SCROLLX         (mWidth < mPageWidth)
 #define     SCROLLY         (mHeight < mPageHeight)
 
+const char * const EvScrollBox::TypeName = "EvScrollBox";
+
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
  * @brief      Create a new instance of a standard ScrollBox.
@@ -25,13 +27,13 @@
 
 EvScrollBox *EvScrollBox::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag, uint16_t State)
 {
-  return !Dest ? nullptr : (EvScrollBox *)EvObj::TryCreate(new EvScrollBox(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvScrollBox" : Tag, State), Dest);
+  return !Dest ? nullptr : (EvScrollBox *)EvObj::TryCreate(new EvScrollBox(Left, Top, Width, Height, Dest->Disp, Tag, State), Dest);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 EvScrollBox::EvScrollBox(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) :
-  EvPanel(Left, Top, Width, Height, Disp, Tag, State),
+  EvPanel(Left, Top, Width, Height, Disp, !Tag ? TypeName : Tag, State),
   mPageWidth(Width),
   mPageHeight(Height),
   mPageOffsetX(0),
@@ -39,8 +41,8 @@ EvScrollBox::EvScrollBox(int16_t Left, int16_t Top, uint16_t Width, uint16_t Hei
   mTouchFlag(false),
   mOnTouch(nullptr)
 {
-  mScrollBarX = EvScrollBar::Create(0, 0, Width, 20, this, nullptr, VISIBLE_OBJ | FIXED_OBJ | SYSTEM_OBJ);
-  mScrollBarY = EvScrollBar::Create(0, 0, 20, Height, this, nullptr, VISIBLE_OBJ | FIXED_OBJ | SYSTEM_OBJ);
+  mScrollBarX = EvScrollBar::Create(0, 0, Width, 20, this, nullptr, VISIBLE_OBJ | FIXED_OBJ);
+  mScrollBarY = EvScrollBar::Create(0, 0, 20, Height, this, nullptr, VISIBLE_OBJ | FIXED_OBJ);
 
   if (mScrollBarX == nullptr || mScrollBarY == nullptr)
     abortCreate();

@@ -1,6 +1,8 @@
 
 #include    <EvGUI.h>
 
+const char * const EvPixelBox::TypeName = "EvPixelBox";
+
 const uint16_t  PowerConsciousHSV[] =
 {
   0, 0, 1, 1, 1, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6, 7, 7, 7, 8, 8, 8, 9, 9, 9, 10, 10, 11, 11, 11,12,
@@ -59,13 +61,13 @@ const uint16_t  RegularHSV[] =
 
 EvPixelBox     *EvPixelBox::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag, uint16_t State)
 {
-  return !Dest ? nullptr : (EvPixelBox *)EvObj::TryCreate(new EvPixelBox(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvPixelBox" : Tag, State), Dest);
+  return !Dest ? nullptr : (EvPixelBox *)EvObj::TryCreate(new EvPixelBox(Left, Top, Width, Height, Dest->Disp, Tag, State), Dest);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 EvPixelBox::EvPixelBox(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) :
-  EvObj(Left, Top, Width, Height, Disp, Tag, State),
+  EvObj(Left, Top, Width, Height, Disp, !Tag ? TypeName : Tag, State),
   mBufInd(0),
   mOnTouch(nullptr)
 {

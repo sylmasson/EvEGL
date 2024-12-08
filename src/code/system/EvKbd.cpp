@@ -2,10 +2,9 @@
 #include    <EvGUI.h>
 #include    <include/system/EvKeyboard.h>
 
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+const char * const EvKbd::TypeName = "EvKbd";
 
 static EvKeyboard     *sKeyboard[2] = {&Keyboard1066x276, &Keyboard600x252};
-//static EvKeyboard     *sKeyboard[2] = {&Keyboard800x220, &Keyboard480x230};
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
@@ -28,13 +27,13 @@ static EvKeyboard     *sKeyboard[2] = {&Keyboard1066x276, &Keyboard600x252};
 
 EvKbd       *EvKbd::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag, uint16_t State)
 {
-  return !Dest ? nullptr : (EvKbd *)EvObj::TryCreate(new EvKbd(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvKbd" : Tag, State), Dest);
+  return !Dest ? nullptr : (EvKbd *)EvObj::TryCreate(new EvKbd(Left, Top, Width, Height, Dest->Disp, Tag, State), Dest);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 EvKbd::EvKbd(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) :
-  EvSideBar(Left, Top, Width, Height, Disp, Tag, State),
+  EvSideBar(Left, Top, Width, Height, Disp, !Tag ? TypeName : Tag, State),
   mKey(0),
   mKeyId(0),
   mLayout(0),

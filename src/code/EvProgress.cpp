@@ -1,6 +1,8 @@
 
 #include    <EvGUI.h>
 
+const char * const EvProgress::TypeName = "EvProgress";
+
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
  * @brief      Create a new instance of a standard Progress Bar.
@@ -24,13 +26,13 @@
 
 EvProgress  *EvProgress::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag, uint16_t State)
 {
-  return !Dest ? nullptr : (EvProgress *)EvObj::TryCreate(new EvProgress(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvProgress" : Tag, State), Dest);
+  return !Dest ? nullptr : (EvProgress *)EvObj::TryCreate(new EvProgress(Left, Top, Width, Height, Dest->Disp, Tag, State), Dest);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 EvProgress::EvProgress(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) :
-  EvObj(Left, Top, Width, Height, Disp, Tag, State),
+  EvObj(Left, Top, Width, Height, Disp, !Tag ? TypeName : Tag, State),
   mValue(-1),
   mColorLower(CL_PROGRESS_LOWER),
   mColorUpper(CL_PROGRESS_UPPER),

@@ -5,6 +5,9 @@
 #define     TAB_STYLE       (1 << 1)
 #define     TAB_LEFT_TOP    (1 << 2)
 
+const char * const EvTab::TypeName = "EvTab";
+const char * const EvSelector::TypeName = "EvSelector";
+
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
  * @brief      Create a new instance of a standard Tab selector.
@@ -28,13 +31,13 @@
 
 EvTab       *EvTab::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag, uint16_t State)
 {
-  return !Dest ? nullptr : (EvTab *)EvObj::TryCreate(new EvTab(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvTab" : Tag, State), Dest);
+  return !Dest ? nullptr : (EvTab *)EvObj::TryCreate(new EvTab(Left, Top, Width, Height, Dest->Disp, Tag, State), Dest);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 EvTab::EvTab(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) :
-  EvSelector(Left, Top, Width, Height, Disp, Tag, State)
+  EvSelector(Left, Top, Width, Height, Disp, !Tag ? TypeName : Tag, State)
 {
   mOption = TAB_STYLE | TAB_LEFT_TOP | SEPARATOR_ON;
   BdShape(RATIO_CORNERS);
@@ -109,13 +112,13 @@ void        EvTab::SetOnChange(void (*OnChange)(EvTab *Sender, int32_t Value))
 
 EvSelector  *EvSelector::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag, uint16_t State)
 {
-  return !Dest ? nullptr : (EvSelector *)EvObj::TryCreate(new EvSelector(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvSelector" : Tag, State), Dest);
+  return !Dest ? nullptr : (EvSelector *)EvObj::TryCreate(new EvSelector(Left, Top, Width, Height, Dest->Disp, Tag, State), Dest);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 EvSelector::EvSelector(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) :
-  EvObj(Left, Top, Width, Height, Disp, Tag, State),
+  EvObj(Left, Top, Width, Height, Disp, !Tag ? TypeName : Tag, State),
   mValue(0),
   mCount(0),
   mNewVal(-2),

@@ -27,6 +27,10 @@
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+const char * const EvEditor::TypeName = "EvEditor";
+const char * const EvEditDot::TypeName = "EvEditDot";
+const char * const EvEditProp::TypeName = "EvEditProp";
+
 int16_t     EvEditProp::sLeft = 0;
 int16_t     EvEditProp::sTop = 0;
 

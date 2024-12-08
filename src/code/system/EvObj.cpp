@@ -3,6 +3,8 @@
 
 //#define     VERBOSE
 
+const char * const EvObj::TypeName = "EvObj";
+
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 EvObj::EvObj(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) :
@@ -24,7 +26,7 @@ EvObj::EvObj(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDispl
   mOwner(nullptr),
   mCache(nullptr),
   Disp(Disp),
-  Tag(!Tag ? "EvObj" : Tag),
+  Tag(!Tag ? TypeName : Tag),
   TagId(0)
 {
   mStyle.font = 25;
@@ -1420,8 +1422,13 @@ void        EvObj::TouchUpdate(const EvTouchEvent *Touch)
       DisplayTagList(EvOut);
     }
 
-    if (Touch->event == TOUCH_DOUBLE && !(mStatus & SYSTEM_OBJ))
-      EvEditor::SelectObj(this);
+    if (Touch->event == TOUCH_DOUBLE)
+    {
+      if (!(mStatus & (SYSTEM_OBJ | FIXED_OBJ)))
+        EvEditor::SelectObj(this);
+      else if (this == Disp)
+        EvEditor::SelectObj(nullptr);
+    }
 
     if (IsEnabled())
       touchEvent(Touch);

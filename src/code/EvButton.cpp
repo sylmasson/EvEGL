@@ -1,6 +1,8 @@
 
 #include    <EvGUI.h>
 
+const char * const EvButton::TypeName = "EvButton";
+
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
  * @brief      Create a new instance of a standard **EvButton**.
@@ -24,7 +26,7 @@ EvButton    *EvButton::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_
 {
   EvButton  *obj = nullptr;
 
-  if (Dest != nullptr && (obj = (EvButton *)EvObj::TryCreate(new EvButton(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvButton" : Tag, State), Dest)) != nullptr)
+  if (Dest != nullptr && (obj = (EvButton *)EvObj::TryCreate(new EvButton(Left, Top, Width, Height, Dest->Disp, Tag, State), Dest)) != nullptr)
   {
     obj->TextAlign(CENTER);
     obj->TextLabel(obj->Tag);
@@ -58,7 +60,7 @@ EvButton    *EvButton::Create(int16_t Left, int16_t Top, const char *Label, uint
 {
   EvButton  *obj = nullptr;
 
-  if (Dest != nullptr && (obj = (EvButton *)EvObj::TryCreate(new EvButton(Left, Top, 0, 0, Dest->Disp, !Tag ? "EvButton" : Tag, State), Dest)) != nullptr)
+  if (Dest != nullptr && (obj = (EvButton *)EvObj::TryCreate(new EvButton(Left, Top, 0, 0, Dest->Disp, Tag, State), Dest)) != nullptr)
   {
     uint16_t  w;
 
@@ -100,7 +102,7 @@ EvButton    *EvButton::Create(int16_t Left, int16_t Top, const char *Label, cons
 {
   EvButton  *obj = nullptr;
 
-  if (Dest != nullptr && Src != nullptr && (obj = (EvButton *)EvObj::TryCreate(new EvButton(Left, Top, Src->mWidth, Src->mHeight, Dest->Disp, !Tag ? "EvButton" : Tag, State), Dest)) != nullptr)
+  if (Dest != nullptr && Src != nullptr && (obj = (EvButton *)EvObj::TryCreate(new EvButton(Left, Top, Src->mWidth, Src->mHeight, Dest->Disp, Tag, State), Dest)) != nullptr)
   {
     obj->TextLabel(Label);
     obj->mStyle = Src->mStyle;
@@ -121,7 +123,7 @@ EvButton    *EvButton::Create(int16_t Left, int16_t Top, const char *Label, cons
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 EvButton::EvButton(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) :
-  EvObj(Left, Top, Width, Height, Disp, Tag, State),
+  EvObj(Left, Top, Width, Height, Disp, !Tag ? TypeName : Tag, State),
   mValue(0),
   mColorUp(CL_BUTTON_FACE),
   mColorDown(CL_BUTTON_FACE_DOWN),

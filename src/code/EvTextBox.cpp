@@ -16,6 +16,8 @@
 #define     IsMoveToWord()  (mFlags & 4)
 #define     IsTouchBox()    (mFlags & 8)
 
+const char * const EvTextBox::TypeName = "EvTextBox";
+
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
  * @brief      Create a new instance of the standard TextBox.
@@ -37,13 +39,13 @@
 
 EvTextBox   *EvTextBox::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag, uint16_t State)
 {
-  return !Dest ? nullptr : (EvTextBox *)EvObj::TryCreate(new EvTextBox(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvTextBox" : Tag, State), Dest);
+  return !Dest ? nullptr : (EvTextBox *)EvObj::TryCreate(new EvTextBox(Left, Top, Width, Height, Dest->Disp, Tag, State), Dest);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 EvTextBox::EvTextBox(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) :
-  EvPanel(Left, Top, Width, Height, Disp, Tag, State),
+  EvPanel(Left, Top, Width, Height, Disp, !Tag ? TypeName : Tag, State),
   mFlags(0),
   mMaxLength(0),
   mColorBd(CL_TEXTBOX_BD),

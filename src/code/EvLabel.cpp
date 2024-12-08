@@ -1,6 +1,8 @@
 
 #include    <EvGUI.h>
 
+const char * const EvLabel::TypeName = "EvLabel";
+
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
  * @brief      Create a new instance of the standard **EvLabel**.
@@ -24,7 +26,7 @@ EvLabel     *EvLabel::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t
 {
   EvLabel   *obj = nullptr;
 
-  if (Dest != nullptr && (obj = (EvLabel *)EvObj::TryCreate(new EvLabel(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvLabel" : Tag, State), Dest)) != nullptr)
+  if (Dest != nullptr && (obj = (EvLabel *)EvObj::TryCreate(new EvLabel(Left, Top, Width, Height, Dest->Disp, Tag, State), Dest)) != nullptr)
   {
     obj->TextLabel(obj->Tag);
     obj->TextColor(CL_LABEL_TEXT);
@@ -56,7 +58,7 @@ EvLabel     *EvLabel::Create(int16_t Left, int16_t Top, const char *Label, uint8
 {
   EvLabel   *obj = nullptr;
 
-  if (Dest != nullptr && (obj = (EvLabel *)EvObj::TryCreate(new EvLabel(Left, Top, 0, 0, Dest->Disp, !Tag ? (!Label ? "EvLabel" : Label) : Tag, State), Dest)) != nullptr)
+  if (Dest != nullptr && (obj = (EvLabel *)EvObj::TryCreate(new EvLabel(Left, Top, 0, 0, Dest->Disp, !Tag ? Label : Tag, State), Dest)) != nullptr)
   {
     obj->TextFont(Font);
     obj->TextLabel(Label);
@@ -91,7 +93,7 @@ EvLabel     *EvLabel::Create(int16_t Left, int16_t Top, const char *Label, const
 {
   EvLabel   *obj = nullptr;
 
-  if (Dest != nullptr && Src != nullptr && (obj = (EvLabel *)EvObj::TryCreate(new EvLabel(Left, Top, Src->mWidth, Src->mHeight, Dest->Disp, !Tag ? (!Label ? "EvLabel" : Label) : Tag, State), Dest)) != nullptr)
+  if (Dest != nullptr && Src != nullptr && (obj = (EvLabel *)EvObj::TryCreate(new EvLabel(Left, Top, Src->mWidth, Src->mHeight, Dest->Disp, !Tag ? Label : Tag, State), Dest)) != nullptr)
   {
     obj->TextLabel(Label);
     obj->mStyle = Src->mStyle;
@@ -113,7 +115,7 @@ EvLabel     *EvLabel::Create(int16_t Left, int16_t Top, const char *Label, const
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 EvLabel::EvLabel(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) :
-  EvObj(Left, Top, Width, Height, Disp, Tag, State),
+  EvObj(Left, Top, Width, Height, Disp, !Tag ? TypeName : Tag, State),
   mTouchFlag(false),
   mOnTouch(nullptr)
 {

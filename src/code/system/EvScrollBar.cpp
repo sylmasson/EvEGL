@@ -3,6 +3,8 @@
 
 #define     KNOB_MIN        (24 << 4)
 
+const char * const EvScrollBar::TypeName = "EvScrollBar";
+
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
  * @brief      Create a new instance of a standard ScrollBar.
@@ -26,13 +28,13 @@
 
 EvScrollBar *EvScrollBar::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag, uint16_t State)
 {
-  return !Dest ? nullptr : (EvScrollBar *)EvObj::TryCreate(new EvScrollBar(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvScrollBar" : Tag, State), Dest);
+  return !Dest ? nullptr : (EvScrollBar *)EvObj::TryCreate(new EvScrollBar(Left, Top, Width, Height, Dest->Disp, Tag, State), Dest);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 EvScrollBar::EvScrollBar(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) :
-  EvObj(Left, Top, Width, Height, Disp, Tag, State),
+  EvObj(Left, Top, Width, Height, Disp, !Tag ? TypeName : Tag, State),
   mValue(0),
   mTimer(0),
   mPageSize(0),

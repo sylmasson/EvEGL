@@ -41,6 +41,9 @@ class EvButton : public EvObj
     void          (*mOnChange)(EvButton *Sender, int32_t Value);
 
   public:
+    static const  char *const TypeName;
+    virtual const char *TypeObj(void) { return TypeName; };
+
     static EvButton *Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ | FILTER_DIS_OBJ);
     static EvButton *Create(int16_t Left, int16_t Top, const char *Label, uint8_t Font, EvPanel *Dest, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ | FILTER_DIS_OBJ);
     static EvButton *Create(int16_t Left, int16_t Top, const char *Label, const EvButton *Src, EvPanel *Dest, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ | FILTER_DIS_OBJ);

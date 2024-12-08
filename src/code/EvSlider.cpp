@@ -4,6 +4,8 @@
 #define     KNOB_TAG        100
 #define     SLIDER_DELAY    150
 
+const char * const EvSlider::TypeName = "EvSlider";
+
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
  * @brief      Create a new instance of a standard **EvSlider**.
@@ -29,7 +31,7 @@ EvSlider    *EvSlider::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_
 {
   EvSlider  *obj = nullptr;
 
-  if (Dest != nullptr && (obj = (EvSlider *)EvObj::TryCreate(new EvSlider(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvSlider" : Tag, State), Dest)) != nullptr)
+  if (Dest != nullptr && (obj = (EvSlider *)EvObj::TryCreate(new EvSlider(Left, Top, Width, Height, Dest->Disp, Tag, State), Dest)) != nullptr)
   {
     obj->BdShape(ROUND_CORNERS);
     obj->resizeEvent();
@@ -63,7 +65,7 @@ EvSlider    *EvSlider::Create(int16_t Left, int16_t Top, int32_t Value, const Ev
 {
   EvSlider  *obj = nullptr;
 
-  if (Dest != nullptr && Src != nullptr && (obj = (EvSlider *)EvObj::TryCreate(new EvSlider(Left, Top, Src->mWidth, Src->mHeight, Dest->Disp, !Tag ? "EvSlider" : Tag, State), Dest)) != nullptr)
+  if (Dest != nullptr && Src != nullptr && (obj = (EvSlider *)EvObj::TryCreate(new EvSlider(Left, Top, Src->mWidth, Src->mHeight, Dest->Disp, Tag, State), Dest)) != nullptr)
   {
     obj->mStyle = Src->mStyle;
     obj->mOpacity = Src->mOpacity;
@@ -90,7 +92,7 @@ EvSlider    *EvSlider::Create(int16_t Left, int16_t Top, int32_t Value, const Ev
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 EvSlider::EvSlider(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) :
-  EvObj(Left, Top, Width, Height, Disp, Tag, State),
+  EvObj(Left, Top, Width, Height, Disp, !Tag ? TypeName : Tag, State),
   mValue(0),
   mMin(0),
   mMax(100),

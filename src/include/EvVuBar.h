@@ -42,6 +42,9 @@ class EvVuBar : public EvObj
   public:
     const int16_t &Value = mValue;
 
+    static const  char *const TypeName;
+    virtual const char *TypeObj(void) { return TypeName; };
+
     static EvVuBar  *Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ);
 };
 

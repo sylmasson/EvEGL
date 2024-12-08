@@ -3,6 +3,8 @@
 
 // #define     VERBOSE
 
+const char * const EvImage::TypeName = "EvImage";
+
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
  * @brief      Create a new instance of the standard Image.
@@ -24,13 +26,13 @@
 
 EvImage     *EvImage::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag, uint16_t State)
 {
-  return !Dest ? nullptr : (EvImage *)EvObj::TryCreate(new EvImage(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvImage" : Tag, State), Dest);
+  return !Dest ? nullptr : (EvImage *)EvObj::TryCreate(new EvImage(Left, Top, Width, Height, Dest->Disp, Tag, State), Dest);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 EvImage::EvImage(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) :
-  EvObj(Left, Top, Width, Height, Disp, Tag, State),
+  EvObj(Left, Top, Width, Height, Disp, !Tag ? TypeName : Tag, State),
   mRefreshCoeff(true),
   mResizeLock(false),
   mResizeMode(RESIZE_PROPORTIONAL | RESIZE_ON_LOAD),

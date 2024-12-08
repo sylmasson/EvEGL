@@ -4,6 +4,8 @@
 #define     KNOB_TAG        100
 #define     SLIDE_DELAY     150
 
+const char * const EvToggle::TypeName = "EvToggle";
+
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
  * @brief      Create a new instance of a standard Toggle switch.
@@ -25,13 +27,13 @@
 
 EvToggle    *EvToggle::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag, uint16_t State)
 {
-  return !Dest ? nullptr : (EvToggle *)EvObj::TryCreate(new EvToggle(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvToggle" : Tag, State), Dest);
+  return !Dest ? nullptr : (EvToggle *)EvObj::TryCreate(new EvToggle(Left, Top, Width, Height, Dest->Disp, Tag, State), Dest);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 EvToggle::EvToggle(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) :
-  EvObj(Left, Top, Width, Height, Disp, Tag, State),
+  EvObj(Left, Top, Width, Height, Disp, !Tag ? TypeName : Tag, State),
   mValue(0),
   mColorOn(CL_TOGGLE_ON),
   mColorOff(CL_TOGGLE_OFF),

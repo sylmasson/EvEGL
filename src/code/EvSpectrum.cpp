@@ -4,6 +4,8 @@
 #define     LINE_COLOR      RGB555(255, 255,   0)
 #define     FILL_COLOR      RGB555(128, 128,   0)
 
+const char * const EvSpectrum::TypeName = "EvSpectrum";
+
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
  * @brief      Create a new instance of the Spectrum.
@@ -25,13 +27,13 @@
 
 EvSpectrum     *EvSpectrum::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag, uint16_t State)
 {
-  return !Dest ? nullptr : (EvSpectrum *)EvObj::TryCreate(new EvSpectrum(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvSpectrum" : Tag, State), Dest);
+  return !Dest ? nullptr : (EvSpectrum *)EvObj::TryCreate(new EvSpectrum(Left, Top, Width, Height, Dest->Disp, Tag, State), Dest);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 EvSpectrum::EvSpectrum(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) :
-  EvObj(Left, Top, Width, Height, Disp, Tag, State),
+  EvObj(Left, Top, Width, Height, Disp, !Tag ? TypeName : Tag, State),
   mDataSize(Width / 2),
   mLineColor(LINE_COLOR),
   mFillColor(FILL_COLOR),

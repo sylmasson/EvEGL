@@ -5,6 +5,8 @@
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+const char * const EvDisplay::TypeName = "EvDisplay";
+
 uint16_t    EvDisplay::sDispCount = 0;
 uint16_t    EvDisplay::sTraceFlags = 0;
 uint32_t    EvDisplay::sFrameNumber = 0;
@@ -22,7 +24,7 @@ EvDisplay   *EvDisplay::Create(uint16_t Width, uint16_t Height, const char *Tag,
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 EvDisplay::EvDisplay(uint16_t Width, uint16_t Height, const char *Tag, const uint32_t *Config, uint8_t CS, uint8_t RST, uint32_t Baudrate, SPIClass *Spi) :
-  EvPanel(0, 0, Width, Height, this, Tag, VISIBLE_OBJ | SYSTEM_OBJ),
+  EvPanel(0, 0, Width, Height, this, !Tag ? TypeName : Tag, VISIBLE_OBJ | SYSTEM_OBJ),
   EvEVE(Config, CS, RST, Baudrate, Spi),
   EvSysFont(this),
   mFrameCount(0),

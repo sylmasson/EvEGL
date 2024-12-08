@@ -18,19 +18,21 @@
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+const char * const EvTouchCal::TypeName = "EvTouchCal";
+
 static const char   *DefaultText[5] = {"Touch Screen Calibration", "Calibration Completed", "Cancel", "Restart", "Save"};
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 EvTouchCal  *EvTouchCal::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag, uint16_t State)
 {
-  return !Dest ? nullptr : (EvTouchCal *)EvObj::TryCreate(new EvTouchCal(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvTouchCal" : Tag, State), Dest);
+  return !Dest ? nullptr : (EvTouchCal *)EvObj::TryCreate(new EvTouchCal(Left, Top, Width, Height, Dest->Disp, Tag, State), Dest);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 EvTouchCal::EvTouchCal(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) :
-  EvObj(Left, Top, Width, Height, Disp, Tag, State),
+  EvObj(Left, Top, Width, Height, Disp, !Tag ? TypeName : Tag, State),
   mInd(0),
   mTouchTag(0),
   mTimer(0),

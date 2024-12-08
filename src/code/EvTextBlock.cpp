@@ -1,6 +1,8 @@
 
 #include    <EvGUI.h>
 
+const char * const EvTextBlock::TypeName = "EvTextBlock";
+
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
  * @brief      Create a new instance of the standard TextBlock.
@@ -22,13 +24,13 @@
 
 EvTextBlock *EvTextBlock::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag, uint16_t State)
 {
-  return !Dest ? nullptr : (EvTextBlock *)EvObj::TryCreate(new EvTextBlock(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvTextBlock" : Tag, State), Dest);
+  return !Dest ? nullptr : (EvTextBlock *)EvObj::TryCreate(new EvTextBlock(Left, Top, Width, Height, Dest->Disp, Tag, State), Dest);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 EvTextBlock::EvTextBlock(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) :
-  EvScrollBox(Left, Top, Width, Height, Disp, Tag, State),
+  EvScrollBox(Left, Top, Width, Height, Disp, !Tag ? TypeName : Tag, State),
   mWrapText(true),
   mLineSpacing(0),
   mLinesCount(0),

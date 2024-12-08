@@ -6,13 +6,17 @@
 
 class EvPlayer : public EvPanel
 {
-  class Button : public EvLabel
+  class EvPlayerBtn : public EvLabel
   {
     public:
-      Button(uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag) : EvLabel(0, 0, Width, Height, Disp, Tag, VISIBLE_OBJ) {};
+      EvPlayerBtn(uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag) : EvLabel(0, 0, Width, Height, Disp, Tag, VISIBLE_OBJ) {};
 
     protected:
       virtual void  drawEvent(void);
+  
+    public:
+      static const  char *const TypeName;
+      virtual const char *TypeObj(void) { return TypeName; };
   };
 
   protected:
@@ -60,10 +64,13 @@ class EvPlayer : public EvPanel
     EvSideBar     *TopBar;
     EvSideBar     *BottomBar;
     EvSlider      *TimeLine;
-    Button        *TimeLapse;
-    Button        *PlayButton;
-    Button        *FullButton;
-    Button        *SpeedButton;
+    EvPlayerBtn   *TimeLapse;
+    EvPlayerBtn   *PlayButton;
+    EvPlayerBtn   *FullButton;
+    EvPlayerBtn   *SpeedButton;
+
+    static const  char *const TypeName;
+    virtual const char *TypeObj(void) { return TypeName; };
 
     static EvPlayer   *Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag = nullptr, uint16_t State = VISIBLE_OBJ);
 };

@@ -1,9 +1,9 @@
 
 #include    <EvGUI.h>
 
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
 extern const EvFont         *Menio20;
+
+const char * const EvTerminal::TypeName = "EvTerminal";
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
@@ -26,13 +26,13 @@ extern const EvFont         *Menio20;
 
 EvTerminal  *EvTerminal::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag, uint16_t State)
 {
-  return !Dest ? nullptr : (EvTerminal *)EvObj::TryCreate(new EvTerminal(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvTerminal" : Tag, State), Dest);
+  return !Dest ? nullptr : (EvTerminal *)EvObj::TryCreate(new EvTerminal(Left, Top, Width, Height, Dest->Disp, Tag, State), Dest);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 EvTerminal::EvTerminal(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) :
-  EvTextBlock(Left, Top, Width, Height, Disp, Tag, State),
+  EvTextBlock(Left, Top, Width, Height, Disp, !Tag ? TypeName : Tag, State),
   mScrolling(0)
 {
   if (!(Cursor = EvTextCursor::Create(0, 0, 0, 0, this, nullptr, VISIBLE_DIS_OBJ)))

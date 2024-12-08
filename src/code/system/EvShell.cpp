@@ -712,7 +712,7 @@ void        EvShell::displayObjectInformation(EvDisplay *Disp, EvObj *Obj, int16
   if (Obj != nullptr)
   {
     if (Obj == Disp)
-      EvOut->printf("%sStatus Id [%s]\n", Detailed == true ? " Left  Top  Width  Height Corners Radius Font PadX PadY    Alignment  " : "", Obj->Tag);
+      EvOut->printf("%s    TypeObj    Status Id [%s]\n", Detailed == true ? " Left  Top  Width  Height Corners Radius Font PadX PadY    Alignment   " : "", Obj->Tag);
     else if (!(Obj->mStatus & SYSTEM_OBJ))
     {
       if (Detailed == true)
@@ -720,10 +720,11 @@ void        EvShell::displayObjectInformation(EvDisplay *Disp, EvObj *Obj, int16
         EvOut->printf("%5d %5d %5d %5d ", Obj->mLeft, Obj->mTop, Obj->mWidth, Obj->mHeight);
         EvOut->printf("%9s %5u ", shapeName[Obj->mBdShape & 0x07], Obj->mBdRadius);
         EvOut->printf("%4u %4d %4d ", Obj->mStyle.font, Obj->mStyle.padX, Obj->mStyle.padY);
-        EvOut->printf("%14s ", alignName[Obj->mStyle.align & 0x0F]);
+        EvOut->printf("%14s  ", alignName[Obj->mStyle.align & 0x0F]);
       }
 
-      EvOut->printf("  %c%c ", Obj->IsViewable() ? 'V' : (Obj->IsVisible() ? 'v' : '.'), Obj->IsEnabled() ? 'E' : 'D');
+      EvOut->printf("%-16s", Obj->TypeObj());
+      EvOut->printf(" %c%c%c", Obj->IsViewable() ? 'V' : (Obj->IsVisible() ? 'v' : '.'), Obj->mStatus & FIXED_OBJ ? 'F' : '.', Obj->IsEnabled() ? 'E' : 'D');
 
       const EvMem *ptr = Disp->RAM_G.FindByOwner(Obj);
 

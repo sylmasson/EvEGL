@@ -1,6 +1,8 @@
 
 #include    <EvGUI.h>
 
+const char * const EvNumInt::TypeName = "EvNumInt";
+
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
  * @brief      Create a new instance of the standard **EvNumInt** class.
@@ -24,7 +26,7 @@ EvNumInt  *EvNumInt::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t 
 {
   EvNumInt  *obj = nullptr;
 
-  if (Dest != nullptr && (obj = (EvNumInt *)EvObj::TryCreate(new EvNumInt(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvNumInt" : Tag, State), Dest)) != nullptr)
+  if (Dest != nullptr && (obj = (EvNumInt *)EvObj::TryCreate(new EvNumInt(Left, Top, Width, Height, Dest->Disp, Tag, State), Dest)) != nullptr)
   {
     obj->TextFont(25);
     obj->TextPadding(5, 0);
@@ -49,7 +51,7 @@ EvNumInt  *EvNumInt::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t 
  * @param[in]  Top     The top position of the **EvNumInt**.
  * @param[in]  *Src    The address pointer of the **EvNumInt** source model.
  * @param[out] *Dest   The address pointer of the **EvPanel** destination. Cannot be nullptr.
- * @param[in]  Tag     The tag name of the **EvNumInt**. If nullptr, the default tag name is "**EvNumInt"**.
+ * @param[in]  Tag     The tag name of the **EvNumInt**. If nullptr, the default tag name is "**"EvNumInt"**.
  * @param[in]  State   The initial state of the **EvNumInt**. Default is set to VISIBLE_OBJ | FILTER_DIS_OBJ.
  *
  * @return     **EvNumInt** address pointer on success, otherwise returns nullptr.
@@ -60,7 +62,7 @@ EvNumInt  *EvNumInt::Create(int16_t Left, int16_t Top, int32_t Value, const EvNu
 {
   EvNumInt  *obj = nullptr;
 
-  if (Dest != nullptr && Src != nullptr && (obj = (EvNumInt *)EvObj::TryCreate(new EvNumInt(Left, Top, Src->mWidth, Src->mHeight, Dest->Disp, !Tag ? "EvNumInt" : Tag, State), Dest)) != nullptr)
+  if (Dest != nullptr && Src != nullptr && (obj = (EvNumInt *)EvObj::TryCreate(new EvNumInt(Left, Top, Src->mWidth, Src->mHeight, Dest->Disp, Tag, State), Dest)) != nullptr)
   {
     obj->mStyle = Src->mStyle;
     obj->mOpacity = Src->mOpacity;
@@ -85,7 +87,7 @@ EvNumInt  *EvNumInt::Create(int16_t Left, int16_t Top, int32_t Value, const EvNu
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 EvNumInt::EvNumInt(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) :
-  EvObj(Left, Top, Width, Height, Disp, Tag, State),
+  EvObj(Left, Top, Width, Height, Disp, !Tag ? TypeName : Tag, State),
   mValue(-1),
   mMin(0),
   mMax(1000),

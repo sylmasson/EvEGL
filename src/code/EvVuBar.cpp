@@ -1,6 +1,8 @@
 
 #include    <EvGUI.h>
 
+const char * const EvVuBar::TypeName = "EvVuBar";
+
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 EvVuBar     *EvVuBar::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag, uint16_t State)
@@ -11,7 +13,7 @@ EvVuBar     *EvVuBar::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 EvVuBar::EvVuBar(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) :
-  EvObj(Left, Top, Width, Height, Disp, Tag, State),
+  EvObj(Left, Top, Width, Height, Disp, !Tag ? TypeName : Tag, State),
   mValue(0),
   mDotValue(0),
   mPeakValue(0),

@@ -9,6 +9,9 @@
 #define     SPEEDBUTTON     2
 #define     TIMELAPSE       3
 
+const char * const EvPlayer::TypeName = "EvPlayer";
+const char * const EvPlayer::EvPlayerBtn::TypeName = "EvPlayerBtn";
+
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 static void sOnLoadFrame(EvVideo *Sender, uint32_t FrameNbr);
@@ -23,13 +26,13 @@ static void sOnTouchSpeedButton(EvLabel *Sender, const EvTouchEvent *Touch);
 
 EvPlayer    *EvPlayer::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag, uint16_t State)
 {
-  return !Dest ? nullptr : (EvPlayer *)EvObj::TryCreate(new EvPlayer(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvPlayer" : Tag, State), Dest);
+  return !Dest ? nullptr : (EvPlayer *)EvObj::TryCreate(new EvPlayer(Left, Top, Width, Height, Dest->Disp, Tag, State), Dest);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 EvPlayer::EvPlayer(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) :
-  EvPanel(Left, Top, Width, Height, Disp, Tag, State),
+  EvPanel(Left, Top, Width, Height, Disp, !Tag ? TypeName : Tag, State),
   mRun(false),
   mLock(false),
   mMovable(false),
@@ -42,10 +45,10 @@ EvPlayer::EvPlayer(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, E
       !(TopBar = EvSideBar::Create(0, 0, mWidth, SIDEBAR_HEIGHT, this, "TopBar", DISABLED_OBJ)) ||
       !(BottomBar = EvSideBar::Create(0, 0, mWidth, SIDEBAR_HEIGHT, this, "BottomBar", DISABLED_OBJ)) ||
       !(TimeLine = EvSlider::Create(0, 0, mWidth - 20, SIDEBAR_HEIGHT - 16, BottomBar, "TimeLine", VISIBLE_OBJ)) ||
-      !(TimeLapse = (Button *)TryCreate(new Button(mWidth, SIDEBAR_HEIGHT, Disp, "TimeLapse"), TopBar)) ||
-      !(PlayButton = (Button *)TryCreate(new Button(110, 110, Disp, "PlayButton"), this)) ||
-      !(FullButton = (Button *)TryCreate(new Button(60, SIDEBAR_HEIGHT, Disp, "FullButton"), BottomBar)) ||
-      !(SpeedButton = (Button *)TryCreate(new Button(60, SIDEBAR_HEIGHT, Disp, "SpeedButton"), BottomBar)))
+      !(TimeLapse = (EvPlayerBtn *)TryCreate(new EvPlayerBtn(mWidth, SIDEBAR_HEIGHT, Disp, "TimeLapse"), TopBar)) ||
+      !(PlayButton = (EvPlayerBtn *)TryCreate(new EvPlayerBtn(110, 110, Disp, "PlayButton"), this)) ||
+      !(FullButton = (EvPlayerBtn *)TryCreate(new EvPlayerBtn(60, SIDEBAR_HEIGHT, Disp, "FullButton"), BottomBar)) ||
+      !(SpeedButton = (EvPlayerBtn *)TryCreate(new EvPlayerBtn(60, SIDEBAR_HEIGHT, Disp, "SpeedButton"), BottomBar)))
   {
     abortCreate();
     return;
@@ -324,7 +327,7 @@ void        EvPlayer::touchEvent(const EvTouchEvent *Touch)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvPlayer::Button::drawEvent(void)
+void        EvPlayer::EvPlayerBtn::drawEvent(void)
 {
   uint16_t  x, y;
 

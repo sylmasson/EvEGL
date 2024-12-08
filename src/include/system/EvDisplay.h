@@ -57,6 +57,9 @@ class EvDisplay : public EvPanel, public EvEVE, public EvSysFont
     static EvDisplay  *sDispList[DISP_MAX];
 
   public:
+    static const  char *const TypeName;
+    virtual const char *TypeObj(void) { return TypeName; };
+
     static EvDisplay  *Create(uint16_t Width, uint16_t Height, const char *Tag, const uint32_t *Config, uint8_t CS, uint8_t RST = 255, uint32_t Baudrate = 30000000, SPIClass *Spi = nullptr);
 };
 

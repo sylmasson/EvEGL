@@ -104,6 +104,8 @@ typedef struct
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+const char * const EvVideo::TypeName = "EvVideo";
+
 uint8_t     EvVideo::sVideoCount = 0;
 
 extern void sendAudio(int16_t *Buffer, uint16_t Len);
@@ -133,13 +135,13 @@ extern void sendAudio(int16_t *Buffer, uint16_t Len);
 
 EvVideo      *EvVideo::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvPanel *Dest, const char *Tag, uint16_t State)
 {
-  return !Dest ? nullptr : (EvVideo *)EvObj::TryCreate(new EvVideo(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvVideo" : Tag, State), Dest);
+  return !Dest ? nullptr : (EvVideo *)EvObj::TryCreate(new EvVideo(Left, Top, Width, Height, Dest->Disp, Tag, State), Dest);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 EvVideo::EvVideo(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) :
-  EvImage(Left, Top, Width, Height, Disp, Tag, State),
+  EvImage(Left, Top, Width, Height, Disp, !Tag ? TypeName : Tag, State),
   mCtrl(0),
   mSpeed(1),
   mSkip(0),

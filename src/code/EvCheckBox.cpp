@@ -1,6 +1,8 @@
 
 #include    <EvGUI.h>
 
+const char * const EvCheckBox::TypeName = "EvCheckBox";
+
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
  * @brief      Create a new instance of a standard **EvCheckBox**.
@@ -24,7 +26,7 @@ EvCheckBox  *EvCheckBox::Create(int16_t Left, int16_t Top, uint16_t Width, uint1
 {
   EvCheckBox  *obj = nullptr;
 
-  if (Dest != nullptr && (obj = (EvCheckBox *)EvObj::TryCreate(new EvCheckBox(Left, Top, Width, Height, Dest->Disp, !Tag ? "EvCheckBox" : Tag, State), Dest)) != nullptr)
+  if (Dest != nullptr && (obj = (EvCheckBox *)EvObj::TryCreate(new EvCheckBox(Left, Top, Width, Height, Dest->Disp, Tag, State), Dest)) != nullptr)
   {
     obj->TextLabel(obj->Tag);
     obj->TextColor(CL_CHECKBOX_TEXT, CL_CHECKBOX_TEXT2);
@@ -56,7 +58,7 @@ EvCheckBox  *EvCheckBox::Create(int16_t Left, int16_t Top, const char *Label, ui
 {
   EvCheckBox  *obj = nullptr;
 
-  if (Dest != nullptr && (obj = (EvCheckBox *)EvObj::TryCreate(new EvCheckBox(Left, Top, 0, 0, Dest->Disp, !Tag ? "EvCheckBox" : Tag, State), Dest)) != nullptr)
+  if (Dest != nullptr && (obj = (EvCheckBox *)EvObj::TryCreate(new EvCheckBox(Left, Top, 0, 0, Dest->Disp, Tag, State), Dest)) != nullptr)
   {
     obj->TextFont(Font);
     obj->TextLabel(Label);
@@ -93,7 +95,7 @@ EvCheckBox  *EvCheckBox::Create(int16_t Left, int16_t Top, const char *Label, co
 {
   EvCheckBox  *obj = nullptr;
 
-  if (Dest != nullptr && Src != nullptr && (obj = (EvCheckBox *)EvObj::TryCreate(new EvCheckBox(Left, Top, Src->mWidth, Src->mHeight, Dest->Disp, !Tag ? "EvCheckBox" : Tag, State), Dest)) != nullptr)
+  if (Dest != nullptr && Src != nullptr && (obj = (EvCheckBox *)EvObj::TryCreate(new EvCheckBox(Left, Top, Src->mWidth, Src->mHeight, Dest->Disp, Tag, State), Dest)) != nullptr)
   {
     obj->TextLabel(Label);
     obj->mStyle = Src->mStyle;
@@ -117,7 +119,7 @@ EvCheckBox  *EvCheckBox::Create(int16_t Left, int16_t Top, const char *Label, co
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 EvCheckBox::EvCheckBox(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) :
-  EvObj(Left, Top, Width, Height, Disp, Tag, State),
+  EvObj(Left, Top, Width, Height, Disp, !Tag ? TypeName : Tag, State),
   mValue(true),
   mColorCheck(CL_CHECKBOX_TRUE),
   mColorUncheck(CL_CHECKBOX_FALSE),

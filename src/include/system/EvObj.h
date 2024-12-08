@@ -254,6 +254,9 @@ class EvObj : public Stream
     void          abortCreate(void);
 
   public:
+    static const  char *const TypeName;
+    virtual const char *TypeObj(void) { return TypeName; };
+
     static EvObj  *TryCreate(EvObj *Obj, EvPanel *Dest);
 };
 
