@@ -46,20 +46,20 @@
 #define     PALETTED4444    15
 #define     PALETTED8       16
 #define     L2              17
-#define     ASTC_4x4        37808
-#define     ASTC_5x4        37809
-#define     ASTC_5x5        37810
-#define     ASTC_6x5        37811
-#define     ASTC_6x6        37812
-#define     ASTC_8x5        37813
-#define     ASTC_8x6        37814
-#define     ASTC_8x8        37815
-#define     ASTC_10x5       37816
-#define     ASTC_10x6       37817
-#define     ASTC_10x8       37818
-#define     ASTC_10x10      37819
-#define     ASTC_12x10      37820
-#define     ASTC_12x12      37821
+#define     ASTC_4x4        31
+#define     ASTC_5x4        32
+#define     ASTC_5x5        33
+#define     ASTC_6x5        34
+#define     ASTC_6x6        35
+#define     ASTC_8x5        36
+#define     ASTC_8x6        37
+#define     ASTC_8x8        38
+#define     ASTC_10x5       39
+#define     ASTC_10x6       40
+#define     ASTC_10x8       41
+#define     ASTC_10x10      42
+#define     ASTC_12x10      43
+#define     ASTC_12x12      44
 
 // Bitmap Rendering mode constant
 

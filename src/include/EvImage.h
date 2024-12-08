@@ -87,8 +87,8 @@ class EvImage : public EvObj
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-bool        IsValidJPEG(const uint8_t *Data, uint32_t DataSize, EvBmp *Bmp = nullptr, const char *Tag = nullptr);
-bool        IsValidPNG(const uint8_t *Data, uint32_t DataSize, EvBmp *Bmp = nullptr, const char *Tag = nullptr);
+bool        IsValidJPEG(uint8_t *Data, uint32_t DataSize, EvBmp *Bmp = nullptr, const char *Tag = nullptr);
+bool        IsValidPNG(uint8_t *Data, uint32_t DataSize, EvBmp *Bmp = nullptr, const char *Tag = nullptr);
 bool        IsValidASTC(uint8_t *Data, uint32_t DataSize, EvBmp *Bmp = nullptr, const char *Tag = nullptr);
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

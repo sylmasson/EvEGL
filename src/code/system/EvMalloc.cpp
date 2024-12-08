@@ -53,6 +53,13 @@ void        EvMalloc::Free(const EvMem *Ptr)
 
   if (ptr != nullptr)
   {
+    for (EvMem *p = mFirst; p != ptr; p = p->next)
+      if (p == nullptr)
+      {
+        EvErr->printf("Error: EvMem pointer (%p) being freed was not allocated\n", ptr);
+        return;
+      }
+
     if (mIdDelCnt < ID_DEL_MAX)
       mIdDel[mIdDelCnt++] = ptr->id;
 

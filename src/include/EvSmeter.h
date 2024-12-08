@@ -46,8 +46,8 @@ class EvSmeter : public EvPanel
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-extern const EvBmp   sSmeter;
-extern const EvBmp   sSmeterNeedle;
+extern const EvBmp   *Smeter;
+extern const EvBmp   *SmeterNeedle;
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 

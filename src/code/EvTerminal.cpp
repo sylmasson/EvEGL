@@ -51,6 +51,7 @@ EvTerminal::EvTerminal(int16_t Left, int16_t Top, uint16_t Width, uint16_t Heigh
   Disp->UnloadFont(17);
   Disp->LoadFont(Menio20, 17);
   Cursor->SetStyle(CURSOR_SMOOTH);
+  Cursor->BgColor(CL_TERMINAL_TEXT);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -79,7 +80,6 @@ void        EvTerminal::refreshEvent(void)
 
     Cursor->MoveTo(x + mStyle.padX, y + mStyle.padY + ((lineHeight - textHeight) >> 1));
     Cursor->ReSize(cursorWidth, textHeight);
-    Cursor->BgColor(mStyle.color.Get());
 
     if (!mScrolling || (mScrolling == 1 && !(mScrollBarY->Scrolling() & SCROLL_MOVING)))
     {

@@ -8,7 +8,7 @@
 
 enum CmdId : uint8_t
 {
-  DC, DUMP, LIST, EDITOR, RADIX, TRACE, THEME, ROTATE, CALIB, INFO, FONT, ROMFONT, LISTSD, CLRCACHE, HELP
+  CD, DUMP, LIST, EDITOR, RADIX, TRACE, THEME, ROTATE, CALIB, INFO, FONT, ROMFONT, LISTSD, CLRCACHE, HELP
 };
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -46,7 +46,7 @@ class EvShell
     void          displayObjectRamG(EvDisplay *Disp, uint32_t Addr, uint32_t RamDL, int32_t Count);
     void          displayListCommand(EvDisplay *Disp, uint32_t Addr, uint32_t RamDL);
     void          displayMallocBlock(EvDisplay *Disp);
-    void          displayObjectInformation(EvObj *Obj, int16_t SpacesCnt = 0);
+    void          displayObjectInformation(EvDisplay *Disp, EvObj *Obj, int16_t SpacesCnt, bool Detailed);
     void          displayFontMetrixBlock(EvDisplay *Disp);
     void          displayRomFont(EvDisplay *Disp);
     bool          displayChange(char *Str);

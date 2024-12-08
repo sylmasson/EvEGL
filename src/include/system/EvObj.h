@@ -49,9 +49,8 @@
 
 // Trace flags constant
 
-#define     TRACE_MODIFIED  (1 << 0)
-#define     TRACE_TOUCH     (1 << 1)
-#define     TRACE_FPS       (1 << 2)
+#define     TRACE_TOUCH     (1 << 0)
+#define     TRACE_FPS       (1 << 1)
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *

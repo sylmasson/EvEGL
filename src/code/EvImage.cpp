@@ -476,7 +476,7 @@ void        EvImage::sOnLoading(EvDMA *Data)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-bool        IsValidJPEG(const uint8_t *Data, uint32_t DataSize, EvBmp *Bmp, const char *Tag)
+bool        IsValidJPEG(uint8_t *Data, uint32_t DataSize, EvBmp *Bmp, const char *Tag)
 {
   uint32_t  width = 0;
   uint32_t  height = 0;
@@ -558,12 +558,13 @@ bool        IsValidJPEG(const uint8_t *Data, uint32_t DataSize, EvBmp *Bmp, cons
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-bool        IsValidPNG(const uint8_t *Data, uint32_t DataSize, EvBmp *Bmp, const char *Tag)
+bool        IsValidPNG(uint8_t *Data, uint32_t DataSize, EvBmp *Bmp, const char *Tag)
 {
   uint32_t  width = 0;
   uint32_t  height = 0;
-  uint8_t   layout = 0;
   uint16_t  palSize = 0;
+  uint8_t   layout = 0;
+  uint8_t   bytePixel = 0;
   char      chunk[] = "????";
   uint32_t  i, length, total = 0;
   static const char  signature[8] = {0x89, 'P', 'N', 'G', 0x0D, 0x0A, 0x1A, 0x0A};
@@ -595,10 +596,10 @@ bool        IsValidPNG(const uint8_t *Data, uint32_t DataSize, EvBmp *Bmp, const
 
         switch (Data[i+9])  // ColorType
         {
-          case 0:
-          case 2: layout = RGB565; break;
-          case 3: layout = PALETTED565; break;
-          case 4: layout = ARGB4; break;
+          case 0: layout = L8; bytePixel = 1; break;
+          case 2: layout = RGB565; bytePixel = 2; break;
+          case 3: layout = PALETTED565; bytePixel = 1; break;
+          case 6: layout = ARGB4; bytePixel = 2; break;
           default: return false;
         }
 
@@ -607,17 +608,15 @@ bool        IsValidPNG(const uint8_t *Data, uint32_t DataSize, EvBmp *Bmp, const
       }
       else if (strcmp(chunk, "PLTE") == 0)
       {
-        if (layout != PALETTED565 && layout != PALETTED4444)
+        if ((length % 3) != 0 || (layout != PALETTED565 && layout != PALETTED4444))
           break;
 
         palSize = (length * 2) / 3;
       }
       else if (strcmp(chunk, "tRNS") == 0)
       {
-        if (layout != PALETTED565)
-          break;
-
-        layout = PALETTED4444;
+        if (layout == PALETTED565)
+          layout = PALETTED4444;
       }
       else if (strcmp(chunk, "IEND") == 0)
       {
@@ -634,7 +633,7 @@ bool        IsValidPNG(const uint8_t *Data, uint32_t DataSize, EvBmp *Bmp, const
           Bmp->Width = width;
           Bmp->Height = height;
           Bmp->PalSize = palSize;
-          Bmp->BmpSize = width * height * sizeof(uint16_t);
+          Bmp->BmpSize = width * height * bytePixel;
           Bmp->DataSize = DataSize;
           Bmp->Data = Data;
           Bmp->Tag = Tag;
@@ -733,15 +732,19 @@ bool        IsValidASTC(uint8_t *Data, uint32_t DataSize, EvBmp *Bmp, const char
         }
       }
 
-      Bmp->Format = RAW_DATA;
-      Bmp->Layout = layout;
-      Bmp->Width = width;
-      Bmp->Height = height;
-      Bmp->PalSize = 0;
-      Bmp->BmpSize = DataSize;
-      Bmp->DataSize = DataSize;
-      Bmp->Data = Data;
-      Bmp->Tag = Tag;
+      if (Bmp != NULL)
+      {
+        Bmp->Format = RAW_DATA;
+        Bmp->Layout = layout;
+        Bmp->Width = width;
+        Bmp->Height = height;
+        Bmp->PalSize = 0;
+        Bmp->BmpSize = DataSize;
+        Bmp->DataSize = DataSize;
+        Bmp->Data = Data;
+        Bmp->Tag = Tag;
+      }
+
       free(buf);
       return true;
     }

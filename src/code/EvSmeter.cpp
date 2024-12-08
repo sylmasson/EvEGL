@@ -11,7 +11,7 @@ EvSmeter    *EvSmeter::Create(int16_t Left, int16_t Top, uint16_t Width, uint16_
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 EvSmeter::EvSmeter(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) :
-  EvPanel(Left, Top, Width == 0 ? sSmeter.Width : Width, Height == 0 ? sSmeter.Height : Height, Disp, Tag, State),
+  EvPanel(Left, Top, Width == 0 ? Smeter->Width : Width, Height == 0 ? Smeter->Height : Height, Disp, Tag, State),
   mLock(false),
   mValue(0),
   mAngle(0),
@@ -20,13 +20,13 @@ EvSmeter::EvSmeter(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, E
   mBG = (EvImage *)EvImage::Create(0, 0, mWidth, mHeight, this, "SmeterBG");
   mNeedle = (EvNeedle *)TryCreate(new EvNeedle(0, 0, 0, 0, Disp, "SmeterNeedle"), this);
 
-  if (!mBG || !mNeedle || !mBG->Load(&sSmeter, OPT_MEDIAFIFO) || !mNeedle->Load(&sSmeterNeedle))
+  if (!mBG || !mNeedle || !mBG->Load(Smeter, OPT_MEDIAFIFO) || !mNeedle->Load(SmeterNeedle))
     abortCreate();
   else
   {
     mBG->SetMode(RESIZE_PROPORTIONAL, BILINEAR);
     mNeedle->SetMode(RESIZE_PROPORTIONAL, BILINEAR);
-    mNeedle->RotateAround(sSmeterNeedle.Width / 2, sSmeterNeedle.Height - 6);
+    mNeedle->RotateAround(SmeterNeedle->Width / 2, SmeterNeedle->Height - 6);
     BgColor(CL_BLACK);
     resizeEvent();
     SetValue(-1000);
@@ -61,8 +61,8 @@ void        EvSmeter::resizeEvent(void)
     ReSize(mBG->Width(), mBG->Height());
     mNeedle->Rotate(0);
     mNeedle->Refresh();
-    mNeedle->Scale(mScale = mWidth / (float)sSmeter.Width);
-    mNeedle->MoveTo((1 + sSmeter.Width - sSmeterNeedle.Width) * mScale * 0.5, 60 * mScale);
+    mNeedle->Scale(mScale = mWidth / (float)Smeter->Width);
+    mNeedle->MoveTo((1 + Smeter->Width - SmeterNeedle->Width) * mScale * 0.5, 60 * mScale);
     mNeedle->Rotate(mAngle);
     mLock = false;
   }

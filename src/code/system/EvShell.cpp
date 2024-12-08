@@ -9,18 +9,18 @@ static void sOnSaveTouchCalibration(EvTouchCal *Sender, bool Save);
 
 static EvCmd    sCmdList[] =
 {
-  {DC,       1,    "", "dc",       "dc [1-4|Name]         Display Change"},
-  {LIST,     1,   "l", "list",     "l, list [DL|Id|Tag]   Show display memory"},
+  {CD,       1,    "", "cd",       "cd [1-4|Name]         Change display"},
   {DUMP,     1,   "d", "dump",     "d, dump [0x|Id|Tag]   Dump display memory"},
+  {LIST,     1,   "l", "list",     "l, list [DL|Id|Tag]   Show display memory"},
+  {INFO,     1,   "i", "info",     "i, info [more]        Show object information"},
   {RADIX,    1,   "r", "radix",    "r, radix [b|w|d]      Change radix"},
   {EDITOR,   1,   "e", "editor",   "e, editor [close]     Open/close editor"},
-  {TRACE,    1,   "t", "trace",    "t, trace opt          [modif|touch|fps|off]"},
+  {TRACE,    1,   "t", "trace",    "t, trace Option       Option: touch|fps|off"},
   {THEME,    1,  "th", "theme",    "th, theme [0-1]       Change theme of display"},
   {ROTATE,   1, "rot", "rotate",   "rot, rotate 0-3       Set display orientation"},
   {CALIB,    0,    "", "calib",    "calib                 Touchscreen calibration"},
-  {INFO,     0,    "", "info",     "info                  Show object information"},
   {FONT,     0,    "", "font",     "font                  Show font metrix block"},
-  {ROMFONT,  0,    "", "romfont",  "romfont               Show display romfont"},
+  {ROMFONT,  0,    "", "romfont",  "romfont               Show romfont of display"},
   {LISTSD,   1,  "ls", "dir",      "ls, dir               Show SD card directory"},
   {CLRCACHE, 0,  "cc", "clrcache", "cc, clrcache          Clear display list cache"},
   {HELP,     0,   "h", "help",     "h, help               Show shell commands"}
@@ -102,34 +102,8 @@ void        EvShell::Input(const char C)
     {
       switch (cmd->id)
       {
-        case DC:
+        case CD:
           msg = (argc == 1 && !displayChange(arg[1])) ? "Invalid display selection" : nullptr;
-          break;
-
-        case LIST:
-          if (argc == 0)
-            displayMallocBlock(Disp);
-          else if (stricmp(arg[1], "DL") == 0)
-          {
-            size = Disp->mSizeDL;
-            displayObjectRamG(Disp, RAM_DL, RAM_DL, size);
-            snprintf(str, sizeof(str) - 1, "DL Size:%-4lu (%.1f%%)  ", size, (float)(size * 100) / 8192.0);
-            EvOut->println(str);
-          }
-          else if (((ptr = Disp->RAM_G.FindByTag(arg[1], EV_OBJ)) == nullptr && (sscanf(arg[1], "%d%c", &i, &c) != 1 || (ptr = Disp->RAM_G.FindById(i)) == nullptr)) || ptr->used == 0 || ptr->typeId != EV_OBJ)
-          {
-            msg = InvalidArg;
-            break;
-          }
-          else
-          {
-            displayObjectRamG(Disp, ptr->addr, ptr->addr - ptr->startDL, ptr->used);
-            snprintf(str, sizeof(str) - 1, "Size:%-4lu (%.1f%%)  ", ptr->used, (float)(ptr->used * 100) / 8192.0);
-            EvOut->print(str);
-            ((EvObj *)(ptr->owner))->DisplayTagList(EvOut);
-            EvOut->println();
-          }
-          msg = nullptr;
           break;
 
         case DUMP:
@@ -178,6 +152,46 @@ void        EvShell::Input(const char C)
             mAddr += size;
             msg = nullptr;
           }
+          break;
+
+        case LIST:
+          if (argc == 0)
+            displayMallocBlock(Disp);
+          else if (stricmp(arg[1], "DL") == 0)
+          {
+            size = Disp->mSizeDL;
+            displayObjectRamG(Disp, RAM_DL, RAM_DL, size);
+            snprintf(str, sizeof(str) - 1, "DL Size:%-4lu (%.1f%%)  ", size, (float)(size * 100) / 8192.0);
+            EvOut->println(str);
+          }
+          else if (((ptr = Disp->RAM_G.FindByTag(arg[1], EV_OBJ)) == nullptr && (sscanf(arg[1], "%d%c", &i, &c) != 1 || (ptr = Disp->RAM_G.FindById(i)) == nullptr)) || ptr->used == 0 || ptr->typeId != EV_OBJ)
+          {
+            msg = InvalidArg;
+            break;
+          }
+          else
+          {
+            ((EvObj *)(ptr->owner))->DisplayTagList(EvOut);
+            EvOut->println();
+            displayObjectRamG(Disp, ptr->addr, ptr->addr - ptr->startDL, ptr->used);
+            snprintf(str, sizeof(str) - 1, "Size:%-4lu (%.1f%%)\n", ptr->used, (float)(ptr->used * 100) / 8192.0);
+            EvOut->print(str);
+          }
+          msg = nullptr;
+          break;
+
+        case INFO:
+          if (argc == 0)
+            displayObjectInformation(Disp, Disp, 0, false);
+          else if (stricmp(arg[1], "more") == 0)
+            displayObjectInformation(Disp, Disp, 0, true);
+          else
+          {
+            msg = InvalidArg;
+            break;
+          }
+
+          msg = nullptr;
           break;
 
         case RADIX:
@@ -231,14 +245,6 @@ void        EvShell::Input(const char C)
             tCal->SetOnExit(sOnSaveTouchCalibration);
             tCal->BdWidth(2 << 4);
             EvEditor::SelectObj(nullptr);
-          }
-          break;
-
-        case INFO:
-          if (argc == 0)
-          {
-            displayObjectInformation(Disp);
-            msg = nullptr;
           }
           break;
 
@@ -691,7 +697,7 @@ void        EvShell::displayMallocBlock(EvDisplay *Disp)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvShell::displayObjectInformation(EvObj *Obj, int16_t SpacesCnt)
+void        EvShell::displayObjectInformation(EvDisplay *Disp, EvObj *Obj, int16_t SpacesCnt, bool Detailed)
 {
   static const char  unknown[] = "Unknown";
   static const char  *shapeName[8] = {"ROUND", "RATIO", "FIXED", "SQUARE", "USER", unknown, unknown, unknown};
@@ -705,15 +711,26 @@ void        EvShell::displayObjectInformation(EvObj *Obj, int16_t SpacesCnt)
 
   if (Obj != nullptr)
   {
-    if (SpacesCnt <= 0)
-      EvOut->printf(" Left  Top  Width  Height Corners Radius Font PadX PadY    Alignment   Status [%s]\n", Obj->Tag);
+    if (Obj == Disp)
+      EvOut->printf("%sStatus Id [%s]\n", Detailed == true ? " Left  Top  Width  Height Corners Radius Font PadX PadY    Alignment  " : "", Obj->Tag);
     else if (!(Obj->mStatus & SYSTEM_OBJ))
     {
-      EvOut->printf("%5d %5d %5d %5d ", Obj->mLeft, Obj->mTop, Obj->mWidth, Obj->mHeight);
-      EvOut->printf("%9s %5u ", shapeName[Obj->mBdShape & 0x07], Obj->mBdRadius);
-      EvOut->printf("%4u %4d %4d ", Obj->mStyle.font, Obj->mStyle.padX, Obj->mStyle.padY);
-      EvOut->printf("%14s ", alignName[Obj->mStyle.align & 0x0F]);
-      EvOut->printf("   %c%c   ", Obj->IsViewable() ? 'V' : (Obj->IsVisible() ? 'v' : '.'), Obj->IsEnabled() ? 'E' : 'D');
+      if (Detailed == true)
+      {
+        EvOut->printf("%5d %5d %5d %5d ", Obj->mLeft, Obj->mTop, Obj->mWidth, Obj->mHeight);
+        EvOut->printf("%9s %5u ", shapeName[Obj->mBdShape & 0x07], Obj->mBdRadius);
+        EvOut->printf("%4u %4d %4d ", Obj->mStyle.font, Obj->mStyle.padX, Obj->mStyle.padY);
+        EvOut->printf("%14s ", alignName[Obj->mStyle.align & 0x0F]);
+      }
+
+      EvOut->printf("  %c%c ", Obj->IsViewable() ? 'V' : (Obj->IsVisible() ? 'v' : '.'), Obj->IsEnabled() ? 'E' : 'D');
+
+      const EvMem *ptr = Disp->RAM_G.FindByOwner(Obj);
+
+      if (ptr != nullptr)
+        EvOut->printf(" %3u ", ptr->id);
+      else
+        EvOut->printf("   - ");
 
       if (SpacesCnt > 0)
         for (int i = 0; i < SpacesCnt; i += 4)
@@ -724,7 +741,7 @@ void        EvShell::displayObjectInformation(EvObj *Obj, int16_t SpacesCnt)
 
     if (Obj->IsPanelObj())
       for (EvPanel::Node *node = ((EvPanel *)Obj)->mFirst; node != nullptr; node = node->next)
-        displayObjectInformation(node->obj, SpacesCnt + 4);
+        displayObjectInformation(Disp, node->obj, SpacesCnt + 4, Detailed);
   }
 }
 
@@ -856,9 +873,7 @@ bool        EvShell::displayChange(char *Str)
 
 bool        EvShell::setTrace(char *Str, uint16_t *Flags)
 {
-  if (stricmp(Str, "modif") == 0)
-    *Flags = TRACE_MODIFIED;
-  else if (stricmp(Str, "touch") == 0)
+  if (stricmp(Str, "touch") == 0)
     *Flags = TRACE_TOUCH;
   else if (stricmp(Str, "fps") == 0)
     *Flags = TRACE_FPS;

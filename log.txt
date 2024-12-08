@@ -1,3 +1,9 @@
+commit 30aef921317698d4f67f389d5452254bb0c08bd2
+Author: Sylvain Masson <sylvainmasson@Sylvains-Mac-mini.local>
+Date:   Wed Nov 13 12:33:50 2024 -0500
+
+    EvShell: Add info command to display object information
+
 commit 786e29a7569327a8366f0665fafce098122a5c5b
 Author: Sylvain Masson <sylvainmasson@Sylvains-Mac-mini.local>
 Date:   Fri Nov 8 15:12:11 2024 -0500

@@ -1365,30 +1365,18 @@ void        EvObj::EndFunction(uint16_t Label, uint16_t CmdSize)
 
 void        EvObj::DisplayTagList(Stream *Out)
 {
-  char        str[80];
-  const char  *tag[8];
-  int16_t     tagCount;
-  EvObj       *obj = this;
+  EvObj     *obj;
 
-  if ((obj->Tag) != nullptr)
+  for (obj = this; obj != nullptr; )
   {
-    snprintf(str, sizeof(str) - 1, "\"%s\"", obj->Tag);
-    Out->print(str);
+    Out->print('[');
+    Out->print(obj->Tag == nullptr ? "nullptr" : obj->Tag);
+    Out->print(']');
 
-    for (tagCount = 0;  tagCount < 8 && (obj = obj->mOwner) != nullptr; tagCount++)
-      tag[tagCount] = obj->Tag;
+    if ((obj = obj->mOwner) == nullptr)
+      break;
 
-    if (tagCount-- > 0)
-    {
-      snprintf(str, sizeof(str) - 1, " from [%s]", tag[tagCount] == nullptr ? "nullptr" : tag[tagCount]);
-      Out->print(str);
-
-      while (tagCount-- > 0)
-      {
-        snprintf(str, sizeof(str) - 1, "->[%s]", tag[tagCount] == nullptr ? "nullptr" : tag[tagCount]);
-        Out->print(str);
-      }
-    }
+    Out->print(" > ");
   }
 }
 
@@ -1603,15 +1591,6 @@ void        EvObj::Draw(void)
       {
         Disp->CmdMemCpy(mCache->addr, (((EvMem *)mCache)->startDL = startDL) + RAM_DL, sizeDL);
         Disp->wrCmdBufUpdate();
-      }
-
-      if (Disp->sTraceFlags & TRACE_MODIFIED)
-      {
-        char    str[80];
-
-        snprintf(str, sizeof(str) - 1, "\n[%s] Modified object (%3u bytes) ", Disp->Tag, sizeDL);
-        EvOut->print(str);
-        DisplayTagList(EvOut);
       }
     }
   }
