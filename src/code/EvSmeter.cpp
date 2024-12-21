@@ -26,8 +26,8 @@ EvSmeter::EvSmeter(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, E
     abortCreate();
   else
   {
-    mBG->SetMode(RESIZE_PROPORTIONAL, BILINEAR);
-    mNeedle->SetMode(RESIZE_PROPORTIONAL, BILINEAR);
+    mBG->SetMode(SCALE_TO_FIT, BILINEAR);
+    mNeedle->SetMode(SCALE_TO_FIT, BILINEAR);
     mNeedle->RotateAround(SmeterNeedle->Width / 2, SmeterNeedle->Height - 6);
     BgColor(CL_BLACK);
     resizeEvent();

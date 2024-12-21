@@ -189,7 +189,7 @@ void        EvPlayer::ScreenSize(void)
   if (!IsFullScreen())
     FullScreen();
   else
-    SmallScreen();
+    NormalScreen();
 
   Video->SetOpacity(OPACITY_MAX);
   BgColor(CL_PLAYER_BG);
@@ -221,7 +221,7 @@ void        EvPlayer::FullScreen(void)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvPlayer::SmallScreen(void)
+void        EvPlayer::NormalScreen(void)
 {
   if (IsFullScreen())
   {

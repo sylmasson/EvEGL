@@ -4,9 +4,9 @@
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#define     RESIZE_NONE             0
-#define     RESIZE_PROPORTIONAL     1
-#define     RESIZE_ON_LOAD          2
+#define     SCALING_NONE      0
+#define     SCALE_TO_FIT      1
+#define     RESIZE_ON_LOAD    (1 << 3)
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
@@ -35,7 +35,9 @@ class EvImage : public EvObj
     const EvBmp   *Load(const char *Filename, SDClass &Dev = SD, uint32_t Options = 0);
     void          ModifiedCoeff(void);
     float         Scale(float Scale);
+    float         ScaleToFit(void);
     float         ScaleToFit(uint16_t Width, uint16_t Height);
+    float         ScaleToFit(uint16_t Width, uint16_t Height, uint16_t BmpWidth, uint16_t BmpHeight);
     void          Rotate(float A);
     void          RotateAdd(float A);
     void          RotateAround(int16_t X, int16_t Y);

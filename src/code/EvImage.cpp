@@ -35,7 +35,7 @@ EvImage::EvImage(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvD
   EvObj(Left, Top, Width, Height, Disp, !Tag ? TypeName : Tag, State),
   mRefreshCoeff(true),
   mResizeLock(false),
-  mResizeMode(RESIZE_PROPORTIONAL | RESIZE_ON_LOAD),
+  mResizeMode(SCALE_TO_FIT | RESIZE_ON_LOAD),
   mFilterMode(NEAREST),
   mRed(255),
   mGreen(255),
@@ -198,12 +198,32 @@ float       EvImage::Scale(float Scale)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+float       EvImage::ScaleToFit(void)
+{
+  if (mBmp != nullptr)
+    ScaleToFit(mWidth, mHeight, mBmp->Width, mBmp->Height);
+
+  return mScale;
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
 float       EvImage::ScaleToFit(uint16_t Width, uint16_t Height)
 {
-  if (mBmp != nullptr && mBmp->Width != 0 && mBmp->Height != 0)
+  if (mBmp != nullptr)
+    ScaleToFit(Width, Height, mBmp->Width, mBmp->Height);
+
+  return mScale;
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+float       EvImage::ScaleToFit(uint16_t Width, uint16_t Height, uint16_t BmpWidth, uint16_t BmpHeight)
+{
+  if (Width > 0 && Height > 0 && BmpWidth > 0 && BmpHeight > 0)
   {
-    float   scaleW = (float)(Width - 1) / mBmp->Width;
-    float   scaleH = (float)(Height - 1) / mBmp->Height;
+    float   scaleW = (float)(Width - 1) / BmpWidth;
+    float   scaleH = (float)(Height - 1) / BmpHeight;
 
     Scale((scaleH > scaleW) ? scaleW : scaleH);
   }
@@ -377,19 +397,14 @@ void        EvImage::resizeEvent(void)
 {
   if (!mResizeLock && mWidth > 0 && mHeight > 0 && mBmp != nullptr && mBmp->Width > 0 && mBmp->Height > 0)
   {
-    switch (mResizeMode & ~RESIZE_ON_LOAD)
+    switch (mResizeMode & 7)
     {
-      case RESIZE_NONE:
-        mResizeLock = true;
-        ReSize(mBmp->Width, mBmp->Height);
-        mResizeLock = false;
+      case SCALING_NONE:
+        Scale(1.0);
         break;
 
-      case RESIZE_PROPORTIONAL:
-        float   scaleW = (float)mWidth / mBmp->Width;
-        float   scaleH = (float)mHeight / mBmp->Height;
-
-        Scale((scaleW > scaleH) ? scaleH : scaleW);
+      case SCALE_TO_FIT:
+        ScaleToFit();
         mWidth = mBmp->Width * mScale;
         mHeight = mBmp->Height * mScale;
         break;
@@ -441,7 +456,6 @@ const EvBmp *EvImage::load(const EvBmp *Bmp, uint32_t Options)
     {
       ReSize(Bmp->Width, Bmp->Height);
       RotateAround(Bmp->Width >> 1, Bmp->Height >> 1, 0.0, 1.0);
-      SetMode(RESIZE_PROPORTIONAL | RESIZE_ON_LOAD, BILINEAR);
     }
 
     Modified();

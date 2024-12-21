@@ -1,7 +1,7 @@
 
 #include    <EvGUI.h>
 
-#define     VERBOSE                 1       // 0 = None, 1 = AviInfo only, 2 = Full
+#define     VERBOSE                 0       // 0 = None, 1 = AviInfo only, 2 = Full
 
 #define     AVIF_HASINDEX           0x00000010
 #define     AVIF_MUSTUSEINDEX       0x00000020
@@ -151,7 +151,7 @@ EvVideo::EvVideo(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvD
   mOnLoadFrame(nullptr),
   Mute(false)
 {
-  SetMode(RESIZE_PROPORTIONAL, BILINEAR);
+  SetMode(SCALE_TO_FIT, BILINEAR);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -236,7 +236,15 @@ bool        EvVideo::Open(const char *FileName, SDClass &Dev)
         #endif
 
           mCtrl = 0;
-          return (seekFirst() && loadFrame());
+
+          if (!seekFirst() || !loadFrame())
+          {
+            Close();
+            return false;
+          }
+
+          ScaleToFit(mWidth, mHeight, mAviInfo.Width, mAviInfo.Height);
+          return true;
         }
       }
 

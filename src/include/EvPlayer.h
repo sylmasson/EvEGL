@@ -33,7 +33,7 @@ class EvPlayer : public EvPanel
     void          HideInfo(void);
     void          ScreenSize(void);
     void          FullScreen(void);
-    void          SmallScreen(void);
+    void          NormalScreen(void);
     bool          IsRunning(void);
     bool          IsMovable(void);
     void          SetMovable(bool Value);
