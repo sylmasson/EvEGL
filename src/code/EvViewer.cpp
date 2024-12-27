@@ -61,7 +61,7 @@ const EvBmp *EvViewer::Load(const EvBmp *Bmp, uint32_t Options)
   const EvBmp *bmp;
 
   if ((bmp = Image->Load(Bmp, Options)) != nullptr)
-    update(Image->ScaleToFit(mWidth, mHeight), 0);
+    update(Image->ScaleToFit(mWidth - 1, mHeight - 1), 0);
 
   return bmp;
 }
@@ -73,7 +73,7 @@ const EvBmp *EvViewer::Load(const char *Filename, SDClass &Dev, uint32_t Options
   const EvBmp *bmp;
 
   if ((bmp = Image->Load(Filename, Dev, Options)) != nullptr)
-    update(Image->ScaleToFit(mWidth, mHeight), 0);
+    update(Image->ScaleToFit(mWidth - 1, mHeight - 1), 0);
 
   return bmp;
 }
@@ -182,7 +182,7 @@ void        EvViewer::touchEvent(const EvTouchEvent *Touch)
         mPanelOffsetX = 0;
         mPanelOffsetY = 0;
         Image->Rotate(0);
-        update(Image->ScaleToFit(mWidth, mHeight), 0);
+        update(Image->ScaleToFit(mWidth - 1, mHeight - 1), 0);
       }
 
       Touch->event = 0;

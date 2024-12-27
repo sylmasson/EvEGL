@@ -318,13 +318,13 @@ void        EvSlider::touchEvent(const EvTouchEvent *Touch)
       mTouchKnob = true;
 
     case TOUCH_END:
-      if (mSliderDelay < PERIOD_REFRESH)
+      if (mSliderDelay < EvDisplay::FrameTime())
         SetValue(value);
       else
       {
         mSetPoint = value;
 
-        if ((mInc = (abs(mSetPoint - mValue) * PERIOD_REFRESH) / mSliderDelay) < 1)
+        if ((mInc = (abs(mSetPoint - mValue) * EvDisplay::FrameTime()) / mSliderDelay) < 1)
           mInc = 1;
       }
 

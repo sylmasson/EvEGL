@@ -36,8 +36,10 @@ EvPlayer::EvPlayer(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, E
   mRun(false),
   mLock(false),
   mMovable(false),
+  mFullScreen(false),
   mSpeedIndex(0),
   mTouchCount(0),
+  mPrevFPS(0),
   mTimerHide(0),
   mSmallOwner(nullptr)
 {
@@ -45,6 +47,7 @@ EvPlayer::EvPlayer(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, E
       !(TopBar = EvSideBar::Create(0, 0, mWidth, SIDEBAR_HEIGHT, this, "TopBar", DISABLED_OBJ)) ||
       !(BottomBar = EvSideBar::Create(0, 0, mWidth, SIDEBAR_HEIGHT, this, "BottomBar", DISABLED_OBJ)) ||
       !(TimeLine = EvSlider::Create(0, 0, mWidth - 20, SIDEBAR_HEIGHT - 16, BottomBar, "TimeLine", VISIBLE_OBJ)) ||
+      !(LiveFPS = EvLabel::Create(0, 0, 100, SIDEBAR_HEIGHT, TopBar, "LiveFPS", VISIBLE_DIS_OBJ)) ||
       !(TimeLapse = (EvPlayerBtn *)TryCreate(new EvPlayerBtn(mWidth, SIDEBAR_HEIGHT, Disp, "TimeLapse"), TopBar)) ||
       !(PlayButton = (EvPlayerBtn *)TryCreate(new EvPlayerBtn(110, 110, Disp, "PlayButton"), this)) ||
       !(FullButton = (EvPlayerBtn *)TryCreate(new EvPlayerBtn(60, SIDEBAR_HEIGHT, Disp, "FullButton"), BottomBar)) ||
@@ -70,6 +73,11 @@ EvPlayer::EvPlayer(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, E
   TimeLine->SetOnTouch(sOnTouchTimeLine);
   TimeLine->SetRange(0, 1);
   TimeLine->SetDelay(0);
+
+  LiveFPS->TextFont(26);
+  LiveFPS->TextLabel("0 FPS");
+  LiveFPS->TextAlign(RIGHT_CENTER);
+  LiveFPS->TextColor(CL_PLAYER_TEXT);
 
   TimeLapse->TextFont(26);
   TimeLapse->TextLabel("");
@@ -189,7 +197,7 @@ void        EvPlayer::ScreenSize(void)
   if (!IsFullScreen())
     FullScreen();
   else
-    NormalScreen();
+    SmallScreen();
 
   Video->SetOpacity(OPACITY_MAX);
   BgColor(CL_PLAYER_BG);
@@ -210,18 +218,17 @@ void        EvPlayer::FullScreen(void)
     if ((mSmallOwner = mOwner) != Disp)
       MoveTo(Disp);
 
-    ToFront();
     MoveTo(0, 0);
     ReSize(Disp->Width(), Disp->Height());
     FullButton->Modified();
-    mStatus |= FULLSCREEN_OBJ;
+    mFullScreen = true;
     mMovable = false;
   }
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void        EvPlayer::NormalScreen(void)
+void        EvPlayer::SmallScreen(void)
 {
   if (IsFullScreen())
   {
@@ -231,9 +238,16 @@ void        EvPlayer::NormalScreen(void)
     MoveTo(mSmallLeft, mSmallTop);
     ReSize(mSmallWidth, mSmallHeight);
     FullButton->Modified();
-    mStatus &= ~FULLSCREEN_OBJ;
+    mFullScreen = false;
     mMovable = false;
   }
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+bool        EvPlayer::IsFullScreen(void)
+{
+  return mFullScreen;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -300,6 +314,16 @@ void        EvPlayer::resizeEvent(void)
 
 void        EvPlayer::refreshEvent(void)
 {
+  char      str[16];
+  uint16_t  liveFPS = Video->FPS();
+
+  if (liveFPS != mPrevFPS)
+  {
+    sprintf(str, "%u FPS", liveFPS);
+    LiveFPS->TextLabel(str);
+    mPrevFPS = liveFPS;
+  }
+
   if (!mTouchCount && mTimerHide)
   {
     uint16_t  msec = millis() - mTimerHide;
@@ -444,6 +468,7 @@ void        EvPlayer::resize(void)
 
   TopBar->ReSize(mWidth, SIDEBAR_HEIGHT);
   TopBar->SetPosition();
+  LiveFPS->OwnerAlign(RIGHT_CENTER, 15);
   TimeLapse->ReSize(mWidth, SIDEBAR_HEIGHT);
   TimeLapse->OwnerAlign(CENTER);
 
@@ -457,7 +482,7 @@ void        EvPlayer::resize(void)
   SpeedButton->OwnerAlign(LEFT_CENTER);
 
   FullButton->Modified();
-  mStatus &= ~FULLSCREEN_OBJ;
+  mFullScreen = false;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -465,7 +490,7 @@ void        EvPlayer::resize(void)
 static void sOnLoadFrame(EvVideo *Sender, uint32_t FrameNbr)
 {
   EvPlayer  *player = (EvPlayer *)Sender->GetOwner();
-  float     FrameRate = player->Video->AviInfo.FrameRate;
+  uint32_t  FrameRate = player->Video->AviInfo.FrameRate;
   uint32_t  FrameCount = player->Video->AviInfo.FrameCount;
 
   player->TimeLine->SetValue(FrameNbr);
@@ -475,8 +500,8 @@ static void sOnLoadFrame(EvVideo *Sender, uint32_t FrameNbr)
     char      str[40];
     uint16_t  time, length;
 
-    time = (float)FrameNbr / FrameRate;
-    length = (float)FrameCount / FrameRate;
+    time = (FrameNbr * 1000) / FrameRate;
+    length = (FrameCount * 1000) / FrameRate;
     snprintf(str, sizeof(str) - 1, "%0u:%02u / %0u:%02u", time / 60, time % 60, length / 60, length % 60);
     player->TimeLapse->TextLabel(str);
   }

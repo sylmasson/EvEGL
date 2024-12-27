@@ -286,19 +286,6 @@ bool        EvObj::IsControlObj(void)
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
- * @brief      Check if the Object is full screen.
- * 
- * @return     true if the Object is full screen.
- * 
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-bool        EvObj::IsFullScreen(void)
-{
-  return (mStatus & FULLSCREEN_OBJ) ? true : false;
-}
-
-/** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- *
  * @brief      Check if is a multi-touch Object.
  * 
  * Used to find out if the object allows the use of multi-touch events.
@@ -1378,7 +1365,7 @@ void        EvObj::DisplayTagList(Stream *Out)
     if ((obj = obj->mOwner) == nullptr)
       break;
 
-    Out->print(" > ");
+    Out->print("->");
   }
 }
 
@@ -1415,9 +1402,16 @@ void        EvObj::TouchUpdate(const EvTouchEvent *Touch)
     {
       char    str[80];
 
-      snprintf(str, sizeof(str) - 1, "\n[%s] (%5lums) %3d  TP%u  TOUCH_%-7s", Disp->Tag, Touch->timer, Touch->tag, Touch->id, nameEvent[Touch->event-1]);
+      snprintf(str, sizeof(str) - 1, "\n[%s] (%5lums) %3d TP%u %-7s", Disp->Tag, Touch->timer, Touch->tag, Touch->id, nameEvent[Touch->event-1]);
       EvOut->print(str);
-      snprintf(str, sizeof(str) - 1, "xy(%3d,%3d)  abs(%3u,%4u)  move(%3d,%3d)  ", Touch->x, Touch->y, Touch->abs.x, Touch->abs.y, Touch->move.x, Touch->move.y);
+      snprintf(str, sizeof(str) - 1, "xy(%3d,%4d)  ", Touch->x, Touch->y);
+      EvOut->print(str);
+
+      if (Touch->event == TOUCH_START)
+        snprintf(str, sizeof(str) - 1, "abs(%3u,%4u)  ", Touch->abs.x, Touch->abs.y);
+      else
+        snprintf(str, sizeof(str) - 1, "move(%3d,%3d)  ", Touch->move.x, Touch->move.y);
+
       EvOut->print(str);
       DisplayTagList(EvOut);
     }

@@ -9,6 +9,8 @@ const char * const EvDisplay::TypeName = "EvDisplay";
 
 uint16_t    EvDisplay::sDispCount = 0;
 uint16_t    EvDisplay::sTraceFlags = 0;
+uint32_t    EvDisplay::sFrameRate = 60000;
+uint32_t    EvDisplay::sFrameTime = 16667;
 uint32_t    EvDisplay::sFrameNumber = 0;
 uint32_t    EvDisplay::sSecondTimer = 0;
 uint32_t    EvDisplay::sUpdateTimer = 0;
@@ -34,7 +36,7 @@ EvDisplay::EvDisplay(uint16_t Width, uint16_t Height, const char *Tag, const uin
   mOnUpdate(nullptr),
   mOnUpdateFPS(nullptr)
 {
-  if (sDispCount >= 3)
+  if (sDispCount >= DISP_MAX)
   {
     EvErr->println("Error: Too many instances of the EvDisplay class");
     exit(0);
@@ -57,9 +59,16 @@ EvDisplay::EvDisplay(uint16_t Width, uint16_t Height, const char *Tag, const uin
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-uint32_t    EvDisplay::FrameNumber(void)
+bool        EvDisplay::SetFrameRate(float FrameRate)
 {
-  return sFrameNumber;
+  uint32_t  frameRate = FrameRate * 1000;
+
+  if (frameRate > 60000 || frameRate < 23976)
+    return false;
+
+  sFrameTime = 1000000000L / frameRate;
+  sFrameRate = frameRate;
+  return true;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -140,7 +149,7 @@ bool        EvDisplay::Update(void)
     sSecondTimer += 1000000L;
   }
 
-  if (!sDispCount || usec - sUpdateTimer < PERIOD_REFRESH)
+  if (!sDispCount || usec - sUpdateTimer < sFrameTime)
     return false;
 
   for (i = 0; i < sDispCount; i++)
@@ -174,7 +183,7 @@ bool        EvDisplay::Update(void)
   {
     uint32_t  timeFrame, maxByteTranfer;
 
-    timeFrame = PERIOD_REFRESH - (micros() - sUpdateTimer) - 500;
+    timeFrame = sFrameTime - (micros() - sUpdateTimer) - 500;
     maxByteTranfer = (((EvSPI::baudrate / 1000) * timeFrame) / 8000) & ~1023;
     // EvDbg->printf("maxByteTranfer = %d, timeFrame = %d usec\n", maxByteTranfer, timeFrame);
 

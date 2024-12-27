@@ -1,3 +1,9 @@
+commit 9032c478239b8f863bc67d11eb2c34ec8eda1469
+Author: Sylvain Masson <sylvainmasson@Sylvains-Mac-mini.local>
+Date:   Sat Dec 21 07:36:44 2024 -0500
+
+    EvPlayer, EvVideo, EvImage and EvSmeter: Redesigned ScaleToFit functions
+
 commit 070a1c3e1f85d4bae950d13c4fdbb74a42bb2028
 Author: Sylvain Masson <sylvainmasson@Sylvains-Mac-mini.local>
 Date:   Sun Dec 8 16:19:04 2024 -0500

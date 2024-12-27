@@ -222,8 +222,8 @@ float       EvImage::ScaleToFit(uint16_t Width, uint16_t Height, uint16_t BmpWid
 {
   if (Width > 0 && Height > 0 && BmpWidth > 0 && BmpHeight > 0)
   {
-    float   scaleW = (float)(Width - 1) / BmpWidth;
-    float   scaleH = (float)(Height - 1) / BmpHeight;
+    float   scaleW = (float)(Width) / BmpWidth;
+    float   scaleH = (float)(Height) / BmpHeight;
 
     Scale((scaleH > scaleW) ? scaleW : scaleH);
   }

@@ -17,10 +17,6 @@
 #define     WAVEFORMAT_SIZE         14
 #define     AVIOLDINDEX_SIZE        16
 
-#define     WAVE_FORMAT_PCM         0x01    // Support audio format supported
-#define     WAVE_FORMAT_MULAW       0x07
-#define     WAVE_FORMAT_IMA_ADPCM   0x11
-
 #define     LIMIT_INFO_DEFAULT      20
 
 #define     FOURCC(str)             (*(uint32_t *)str)
@@ -108,8 +104,6 @@ const char * const EvVideo::TypeName = "EvVideo";
 
 uint8_t     EvVideo::sVideoCount = 0;
 
-extern void sendAudio(int16_t *Buffer, uint16_t Len);
-
 #if (VERBOSE > 0)
   static const char *sWaveFormat[4] = {"Unknown format", "PCM signed integer format", "Mu-law encoded format", "IMA ADPCM format"};
 #endif
@@ -144,11 +138,14 @@ EvVideo::EvVideo(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvD
   EvImage(Left, Top, Width, Height, Disp, !Tag ? TypeName : Tag, State),
   mCtrl(0),
   mSpeed(1),
-  mSkip(0),
+  mFrameSync(++sVideoCount & 1),
+  mFps(0),
+  mFpsCnt(0),
+  mFpsTimer(millis()),
   mFileInd(0),
   mFileSize(0),
-  mFrameSync(++sVideoCount & 1),
   mOnLoadFrame(nullptr),
+  mOnLoadAudio(nullptr),
   Mute(false)
 {
   SetMode(SCALE_TO_FIT, BILINEAR);
@@ -214,7 +211,7 @@ bool        EvVideo::Open(const char *FileName, SDClass &Dev)
           printFmt("  AudioBufSize = %u bytes\n", mAviInfo.AudioBufSize);
           printFmt("  VideoBufSize = %u bytes\n", mAviInfo.VideoBufSize);
           printFmt("  VideoLength  = %.2f sec\n", mAviInfo.VideoLength);
-          printFmt("  FrameRate  = %.2f Hz\n", mAviInfo.FrameRate);
+          printFmt("  FrameRate  = %.3f Hz\n", (float)mAviInfo.FrameRate / 1000.0);
           printFmt("  FrameCount = %u\n", mAviInfo.FrameCount);
           printFmt("  MoviBegin = 0x%08X\n", mAviInfo.MoviBegin);
           printFmt("  MoviEnd   = 0x%08X\n", mAviInfo.MoviEnd);
@@ -224,8 +221,7 @@ bool        EvVideo::Open(const char *FileName, SDClass &Dev)
           printFmt("  AudioFcc = '%s'\n", mAviInfo.AudioFcc);
           printFmt("}\n");
         #endif
-
-        #if (VERBOSE > 0)
+        #if (VERBOSE > 1)
           printFmt("\nmFrame\n");
           printFmt("{\n");
           printFmt("  Nbr    = #%u\n", mFrame.Nbr);
@@ -234,6 +230,9 @@ bool        EvVideo::Open(const char *FileName, SDClass &Dev)
           printFmt("  Length = %u\n", mFrame.Length);
           printFmt("}\n");
         #endif
+
+          if (EvDisplay::FrameRate() / 2 != mAviInfo.FrameRate)
+            EvErr->printf("EvVideo Warning: Incompatibility between display FPS (%.3f) and video FPS (%.3f)\n", (float)EvDisplay::FrameRate() / 1000.0, (float)mAviInfo.FrameRate / 1000.0);
 
           mCtrl = 0;
 
@@ -244,6 +243,7 @@ bool        EvVideo::Open(const char *FileName, SDClass &Dev)
           }
 
           ScaleToFit(mWidth, mHeight, mAviInfo.Width, mAviInfo.Height);
+          mFps = mFpsCnt = 0;
           return true;
         }
       }
@@ -287,6 +287,8 @@ bool        EvVideo::Play(void)
     return false;
 
   mCtrl = VIDEO_RUN;
+  mFpsTimer = millis();
+  mFps = mFpsCnt = 0;
   return (mFrame.Nbr >= mAviInfo.FrameCount) ? seekFirst() : true;
 }
 
@@ -343,7 +345,6 @@ bool        EvVideo::Seek(uint32_t FrameNbr)
   if (!mFile)
     return false;
 
-  mSkip = 0;
   mCtrl |= VIDEO_LOAD;
   return (seek(FrameNbr));
 }
@@ -357,13 +358,25 @@ void        EvVideo::SetOnLoadFrame(void (*OnLoadFrame)(EvVideo *Sender, uint32_
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+void        EvVideo::SetOnLoadAudio(void (*OnLoadAudio)(EvVideo *Sender, void *Data, uint16_t DataSize))
+{
+  mOnLoadAudio = OnLoadAudio;
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
 void        EvVideo::refreshEvent(void)
 {
+  if ((uint16_t)(millis() - mFpsTimer) >= 1000)
+  {
+    mFps = mFpsCnt;
+    mFpsTimer += 1000;
+    mFpsCnt = 0;
+  }
+
   if ((Disp->FrameNumber() & 1) == mFrameSync)
   {
-    if (mSkip)
-      mSkip--;
-    else if (mCtrl & (VIDEO_RUN | VIDEO_LOAD) && loadFrame() == true)
+    if (mCtrl & (VIDEO_RUN | VIDEO_LOAD) && loadFrame() == true)
     {
       if (mFrame.Nbr >= mAviInfo.FrameCount || mSpeed == 0)
         mCtrl = 0;
@@ -409,6 +422,7 @@ bool        EvVideo::loadFrame(void)
         if (mOnLoadFrame != nullptr)
           mOnLoadFrame(this, mFrame.Nbr);
 
+        mFpsCnt++;
         return true;
       }
 
@@ -423,41 +437,49 @@ bool        EvVideo::loadFrame(void)
 
 bool        EvVideo::nextFrame(uint32_t FrameCnt)
 {
-  int16_t   audio[2048];
-  uint32_t  size = mFrame.Length;
+  uint32_t  length = mFrame.Length;
   struct
   {
     uint32_t  fcc;
     uint32_t  cb;
   } chunk;
 
-  digitalWrite(38, HIGH);
+//  digitalWrite(38, HIGH);
   mFileInd = mFrame.Offset;
 
   while (FrameCnt > 0)
   {
-    if (size & 1)
-      size++;
+    if (length & 1)
+      length++;
 
-    mFileInd += size;
+    mFileInd += length;
 
     if (!readFile(&chunk, mFileInd, 8))
       return false;
 
     mFileInd += 8;
-    size = chunk.cb;
+    length = chunk.cb;
 
     if (chunk.fcc == FOURCC(mAviInfo.AudioFcc))
     {
-      if (!readFile(audio, mFileInd, size))
-        return false;
+      uint32_t  ind, len, size;
+      int16_t   buf[mAviInfo.AudioBufSize > 2048 ? 2048 : mAviInfo.AudioBufSize];
 
-      sendAudio(audio, size);
+      for (ind = mFileInd, len = length; len > 0; len -= size, ind += size)
+      {
+        size = len < sizeof(buf) ? len : sizeof(buf);
+
+        if (!readFile(buf, ind, size))
+          return false;
+
+        if (mOnLoadAudio != nullptr)
+          mOnLoadAudio(this, buf, size);
+      }
     }
     else if (chunk.fcc == FOURCC(mAviInfo.VideoFcc))
     {
       mFrame.Nbr++;
-      mFrame.Length = size;
+      mFrame.Length = length;
       mFrame.Offset = mFileInd;
       FrameCnt--;
     }
@@ -465,7 +487,7 @@ bool        EvVideo::nextFrame(uint32_t FrameCnt)
     mFrame.Ind += AVIOLDINDEX_SIZE;
   }
 
-  digitalWrite(38, LOW);
+//  digitalWrite(38, LOW);
   return true;
 }
 
@@ -675,8 +697,8 @@ bool        EvVideo::readInfo(uint32_t BlkEnd, uint16_t TabCnt, uint32_t Limit)
       else if (strh.fccType == FOURCC("vids") && strh.fccHandler == FOURCC("MJPG"))
       {
         mAviInfo.VideoBufSize = strh.dwSuggestedBufferSize;
-        mAviInfo.FrameRate = (strh.dwScale == 0) ? 0 : (float)strh.dwRate / (float)strh.dwScale;
-        mAviInfo.VideoLength = (mAviInfo.FrameRate == 0) ? 0 : (float)mAviInfo.FrameCount / mAviInfo.FrameRate;
+        mAviInfo.FrameRate = (strh.dwScale == 0) ? 0 : ((float)strh.dwRate * 1000.0) / (float)strh.dwScale;
+        mAviInfo.VideoLength = (mAviInfo.FrameRate == 0) ? 0 : ((float)mAviInfo.FrameCount * 1000.0) / mAviInfo.FrameRate;
 
         if (!FOURCC(mAviInfo.VideoFcc))
           snprintf(mAviInfo.VideoFcc, sizeof(mAviInfo.VideoFcc), "%02udc", mAviInfo.Stream & 0x0F);
@@ -751,10 +773,10 @@ bool        EvVideo::readInfo(uint32_t BlkEnd, uint16_t TabCnt, uint32_t Limit)
 
         switch (strf.wFormatTag)
         {
-          case WAVE_FORMAT_PCM: mAviInfo.AudioFmt = 1; break;
-          case WAVE_FORMAT_MULAW: mAviInfo.AudioFmt = 2; break;
-          case WAVE_FORMAT_IMA_ADPCM: mAviInfo.AudioFmt = 3; break;
-          default: mAviInfo.AudioFmt = 0;
+          case 0x01: mAviInfo.AudioFmt = WAVE_FORMAT_PCM; break;
+          case 0x07: mAviInfo.AudioFmt = WAVE_FORMAT_MULAW; break;
+          case 0x11: mAviInfo.AudioFmt = WAVE_FORMAT_IMA_ADPCM; break;
+          default: mAviInfo.AudioFmt = WAVE_FORMAT_UNKNOWN;
         }
 
         mAviInfo.AudioChan = strf.nChannels;

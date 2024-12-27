@@ -264,7 +264,7 @@ void        EvEditor::SelectObj(EvObj *Obj)
     property->SelShape->SetValue(-1);
     property->SelAlignX->SetValue(-1);
     property->SelAlignY->SetValue(-1);
-    property->LabTag->TextLabel("Select Object");
+    property->LabTag->TextLabel("Unselected object");
     property->LabTag->TextColor(TEXT_ERROR);
     editor->Hide();
   }

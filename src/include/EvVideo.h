@@ -4,9 +4,14 @@
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#define     VIDEO_RUN       (1 << 0)
-#define     VIDEO_LOAD      (1 << 1)
-#define     VIDEO_REWIND    (1 << 2)
+#define     VIDEO_RUN               (1 << 0)
+#define     VIDEO_LOAD              (1 << 1)
+#define     VIDEO_REWIND            (1 << 2)
+
+#define     WAVE_FORMAT_UNKNOWN     0
+#define     WAVE_FORMAT_PCM         1
+#define     WAVE_FORMAT_MULAW       2
+#define     WAVE_FORMAT_IMA_ADPCM   3
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
@@ -23,7 +28,7 @@ typedef struct
   uint32_t  AudioBufSize;
   uint32_t  VideoBufSize;
   float     VideoLength;
-  float     FrameRate;
+  uint32_t  FrameRate;
   uint32_t  FrameCount;
   uint32_t  MoviBegin;
   uint32_t  MoviEnd;
@@ -70,17 +75,21 @@ class EvVideo : public EvImage
     bool          Rewind(uint8_t Speed);
     bool          Forward(uint8_t Speed);
     bool          Seek(uint32_t FrameNbr);
+    uint16_t      FPS(void) { return mFps; };
     void          SetOnLoadFrame(void (*OnLoadFrame)(EvVideo *Sender, uint32_t FrameNbr));
+    void          SetOnLoadAudio(void (*OnLoadAudio)(EvVideo *Sender, void *Data, uint16_t DataSize));
 
   protected:
     uint8_t       mCtrl;
     uint8_t       mSpeed;
-    uint8_t       mSkip;
+    uint8_t       mFrameSync;
+    uint8_t       mFps;
+    uint8_t       mFpsCnt;
+    uint16_t      mFpsTimer;
     File          mFidx;
     File          mFile;
     uint32_t      mFileInd;
     uint32_t      mFileSize;
-    uint8_t       mFrameSync;
     AVIINFO       mAviInfo;
     AVIFRAME      mFrame;
 
@@ -103,6 +112,7 @@ class EvVideo : public EvImage
     static uint8_t  sVideoCount;
 
     void          (*mOnLoadFrame)(EvVideo *Sender, uint32_t FrameNbr);
+    void          (*mOnLoadAudio)(EvVideo *Sender, void *Data, uint16_t DataSize);
 
   public:
     bool            Mute;

@@ -22,7 +22,7 @@ EvKinScroll::EvKinScroll(uint8_t Speed, uint16_t Period)
 
 void        EvKinScroll::Setup(uint8_t Speed, uint16_t Period)
 {
-  if ((mPeriod = ((uint32_t)Period * FREQ_REFRESH) / 1000) >= sizeof(kineticTable))
+  if ((mPeriod = ((uint32_t)Period * EvDisplay::FrameRate()) / 1000000L) >= sizeof(kineticTable))
     mPeriod = sizeof(kineticTable) - 1;
 
   mSpeed = (mPeriod == 0) ? 0 : ((uint)Speed * 256) / kineticTable[mPeriod]; // 4 bits fixed point
@@ -84,7 +84,7 @@ void        EvKinMove::Setup(uint16_t Period)
 {
   int       i;
 
-  if ((mPeriod = ((uint32_t)Period * FREQ_REFRESH) / 1000) >= sizeof(kineticTable))
+  if ((mPeriod = ((uint32_t)Period * EvDisplay::FrameRate()) / 1000000L) >= sizeof(kineticTable))
     mPeriod = sizeof(kineticTable) - 1;
 
   for (mTotal = 0, i = 0; i <= mPeriod; i++)

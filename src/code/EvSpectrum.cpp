@@ -1,8 +1,9 @@
 
 #include    <EvGUI.h>
 
-#define     LINE_COLOR      RGB555(255, 255,   0)
-#define     FILL_COLOR      RGB555(128, 128,   0)
+#define     LINE_COLOR      CL_WHITE_SMOKE
+#define     FILL_COLOR      CL_WHITE_SMOKE
+#define     BD_COLOR        CL_WHITE_SMOKE
 
 const char * const EvSpectrum::TypeName = "EvSpectrum";
 
@@ -34,13 +35,14 @@ EvSpectrum     *EvSpectrum::Create(int16_t Left, int16_t Top, uint16_t Width, ui
 
 EvSpectrum::EvSpectrum(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, EvDisplay *Disp, const char *Tag, uint16_t State) :
   EvObj(Left, Top, Width, Height, Disp, !Tag ? TypeName : Tag, State),
-  mDataSize(Width / 2),
-  mLineColor(LINE_COLOR),
-  mFillColor(FILL_COLOR),
+  mData(nullptr),
+  mDataSize(0),
   mOnTouch(nullptr)
 {
-  if ((mData = (uint8_t *)calloc(mDataSize, sizeof(*mData))) == nullptr)
-    abortCreate();
+  SetColor(LINE_COLOR, FILL_COLOR);
+  BdShape(FIXED_CORNERS);
+  BdColor(BD_COLOR);
+  BdWidth(32);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -52,27 +54,43 @@ EvSpectrum::~EvSpectrum(void)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void          EvSpectrum::RawData(uint16_t X, uint8_t Data)
+bool          EvSpectrum::SetData(uint16_t X, uint8_t Data)
 {
-  if (X < mDataSize)
-  {
-    mData[X] = Data;
-    Modified();
-  }
+  if (X >= mDataSize || mData == nullptr)
+    return false;
+
+  mData[X] = Data;
+  Modified();
+  return true;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void          EvSpectrum::RawData(uint16_t X, uint8_t *Data, uint16_t Count)
+bool          EvSpectrum::SetData(uint16_t X, uint8_t *Data, uint16_t Count)
 {
-  if (X < mDataSize)
-  {
-    if (X + Count > mDataSize)
-      Count = mDataSize - X;
+  if (X >= mDataSize || mData == nullptr)
+    return false;
 
-    memcpy(mData + X, Data, Count);
-    Modified();
-  }
+  if (X + Count > mDataSize)
+    Count = mDataSize - X;
+
+  memcpy(mData + X, Data, Count);
+  Modified();
+  return true;
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+bool          EvSpectrum::SetDataSize(uint16_t DataSize, uint8_t Value)
+{
+  free(mData);
+  mDataSize = 0;
+
+  if (DataSize < 2 || (mData = (uint8_t *)malloc(DataSize)) == nullptr)
+    return false;
+
+  memset(mData, Value, mDataSize = DataSize);
+  return true;
 }
 
 /** * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -83,13 +101,17 @@ void          EvSpectrum::RawData(uint16_t X, uint8_t *Data, uint16_t Count)
  *
  * @param[in]  LineColor  The Line Color of the Spectrum.
  * @param[in]  FillColor  The Fill Color of the Spectrum.
+ * @param[in]  FillColorA The Fill Color Opacity of the Spectrum.
  * 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void          EvSpectrum::SetColor(uint16_t LineColor, uint16_t FillColor)
+void          EvSpectrum::SetColor(uint16_t LineColor, uint16_t FillColor, uint8_t FillColorA)
 {
-  if (mLineColor.Set(LineColor) | mFillColor.Set(FillColor))
+  if ((mLineColor.Set(LineColor) | mFillColor.Set(FillColor)) || mFillColorA != FillColorA)
+  {
+    mFillColorA = FillColorA;
     Modified();
+  }
 }
 
 /// @copydoc EvButton::SetOnTouch()
@@ -105,8 +127,6 @@ void        EvSpectrum::drawEvent(void)
 {
   uint16_t  i, len, vCnt, vCall, size = mDataSize;
   int16_t   x, y, prevX, prevY, xBuf[size], yBuf[size];
-
-//  Disp->CmdGradient(0, 0, 0xc0c000, 0, mHeight, 0x000000);
 
   for (i = x = y = len = vCnt = 0; i < size; i++)
   {
@@ -138,7 +158,7 @@ void        EvSpectrum::drawEvent(void)
 
   if (vCnt)
   {
-    if (mFillColor.Get() == mBgColor.Get())
+    if (mFillColor.Get() == 0 || mFillColorA == 0)
     {
       Disp->ColorRGB(mLineColor.Get());
       Disp->Begin(LINE_STRIP);
@@ -155,10 +175,12 @@ void        EvSpectrum::drawEvent(void)
       EndFunction(vCall, vCnt);
 
       Disp->ColorRGB(mFillColor.Get());
+      Disp->ColorA(mFillColorA);
       Disp->Begin(EDGE_STRIP_B);
       Disp->LineWidth(16);
       Disp->Call(vCall);
       Disp->ColorRGB(mLineColor.Get());
+      Disp->ColorA(255);
       Disp->Begin(LINE_STRIP);
       Disp->LineWidth(16);
       Disp->Call(vCall);
@@ -178,7 +200,7 @@ void        EvSpectrum::touchEvent(const EvTouchEvent *Touch)
 
 void        EvSpectrum::dataScaling(uint16_t Ind, int16_t &X, int16_t &Y)
 {
-  X = (Ind * (mWidth * 16)) / mDataSize;
-  Y = (mData[Ind] * mHeight) >> 4;
+  X = ((Ind * (uint32_t)((mWidth * 16) - (mBdWidth * 2) - 32)) / (mDataSize - 1)) + mBdWidth + 16;
+  Y = ((mData[Ind] * (uint32_t)((mHeight * 16) - (mBdWidth * 2) - 32)) / 256) + mBdWidth + 16;
 }
 
