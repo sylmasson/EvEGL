@@ -1,3 +1,19 @@
+commit a3b2e2a8a07a205215257d8b9711308eb4e14380
+Author: Sylvain Masson <sylvainmasson@Sylvains-Mac-mini.local>
+Date:   Fri Dec 27 17:17:51 2024 -0500
+
+    EvPlayer: Show FPS in top bar and change fullscreen handling
+    
+    EvVideo: Added FPS functionality and improved audio sampling
+    
+    EvSpectrum: Added fill opacity feature and general improvement
+    
+    EvViewer, EvImage: Fixed a pixel in the scaling calculation
+    
+    EvDisplay: Programmable frame rate support
+    
+    Global: Cleaning and minor changes
+
 commit 9032c478239b8f863bc67d11eb2c34ec8eda1469
 Author: Sylvain Masson <sylvainmasson@Sylvains-Mac-mini.local>
 Date:   Sat Dec 21 07:36:44 2024 -0500

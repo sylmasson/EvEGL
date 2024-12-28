@@ -249,13 +249,13 @@ void        EvSlider::resizeEvent(void)
 {
   if (mWidth >= mHeight)
   {
-    mThickness = mHeight << 2;
+    mThickness = mHeight * 3;
     mSliderWidth = mHeight << 4;
     mSliderLength = mWidth << 4;
   }
   else
   {
-    mThickness = mWidth << 2;
+    mThickness = mWidth * 3;
     mSliderWidth = mWidth << 4;
     mSliderLength = mHeight << 4;
   }

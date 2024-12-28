@@ -67,6 +67,7 @@ class EvPlayer : public EvPanel
     EvSideBar     *TopBar;
     EvSideBar     *BottomBar;
     EvSlider      *TimeLine;
+    EvSlider      *Volume;
     EvLabel       *LiveFPS;
     EvPlayerBtn   *TimeLapse;
     EvPlayerBtn   *PlayButton;

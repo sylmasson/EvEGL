@@ -17,6 +17,7 @@ const char * const EvPlayer::EvPlayerBtn::TypeName = "EvPlayerBtn";
 static void sOnLoadFrame(EvVideo *Sender, uint32_t FrameNbr);
 static void sOnChangeTimeLine(EvSlider *Sender, int32_t Value);
 static void sOnTouchTimeLine(EvSlider *Sender, const EvTouchEvent *Touch);
+static void sOnTouchVolume(EvSlider *Sender, const EvTouchEvent *Touch);
 static void sOnTouchTimeLapse(EvLabel *Sender, const EvTouchEvent *Touch);
 static void sOnTouchPlayButton(EvLabel *Sender, const EvTouchEvent *Touch);
 static void sOnTouchFullButton(EvLabel *Sender, const EvTouchEvent *Touch);
@@ -49,6 +50,7 @@ EvPlayer::EvPlayer(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, E
       !(TimeLine = EvSlider::Create(0, 0, mWidth - 20, SIDEBAR_HEIGHT - 16, BottomBar, "TimeLine", VISIBLE_OBJ)) ||
       !(LiveFPS = EvLabel::Create(0, 0, 100, SIDEBAR_HEIGHT, TopBar, "LiveFPS", VISIBLE_DIS_OBJ)) ||
       !(TimeLapse = (EvPlayerBtn *)TryCreate(new EvPlayerBtn(mWidth, SIDEBAR_HEIGHT, Disp, "TimeLapse"), TopBar)) ||
+      !(Volume = EvSlider::Create(0, 0, mWidth / 6, SIDEBAR_HEIGHT - 20, TopBar, "Volume", VISIBLE_OBJ)) ||
       !(PlayButton = (EvPlayerBtn *)TryCreate(new EvPlayerBtn(110, 110, Disp, "PlayButton"), this)) ||
       !(FullButton = (EvPlayerBtn *)TryCreate(new EvPlayerBtn(60, SIDEBAR_HEIGHT, Disp, "FullButton"), BottomBar)) ||
       !(SpeedButton = (EvPlayerBtn *)TryCreate(new EvPlayerBtn(60, SIDEBAR_HEIGHT, Disp, "SpeedButton"), BottomBar)))
@@ -73,6 +75,13 @@ EvPlayer::EvPlayer(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, E
   TimeLine->SetOnTouch(sOnTouchTimeLine);
   TimeLine->SetRange(0, 1);
   TimeLine->SetDelay(0);
+
+  Volume->SetColor(CL_PLAYER_TEXT, CL_DIM_GRAY, CL_PLAYER_TEXT);
+  Volume->OwnerAlign(LEFT_CENTER, 15);
+  Volume->BdShape(RATIO_CORNERS);
+  Volume->SetOnTouch(sOnTouchVolume);
+  Volume->SetRange(0, 100);
+  Volume->SetValue(0);
 
   LiveFPS->TextFont(26);
   LiveFPS->TextLabel("0 FPS");
@@ -519,6 +528,15 @@ static void sOnChangeTimeLine(EvSlider *Sender, int32_t Value)
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 static void sOnTouchTimeLine(EvSlider *Sender, const EvTouchEvent *Touch)
+{
+  EvPlayer  *player = (EvPlayer *)Sender->GetOwner(2);
+
+  player->TouchInfo(Touch);
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+static void sOnTouchVolume(EvSlider *Sender, const EvTouchEvent *Touch)
 {
   EvPlayer  *player = (EvPlayer *)Sender->GetOwner(2);
 
