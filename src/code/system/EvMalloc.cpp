@@ -1,5 +1,5 @@
 
-#include    <EvGUI.h>
+#include    <EvEGL.h>
 
 #define     BOTTOM_SIZE_MIN (128 * 1024)
 #define     BLOCK_SIZE(x)   (((x) + (EV_MALLOC_MIN-1)) & ~(EV_MALLOC_MIN-1))

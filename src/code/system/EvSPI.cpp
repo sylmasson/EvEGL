@@ -1,5 +1,5 @@
 
-#include    <EvGUI.h>
+#include    <EvEGL.h>
 
 #define     hostRead(addr)  hostTransaction((addr) & 0x3FFFFF)
 #define     hostWrite(addr) hostTransaction(((addr) & 0x3FFFFF) | 0x800000)

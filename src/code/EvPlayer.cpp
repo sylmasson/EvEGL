@@ -1,5 +1,5 @@
 
-#include    <EvGUI.h>
+#include    <EvEGL.h>
 
 #define     HIDE_DELAY      3000
 #define     SIDEBAR_HEIGHT  50

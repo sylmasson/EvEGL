@@ -1,5 +1,5 @@
 
-#include    <EvGUI.h>
+#include    <EvEGL.h>
 
 #define     FORMAT    2     // 0 = JPEG, 1 = PNG or 2 = ASTC
 

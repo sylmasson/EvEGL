@@ -1,5 +1,5 @@
 
-#include    <EvGUI.h>
+#include    <EvEGL.h>
 
 #define     SEPARATOR_ON    (1 << 0)
 #define     TAB_STYLE       (1 << 1)

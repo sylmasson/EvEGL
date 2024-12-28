@@ -1,6 +1,6 @@
 
-#ifndef     _EV_GUI_H_
-#define     _EV_GUI_H_
+#ifndef     _EVEGL_H_
+#define     _EVEGL_H_
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
@@ -99,5 +99,5 @@ class       EvVuBar;
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#endif  /* _EV_GUI_H_ */
+#endif  /* _EVEGL_H_ */
 

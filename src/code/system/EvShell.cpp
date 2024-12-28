@@ -1,5 +1,5 @@
 
-#include    <EvGUI.h>
+#include    <EvEGL.h>
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
@@ -795,7 +795,7 @@ void        EvShell::displayRomFont(EvDisplay *Disp)
   uint32_t  addr = Disp->rd32(FONT_ROOT);
   int       i, j, romFont, begChar, curWidth = 0;
 
-  EvOut->println("\n#include    <EvGUI.h>");
+  EvOut->println("\n#include    <EvEGL.h>");
 
   for (romFont = FIRST_ROM_FONT; romFont <= LAST_ROM_FONT; romFont++, addr += 148)
   {

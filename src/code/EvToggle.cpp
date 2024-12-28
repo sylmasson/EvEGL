@@ -1,5 +1,5 @@
 
-#include    <EvGUI.h>
+#include    <EvEGL.h>
 
 #define     KNOB_TAG        100
 #define     SLIDE_DELAY     150

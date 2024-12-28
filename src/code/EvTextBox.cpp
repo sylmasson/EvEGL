@@ -1,5 +1,5 @@
 
-#include    <EvGUI.h>
+#include    <EvEGL.h>
 
 #define     ClrEditedText() (mFlags &= ~1)
 #define     ClrMoveCursor() (mFlags &= ~2)

@@ -1,5 +1,5 @@
 
-#include    <EvGUI.h>
+#include    <EvEGL.h>
 
 #define     BG_COLOR        RGB555(240, 240, 240)
 #define     PANEL_COLOR     CL_LIGHT_GRAY

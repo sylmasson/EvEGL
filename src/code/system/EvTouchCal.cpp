@@ -1,5 +1,5 @@
 
-#include    <EvGUI.h>
+#include    <EvEGL.h>
 
 #define     BG_COLOR          RGB555(  0,   0,   0)
 #define     DOT_COLOR         RGB555(  0,   0, 220)

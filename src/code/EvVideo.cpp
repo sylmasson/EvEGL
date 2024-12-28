@@ -1,5 +1,5 @@
 
-#include    <EvGUI.h>
+#include    <EvEGL.h>
 
 #define     VERBOSE                 0       // 0 = None, 1 = AviInfo only, 2 = Full
 

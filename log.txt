@@ -1,3 +1,11 @@
+commit cb0ff6a4270fea99735dc66c69f9a2a74aecf20e
+Author: Sylvain Masson <sylvainmasson@Sylvains-Mac-mini.local>
+Date:   Sat Dec 28 08:55:05 2024 -0500
+
+    EvPlayer: Added volume control
+    
+    EvSlider: Reduce slider thickness
+
 commit a3b2e2a8a07a205215257d8b9711308eb4e14380
 Author: Sylvain Masson <sylvainmasson@Sylvains-Mac-mini.local>
 Date:   Fri Dec 27 17:17:51 2024 -0500
@@ -132,7 +140,7 @@ Date:   Mon Mar 18 11:01:04 2024 -0400
     
     EvTouch, EvDisplay: New EvTouch class used only by EvDisplay class
     
-    Global: Moving the constant from EvGUI to the respective class file
+    Global: Moving the constant from EvEGL to the respective class file
 
 commit 536b3709bb0dc1c7d62f41450285993ad34aa264
 Author: Sylvain Masson <sylvainmasson@Sylvains-Mac-mini.local>
@@ -312,4 +320,4 @@ commit 051cdce89ed43a59c752fd686b24c05cc16a791b
 Author: Sylvain Masson <sylmasson@gmail.com>
 Date:   Mon May 29 08:16:41 2023 -0400
 
-    EvGUI: First commit
+    EvEGL: First commit

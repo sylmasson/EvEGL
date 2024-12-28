@@ -1,5 +1,5 @@
 
-#include    <EvGUI.h>
+#include    <EvEGL.h>
 
 #define     SCROLLX         (mWidth < mPageWidth)
 #define     SCROLLY         (mHeight < mPageHeight)

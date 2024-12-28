@@ -1,5 +1,5 @@
 
-#include    <EvGUI.h>
+#include    <EvEGL.h>
 
 #define     LINE_COLOR      CL_WHITE_SMOKE
 #define     FILL_COLOR      CL_WHITE_SMOKE

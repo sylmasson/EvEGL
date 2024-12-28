@@ -1,5 +1,5 @@
 
-#include    <EvGUI.h>
+#include    <EvEGL.h>
 
 // #define     SIDEBAR_DEBUG   SIDEBAR_RIGHT
 

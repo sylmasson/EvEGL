@@ -15,7 +15,7 @@
 #define     FUNCT_USED_OBJ  (1 << 8)
 #define     FILTER_DIS_OBJ  (1 << 13)
 #define     ABORT_OBJ       (1 << 14)
-#define     SYSTEM_OBJ      (1 << 15) // reserved for GUI System
+#define     SYSTEM_OBJ      (1 << 15) // reserved for System
 
 #define     VISIBLE_DIS_OBJ (VISIBLE_OBJ | DISABLED_OBJ)
 

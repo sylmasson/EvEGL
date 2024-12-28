@@ -1,5 +1,5 @@
 
-#include    <EvGUI.h>
+#include    <EvEGL.h>
 
 #define     MAX_ITEMS_BLOCK_SIZE    4
 #define     VALID_BOUNDARY(Index)   ((unsigned int)Index < (unsigned int)mCount)
