@@ -1,3 +1,9 @@
+commit 4235aff287dcc6189fe812ee5a4a1dde015e8c27
+Author: Sylvain Masson <sylvainmasson@Sylvains-Mac-mini.local>
+Date:   Sat Dec 28 17:27:07 2024 -0500
+
+    Change library name for EvEGL
+
 commit cb0ff6a4270fea99735dc66c69f9a2a74aecf20e
 Author: Sylvain Masson <sylvainmasson@Sylvains-Mac-mini.local>
 Date:   Sat Dec 28 08:55:05 2024 -0500
@@ -140,7 +146,7 @@ Date:   Mon Mar 18 11:01:04 2024 -0400
     
     EvTouch, EvDisplay: New EvTouch class used only by EvDisplay class
     
-    Global: Moving the constant from EvEGL to the respective class file
+    Global: Moving the constant from EvGUI to the respective class file
 
 commit 536b3709bb0dc1c7d62f41450285993ad34aa264
 Author: Sylvain Masson <sylvainmasson@Sylvains-Mac-mini.local>
@@ -320,4 +326,4 @@ commit 051cdce89ed43a59c752fd686b24c05cc16a791b
 Author: Sylvain Masson <sylmasson@gmail.com>
 Date:   Mon May 29 08:16:41 2023 -0400
 
-    EvEGL: First commit
+    EvGUI: First commit
