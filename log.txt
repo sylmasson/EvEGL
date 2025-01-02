@@ -1,3 +1,9 @@
+commit c2d00e6fe9acc09619fc94b072cb77e2931e6a9b
+Author: Sylvain Masson <sylvainmasson@Sylvains-Mac-mini.local>
+Date:   Sat Dec 28 20:05:41 2024 -0500
+
+    After change library name for EvEGL
+
 commit 4235aff287dcc6189fe812ee5a4a1dde015e8c27
 Author: Sylvain Masson <sylvainmasson@Sylvains-Mac-mini.local>
 Date:   Sat Dec 28 17:27:07 2024 -0500

@@ -44,7 +44,7 @@ EvViewer::EvViewer(int16_t Left, int16_t Top, uint16_t Width, uint16_t Height, E
 
   TouchMax(2);
   BgColor(CL_DEFAULT_BG);
-  BdShape(FIXED_CORNERS);
+  BdShape(SQUARE_CORNERS);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
