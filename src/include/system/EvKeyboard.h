@@ -17,11 +17,11 @@
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-extern EvKeyboard           			Keyboard480x230;
-extern EvKeyboard           			Keyboard600x252;
-extern EvKeyboard           			Keyboard800x220;
-extern EvKeyboard           			Keyboard1024x276;
-extern EvKeyboard           			Keyboard1066x276;
+extern EvKeyboard                 Keyboard480x230;
+extern EvKeyboard                 Keyboard600x252;
+extern EvKeyboard                 Keyboard800x220;
+extern EvKeyboard                 Keyboard1024x276;
+extern EvKeyboard                 Keyboard1066x276;
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 

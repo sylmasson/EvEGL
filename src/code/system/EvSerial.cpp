@@ -7,8 +7,8 @@ static DummySerial  sEvSerial;
 
 Stream      *EvIn = &sEvSerial;
 Stream      *EvOut = &sEvSerial;
-Stream 			*EvErr = &sEvSerial;
-Stream 			*EvDbg = &sEvSerial;
+Stream      *EvErr = &sEvSerial;
+Stream      *EvDbg = &sEvSerial;
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 

@@ -36,31 +36,31 @@
 
 enum IndexedColor : uint16_t
 {
-	CL_NOCOLOR,
+  CL_NOCOLOR,
   CL_PANEL_BG,
   CL_DISPLAY_BG,
   CL_DEFAULT_BG,
   CL_SCROLL_BAR,
   CL_TEXTCURSOR,
 
-	CL_DARK_TEXT,
-	CL_LIGHT_TEXT,
+  CL_DARK_TEXT,
+  CL_LIGHT_TEXT,
   CL_DEFAULT_TEXT,
   CL_REVERSE_TEXT,
-	CL_LABEL_TEXT,
+  CL_LABEL_TEXT,
 
-	CL_BUTTON_FACE,
-	CL_BUTTON_FACE_DOWN,
-	CL_BUTTON_TEXT,
-	CL_BUTTON_TEXT_DOWN,
+  CL_BUTTON_FACE,
+  CL_BUTTON_FACE_DOWN,
+  CL_BUTTON_TEXT,
+  CL_BUTTON_TEXT_DOWN,
 
-	CL_TOGGLE_ON,
-	CL_TOGGLE_OFF,
-	CL_TOGGLE_KNOB,
+  CL_TOGGLE_ON,
+  CL_TOGGLE_OFF,
+  CL_TOGGLE_KNOB,
 
-	CL_SLIDER_LOWER,
-	CL_SLIDER_UPPER,
-	CL_SLIDER_KNOB,
+  CL_SLIDER_LOWER,
+  CL_SLIDER_UPPER,
+  CL_SLIDER_KNOB,
 
   CL_PROGRESS_LOWER,
   CL_PROGRESS_UPPER,
@@ -85,7 +85,7 @@ enum IndexedColor : uint16_t
   CL_NUMINT_DEC,
   CL_NUMINT_TEXT,
 
-	CL_CHECKBOX_TRUE,
+  CL_CHECKBOX_TRUE,
   CL_CHECKBOX_FALSE,
   CL_CHECKBOX_BD,
   CL_CHECKBOX_TEXT,
@@ -117,10 +117,10 @@ enum IndexedColor : uint16_t
 
 class EvColor
 {
-	friend class 		color16;
+  friend class      color16;
 
-	public:
-		EvColor(void);
+  public:
+    EvColor(void);
 
     static uint16_t   GetTheme(void);
     static uint16_t   SwitchTheme(void);
@@ -130,31 +130,31 @@ class EvColor
     static bool       EditTheme(uint16_t Theme, uint8_t Index, uint16_t Color);
     static bool       IsModified(bool ClearAfter = false);
 
-	protected:
+  protected:
     static uint8_t    sTheme;
-		static bool  			sModified;
-		static uint16_t 	sColorTable[2][256];
+    static bool       sModified;
+    static uint16_t   sColorTable[2][256];
 };
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 class color16
 {
-	public:
-		color16(void);
-		color16(uint16_t Color);
+  public:
+    color16(void);
+    color16(uint16_t Color);
 
-		bool  				Set(color16 &Color);
-		bool  				Set(uint16_t Color);
-		uint16_t			Get(void);
-		uint16_t 			Raw(void);
+    bool          Set(color16 &Color);
+    bool          Set(uint16_t Color);
+    uint16_t      Get(void);
+    uint16_t      Raw(void);
 
-	protected:
-		uint16_t			mColor;
+  protected:
+    uint16_t      mColor;
 };
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-extern EvColor 		SystemColor;
+extern EvColor    SystemColor;
 
 #endif  /* _EV_COLOR_H_ */

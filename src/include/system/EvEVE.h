@@ -485,7 +485,7 @@ class EvEVE : public EvSPI
     bool          CapacitiveTouchEngine;  
 
   private:
-  	void 					checkDL(void);
+    void          checkDL(void);
     void          wrCmdBufDL(uint32_t Data);
     int32_t       transformCoeff(int32_t Coeff);
     uint32_t      colorCorrection(uint32_t Color);
