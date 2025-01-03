@@ -26,7 +26,7 @@
 
 #include    <EvEGL.h>
 
-#define     VERBOSE                 0       // 0 = None, 1 = AviInfo only, 2 = Full
+#define     VERBOSE                 1       // 0 = None, 1 = AviInfo only, 2 = Full
 
 #define     AVIF_HASINDEX           0x00000010
 #define     AVIF_MUSTUSEINDEX       0x00000020
