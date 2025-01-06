@@ -28,7 +28,7 @@
 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include		<EvEGL.h>
+#include    <EvEGL.h>
 
 #define     DISP_1024
 
@@ -43,9 +43,9 @@
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-EvDisplay		*Disp;
+EvDisplay   *Disp;
 EvSelector  *AlignX;
-EvLabel 		*Title, *Status;
+EvLabel     *Title, *Status;
 EvLabel     *FontLab, *SpLab, *PadLab;
 EvNumInt    *FontSize, *Spacing, *Padding;
 EvCheckBox  *Wrap;
@@ -91,7 +91,7 @@ extern const EvFont  *Segoeprb_24_L4;
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void 				setup(void)
+void        setup(void)
 {
   Serial.begin(500000);
 
@@ -147,7 +147,7 @@ void 				setup(void)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void 				loop(void)
+void        loop(void)
 {
   if (Disp->Update())
   {

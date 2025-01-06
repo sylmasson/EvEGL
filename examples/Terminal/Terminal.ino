@@ -28,7 +28,7 @@
 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include		<EvEGL.h>
+#include    <EvEGL.h>
 
 #define     DISP_1024
 
@@ -43,11 +43,11 @@
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-EvDisplay		*Disp;
-EvLabel 		*Title;
+EvDisplay   *Disp;
+EvLabel     *Title;
 EvLabel     *Status;
 EvButton    *Clear;
-EvTextBox		*TermIn;
+EvTextBox   *TermIn;
 EvTerminal  *TermOut;
 String      LastInputCmd;
 
@@ -55,7 +55,7 @@ EvShell     Shell(Serial, &SD);
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void 				setup(void)
+void        setup(void)
 {
   Serial.begin(500000);
   SD.begin(BUILTIN_SDCARD);
@@ -97,7 +97,7 @@ void 				setup(void)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void 				loop(void)
+void        loop(void)
 {
   if (Disp->Update())
   {

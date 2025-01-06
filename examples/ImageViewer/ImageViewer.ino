@@ -28,7 +28,7 @@
 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include		<EvEGL.h>
+#include    <EvEGL.h>
 
 #define     DISP_1024
 
@@ -43,8 +43,8 @@
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-EvDisplay		*Disp;
-EvLabel 		*Title, *Status;
+EvDisplay   *Disp;
+EvLabel     *Title, *Status;
 EvLabel     *ScaleLab, *AngleLab, *RGB;
 EvNumLabel  *ScaleVal;
 EvNumInt    *AngleVal;
@@ -59,7 +59,7 @@ extern const EvBmp   *Cardinal_a_poitrine_rose_4459_720x480;
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void 				setup(void)
+void        setup(void)
 {
   Serial.begin(500000);
   SD.begin(BUILTIN_SDCARD);
@@ -138,7 +138,7 @@ void 				setup(void)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void 				loop(void)
+void        loop(void)
 {
   if (Disp->Update())
   {

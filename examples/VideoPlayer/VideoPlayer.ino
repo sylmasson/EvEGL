@@ -28,7 +28,7 @@
 
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include		<EvEGL.h>
+#include    <EvEGL.h>
 
 #define     DISP_1024
 
@@ -68,8 +68,8 @@ AudioControlSGTL5000     AudioCtrl;      //xy=672,352
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-EvDisplay		*Disp;
-EvLabel 		*Title;
+EvDisplay   *Disp;
+EvLabel     *Title;
 EvLabel     *Status;
 EvPlayer    *Player;
 EvSpectrum  *Spectrum;
@@ -80,10 +80,10 @@ uint8_t     fftVal[128];
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void 				setup(void)
+void        setup(void)
 {
   Serial.begin(500000);
-  SD.begin(BUILTIN_SDCARD);
+//  SD.begin(BUILTIN_SDCARD);
   SystemColor.SelectTheme(1);
 
   AudioMemory(100);
@@ -127,7 +127,7 @@ void 				setup(void)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-void 				loop(void)
+void        loop(void)
 {
 #if (FREE_CPU != 2)
   if (Disp->Update())
