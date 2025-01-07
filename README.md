@@ -10,7 +10,7 @@ My name is Sylvain Masson. I have a background as an electronics technician. I h
 
 Now retired since 2016, I had fun with the Arduino environment to learn C++. I discovered a very powerful object-oriented language with the class inheritance and polymorphism. I am now a fan of C++.
 
-It was after studying graphic displays using a Brigetek"s EVE graphics controller with the Gameduino library (thanks to James Bowman) that I decided to start the EvEGL project. I wanted to develop a new library that would use the power of the EVE chips, but without necessarily having to know how they work. This way, a programmer could create graphical user interfaces (GUI) more faster.
+It was after studying graphic displays using a Brigetek"s EVE graphics controller with the Gameduino library (thanks to James Bowman) that I decided to start the EvEGL project. I wanted to develop a new library that would use the power of the EVE chips, but without necessarily having to know how they work. **This way, a programmer could create graphical user interfaces (GUI) more faster.**
 
 Now I would like to share my work for the benefit of the Open Source community.
 
@@ -47,6 +47,10 @@ Now I would like to share my work for the benefit of the Open Source community.
  - Show SD card contents
 
 ## How it works
+### Important note
+| *I assume that the reader has some knowledge of the C++ language with Arduino environment* |
+|:---:|
+
 The EvEGL library is based on the creation of visual objects that are refreshed as needed at a given frequency. This default frequency is 60Hz and can be changed downwards.
 
 The primary object classes are EvObj and EvPanel. The EvObj class is the base class from which all other visual object classes inherit. The EvPanel class of course inherits from the EvObj class, but above all allows you to add a list of visual objects that will be refreshed in order of creation. The EvPanel class can also contain other EvPanel classes. In this way, several chains of visual objects can be created.
@@ -58,8 +62,6 @@ Each visual object must be created dynamically. In other words, with the keyword
 All visual objects will therefore be manipulated using pointers. The programmer should validate the creation of visual objects before use. There is no need to release visual objects that will be created in an EvPanel visual object. An EvPanel object type is designed to destroy all visual objects that contain it upon its own destruction.
 
 A list of visual objects is included in this library (see below). A programmer can of course create his own objects from scratch but the easiest way is to start with already existing objects. In this way, development time is considerably reduced.
-
-<div style="margin-top: 40px; margin-bottom: 40px; margin-left: 50px; margin-right: auto; width: 100%">
 
 | List of visual objects included | Object category |
 |:---:|:---:|
@@ -74,10 +76,12 @@ A list of visual objects is included in this library (see below). A programmer c
 | EvImage, EvViewer, EvVideo, EvPlayer | Image and video object |
 | EvKbd, EvEditor | System object |
 
-</div>
-
 ## How to use EvEGL
-To illustrate the simplicity of this library, let's take a look at the « TextBlock Demo », which you can find in the Examples section of the Arduino IDE.
+To illustrate the simplicity of this library, let's take a look at the « TextBlock Demo », which you can find in the Examples section of the Arduino IDE. You can see what this demo can do with so few lines of code.
+
+https://www.youtube.com/watch?v=ltXed7DeuFM
+
+[![](https://img.youtube.com/vi/ltXed7DeuFM/0.jpg)](https://www.youtube.com/watch?v=ltXed7DeuFM)
 
 ### Header section
 First you need to include the « EvEGL.h » file, which defines all the library classes. Then define the CS and RST constants corresponding to your display configuration.
@@ -287,3 +291,11 @@ void        OnUpdateFPS(EvDisplay *Sender, uint32_t TimeUsed, uint16_t FrameCoun
 }
 
 ```
+## More examples
+
+#### You can see other examples provided with the library
+ - EvEGL Terminal Demo
+ - EvEGL ImageViewer Demo
+ - EvEGL VideoPlayer Demo (https://www.youtube.com/watch?v=yxi0nsAX0lU)
+
+I invite you to consult the source code to learn more. Some documentation has been started in the source code, but there is still a lot to do. To be continued...
