@@ -295,7 +295,11 @@ void        OnUpdateFPS(EvDisplay *Sender, uint32_t TimeUsed, uint16_t FrameCoun
 
 #### You can see other examples provided with the library
  - EvEGL Terminal Demo
- - EvEGL ImageViewer Demo
  - EvEGL VideoPlayer Demo (https://www.youtube.com/watch?v=yxi0nsAX0lU)
+- EvEGL ImageViewer Demo with ***Shell and live editing***
+
+https://www.youtube.com/watch?v=mzpa-61yCAY
+
+[![](https://img.youtube.com/vi/mzpa-61yCAY/0.jpg)](https://www.youtube.com/watch?v=mzpa-61yCAY)
 
 I invite you to consult the source code to learn more. Some documentation has been started in the source code, but there is still a lot to do. To be continued...
