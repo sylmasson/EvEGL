@@ -83,7 +83,7 @@ uint8_t     fftVal[128];
 void        setup(void)
 {
   Serial.begin(500000);
-//  SD.begin(BUILTIN_SDCARD);
+  SD.begin(BUILTIN_SDCARD);
   SystemColor.SelectTheme(1);
 
   AudioMemory(100);

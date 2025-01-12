@@ -519,14 +519,6 @@
 	},
 	"buffers":
 	[
-		{
-			"file": "src/code/system/EvSerial.cpp",
-			"settings":
-			{
-				"buffer_size": 725,
-				"line_ending": "Unix"
-			}
-		}
 	],
 	"build_system": "",
 	"build_system_choices":
@@ -585,6 +577,9 @@
 	"expanded_folders":
 	[
 		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/examples",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/examples/TextBlock",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/examples/TextBlock/Images",
 		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src",
 		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/code",
 		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/code/system",
@@ -593,11 +588,106 @@
 	],
 	"file_history":
 	[
-		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/code/system/EvSerial.cpp",
-		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/include/system/EvEVE.h",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/README.md",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/examples/TextBlock/TextBlock.ino",
 		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/include/system/EvKeyboard.h",
-		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/include/system/EvColor.h",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/code/system/EvSerial.cpp",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/code/system/EvColor.cpp",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/examples/VideoPlayer/VideoPlayer.ino",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/examples/Terminal/Terminal.ino",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/examples/ImageViewer/ImageViewer.ino",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/code/EvVideo.cpp",
 		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/EvEGL.h",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/library.properties",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/keyboard/EvKbd_800x220.cpp",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/keyboard/EvKbd_600x252.cpp",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/keyboard/EvKbd_480x230.cpp",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/keyboard/EvKbd_1066x276.cpp",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/keyboard/EvKbd_1024x276.cpp",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/include/EvNumLabel.h",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/include/EvNumInt.h",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/include/EvLabel.h",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/include/EvImage.h",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/include/EvCheckBox.h",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/include/EvButton.h",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/include/EvPixelBox.h",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/include/EvPlayer.h",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/include/EvProgress.h",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/include/EvSelector.h",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/include/EvSlider.h",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/include/EvSmeter.h",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/include/EvSpectrum.h",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/include/EvTerminal.h",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/include/EvTextBlock.h",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/include/EvTextBox.h",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/include/EvTextCursor.h",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/include/EvToggle.h",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/include/EvVideo.h",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/include/EvViewer.h",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/include/EvVuBar.h",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/include/system/EvKbd.h",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/include/system/EvEVE.h",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/include/system/EvEditor.h",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/include/system/EvDMA.h",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/include/system/EvDisplay.h",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/include/system/EvColor.h",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/include/system/EvKinetic.h",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/include/system/EvMalloc.h",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/include/system/EvObj.h",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/include/system/EvPanel.h",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/include/system/EvScrollBar.h",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/include/system/EvScrollBox.h",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/include/system/EvSerial.h",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/include/system/EvShell.h",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/include/system/EvSideBar.h",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/include/system/EvSPI.h",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/include/system/EvStringList.h",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/include/system/EvSysFont.h",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/include/system/EvTouch.h",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/include/system/EvTouchCal.h",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/config/EvConfig_800x480_50.cpp",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/config/EvConfig_800x480_43.cpp",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/config/EvConfig_1066x600_70.cpp",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/config/EvConfig_1024x600_70.cpp",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/code/EvNumLabel.cpp",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/code/EvNumInt.cpp",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/code/EvLabel.cpp",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/code/EvImage.cpp",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/code/EvCheckBox.cpp",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/code/EvButton.cpp",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/code/EvPixelBox.cpp",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/code/EvPlayer.cpp",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/code/EvProgress.cpp",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/code/EvSelector.cpp",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/code/EvSlider.cpp",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/code/EvSmeter.cpp",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/code/EvSmeterData.cpp",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/code/EvSpectrum.cpp",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/code/EvTerminal.cpp",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/code/EvTextBlock.cpp",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/code/EvTextBox.cpp",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/code/EvTextCursor.cpp",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/code/EvToggle.cpp",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/code/EvViewer.cpp",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/code/EvVuBar.cpp",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/code/system/EvTouchCal.cpp",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/code/system/EvTouch.cpp",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/code/system/EvSysFont.cpp",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/code/system/EvStringList.cpp",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/code/system/EvSPI.cpp",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/code/system/EvSideBar.cpp",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/code/system/EvShell.cpp",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/code/system/EvScrollBox.cpp",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/code/system/EvScrollBar.cpp",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/code/system/EvPanel.cpp",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/code/system/EvObj.cpp",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/code/system/EvMenio20.cpp",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/code/system/EvMalloc.cpp",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/code/system/EvKinetic.cpp",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/code/system/EvKbd.cpp",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/code/system/EvEVE.cpp",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/code/system/EvEditor.cpp",
+		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/code/system/EvDMA.cpp",
 		"/Users/sylvainmasson/Documents/github.nosync/prj/EvEGL/src/code/system/EvDisplay.cpp",
 		"/Users/sylvainmasson/Documents/Arduino/libraries/EvEGL/src/include/EvViewer.h",
 		"/Users/sylvainmasson/Documents/Arduino/libraries/EvEGL/src/code/EvViewer.cpp",
@@ -625,106 +715,11 @@
 		"/Users/sylvainmasson/Documents/Arduino/libraries/EvGUI/src/code/EvTerminal.cpp",
 		"/Users/sylvainmasson/Documents/Arduino/libraries/EvGUI/src/code/EvTextBlock.cpp",
 		"/Users/sylvainmasson/Documents/Arduino/libraries/EvGUI/src/code/EvTextBox.cpp",
-		"/Users/sylvainmasson/Documents/Arduino/libraries/EvGUI/src/code/EvTextCursor.cpp",
-		"/Users/sylvainmasson/Documents/Arduino/libraries/EvGUI/src/code/EvToggle.cpp",
-		"/Users/sylvainmasson/Documents/Arduino/libraries/EvGUI/src/code/EvVideo.cpp",
-		"/Users/sylvainmasson/Documents/Arduino/libraries/EvGUI/src/code/EvViewer.cpp",
-		"/Users/sylvainmasson/Documents/Arduino/libraries/EvGUI/src/code/EvVuBar.cpp",
-		"/Users/sylvainmasson/Documents/Arduino/libraries/EvGUI/src/code/system/EvColor.cpp",
-		"/Users/sylvainmasson/Documents/Arduino/libraries/EvGUI/src/code/system/EvDisplay.cpp",
-		"/Users/sylvainmasson/Documents/Arduino/libraries/EvGUI/src/code/system/EvDMA.cpp",
-		"/Users/sylvainmasson/Documents/Arduino/libraries/EvGUI/src/code/system/EvEditor.cpp",
-		"/Users/sylvainmasson/Documents/Arduino/libraries/EvGUI/src/code/system/EvEVE.cpp",
-		"/Users/sylvainmasson/Documents/Arduino/libraries/EvGUI/src/code/system/EvKbd.cpp",
-		"/Users/sylvainmasson/Documents/Arduino/libraries/EvGUI/src/code/system/EvKinetic.cpp",
-		"/Users/sylvainmasson/Documents/Arduino/libraries/EvGUI/src/code/system/EvMalloc.cpp",
-		"/Users/sylvainmasson/Documents/Arduino/libraries/EvGUI/src/code/system/EvMenio20.cpp",
-		"/Users/sylvainmasson/Documents/Arduino/libraries/EvGUI/src/code/system/EvObj.cpp",
-		"/Users/sylvainmasson/Documents/Arduino/libraries/EvGUI/src/code/system/EvPanel.cpp",
-		"/Users/sylvainmasson/Documents/Arduino/libraries/EvGUI/src/code/system/EvScrollBar.cpp",
-		"/Users/sylvainmasson/Documents/Arduino/libraries/EvGUI/src/code/system/EvScrollBox.cpp",
-		"/Users/sylvainmasson/Documents/Arduino/libraries/EvGUI/src/code/system/EvSerial.cpp",
-		"/Users/sylvainmasson/Documents/Arduino/libraries/EvGUI/src/code/system/EvShell.cpp",
-		"/Users/sylvainmasson/Documents/Arduino/libraries/EvGUI/src/code/system/EvSideBar.cpp",
-		"/Users/sylvainmasson/Documents/Arduino/libraries/EvGUI/src/code/system/EvSPI.cpp",
-		"/Users/sylvainmasson/Documents/Arduino/libraries/EvGUI/src/code/system/EvStringList.cpp",
-		"/Users/sylvainmasson/Documents/Arduino/libraries/EvGUI/src/code/system/EvSysFont.cpp",
-		"/Users/sylvainmasson/Documents/Arduino/libraries/EvGUI/src/code/system/EvTouch.cpp",
-		"/Users/sylvainmasson/Documents/Arduino/libraries/EvGUI/src/code/system/EvTouchCal.cpp",
-		"/Users/sylvainmasson/Documents/Arduino/libraries/EvGUI/src/keyboard/EvKbd_1024x276.cpp",
-		"/Users/sylvainmasson/Documents/Arduino/libraries/EvGUI/src/keyboard/EvKbd_1066x276.cpp",
-		"/Users/sylvainmasson/Documents/Arduino/libraries/EvGUI/src/keyboard/EvKbd_480x230.cpp",
-		"/Users/sylvainmasson/Documents/Arduino/libraries/EvGUI/src/keyboard/EvKbd_600x252.cpp",
-		"/Users/sylvainmasson/Documents/Arduino/libraries/EvGUI/src/keyboard/EvKbd_800x220.cpp",
-		"/Users/sylvainmasson/Documents/Arduino/libraries/EvGUI/src/include/EvVideo.h",
-		"/Users/sylvainmasson/Documents/Arduino/libraries/EvGUI/src/include/EvPlayer.h",
-		"/Users/sylvainmasson/Documents/Arduino/libraries/EvGUI/src/include/system/EvDisplay.h",
-		"/Users/sylvainmasson/Documents/Arduino/libraries/EvGUI/src/EvGUI.h",
-		"/Users/sylvainmasson/Documents/Arduino/libraries/EvGUI/src/include/EvSpectrum.h",
-		"/Users/sylvainmasson/Documents/Arduino/libraries/EvGUI/src/include/system/EvPanel.h",
-		"/Users/sylvainmasson/Documents/Arduino/libraries/EvGUI/src/include/system/EvEVE.h",
-		"/Users/sylvainmasson/Documents/Arduino/libraries/EvGUI/src/include/EvImage.h",
-		"/Users/sylvainmasson/Documents/Arduino/libraries/EvGUI/images/backup/EvImage.h",
-		"/Users/sylvainmasson/Documents/Arduino/libraries/EvGUI/images/backup/EvImage.cpp",
-		"/Users/sylvainmasson/Documents/Arduino/libraries/EvGUI/src/include/system/EvShell.h",
-		"/Users/sylvainmasson/Documents/Arduino/libraries/EvGUI/src/include/EvViewer.h",
-		"/Users/sylvainmasson/Documents/Arduino/libraries/EvGUI/src/include/EvVuBar.h",
-		"/Users/sylvainmasson/Documents/Arduino/libraries/EvGUI/src/include/system/EvTouchCal.h",
-		"/Users/sylvainmasson/Documents/Arduino/libraries/EvGUI/src/include/system/EvEditor.h",
-		"/Users/sylvainmasson/Documents/Arduino/libraries/EvGUI/src/include/system/EvKbd.h",
-		"/Users/sylvainmasson/Documents/Arduino/libraries/EvGUI/src/include/EvPixelBox.h",
-		"/Users/sylvainmasson/Documents/Arduino/libraries/EvGUI/src/include/EvProgress.h",
-		"/Users/sylvainmasson/Documents/Arduino/libraries/EvGUI/src/include/EvSelector.h",
-		"/Users/sylvainmasson/Documents/Arduino/libraries/EvGUI/src/include/EvSlider.h",
-		"/Users/sylvainmasson/Documents/Arduino/libraries/EvGUI/src/include/EvSmeter.h",
-		"/Users/sylvainmasson/Documents/Arduino/libraries/EvGUI/src/include/EvTerminal.h",
-		"/Users/sylvainmasson/Documents/Arduino/libraries/EvGUI/src/include/EvTextBlock.h",
-		"/Users/sylvainmasson/Documents/Arduino/libraries/EvGUI/src/include/EvTextBox.h",
-		"/Users/sylvainmasson/Documents/Arduino/libraries/EvGUI/src/include/EvTextCursor.h",
-		"/Users/sylvainmasson/Documents/Arduino/libraries/EvGUI/src/include/EvToggle.h",
-		"/Users/sylvainmasson/Documents/Arduino/libraries/EvGUI/src/include/EvButton.h",
-		"/Users/sylvainmasson/Documents/Arduino/libraries/EvGUI/src/include/EvCheckBox.h",
-		"/Users/sylvainmasson/Documents/Arduino/libraries/EvGUI/src/include/system/EvScrollBox.h",
-		"/Users/sylvainmasson/Documents/Arduino/libraries/EvGUI/src/include/system/EvScrollBar.h",
-		"/Users/sylvainmasson/Documents/Arduino/libraries/EvGUI/src/include/system/EvSideBar.h",
-		"/Users/sylvainmasson/Documents/Arduino/libraries/EvGUI/src/include/EvLabel.h",
-		"/Users/sylvainmasson/Documents/Arduino/libraries/EvGUI/src/include/EvNumInt.h",
-		"/Users/sylvainmasson/Documents/Arduino/libraries/EvGUI/src/include/EvNumLabel.h",
-		"/Users/sylvainmasson/Documents/Arduino/libraries/EvGUI/src/include/system/EvMalloc.h",
-		"/Users/sylvainmasson/Documents/Arduino/libraries/EvGUI/src/include/system/EvSysFont.h",
-		"/Users/sylvainmasson/Documents/Arduino/libraries/EvGUI/src/include/system/EvColor.h",
-		"/Users/sylvainmasson/Documents/Arduino/libraries/EvGUI/src/include/system/EvDMA.h",
-		"/Users/sylvainmasson/Documents/Arduino/libraries/EvGUI/src/include/system/EvTouch.h",
-		"/Users/iMacSylvain/Documents/Arduino/libraries/EvGUI/src/code/system/EvScrollBox.cpp",
-		"/Users/iMacSylvain/Documents/Arduino/libraries/EvGUI/src/include/system/EvDisplay.h",
-		"/Users/iMacSylvain/Documents/Arduino/libraries/EvGUI/src/code/system/EvDisplay.cpp",
-		"/Users/iMacSylvain/Documents/Arduino/libraries/EvGUI/src/code/system/EvShell.cpp",
-		"/Users/iMacSylvain/Documents/Arduino/libraries/EvGUI/src/code/system/EvEVE.cpp",
-		"/Users/iMacSylvain/Documents/Arduino/libraries/EvGUI/src/include/system/EvShell.h",
-		"/Users/iMacSylvain/Documents/Arduino/libraries/EvGUI/src/code/system/EvDMA.cpp",
-		"/Users/iMacSylvain/Documents/Arduino/libraries/EvGUI/src/include/system/EvDMA.h",
-		"/Users/iMacSylvain/Documents/Arduino/libraries/EvGUI/src/include/EvButton.h",
-		"/Users/iMacSylvain/Documents/Arduino/libraries/EvGUI/src/include/system/EvObj.h",
-		"/Users/iMacSylvain/Documents/Arduino/libraries/EvGUI/src/include/EvImage.h",
-		"/Users/iMacSylvain/Documents/Arduino/libraries/EvGUI/src/code/EvImage.cpp",
-		"/Users/iMacSylvain/Documents/Arduino/libraries/EvGUI/src/code/EvButton.cpp",
-		"/Users/iMacSylvain/Documents/Arduino/libraries/EvGUI/src/include/system/EvTouchCal.h",
-		"/Users/iMacSylvain/Documents/Arduino/libraries/EvGUI/src/code/system/EvTouchCal.cpp",
-		"/Users/iMacSylvain/Documents/Arduino/libraries/EvGUI/src/code/system/EvStringList.cpp",
-		"/Users/iMacSylvain/Documents/Arduino/libraries/EvGUI/src/code/system/EvScrollBar.cpp",
-		"/Users/iMacSylvain/Documents/Arduino/libraries/EvGUI/src/code/system/EvKbd.cpp",
-		"/Users/iMacSylvain/Documents/Arduino/libraries/EvGUI/src/code/system/EvEditor.cpp",
-		"/Users/iMacSylvain/Documents/Arduino/libraries/EvGUI/src/code/EvVuBar.cpp",
-		"/Users/iMacSylvain/Documents/Arduino/libraries/EvGUI/src/code/EvVideo.cpp",
-		"/Users/iMacSylvain/Documents/Arduino/libraries/EvGUI/src/code/EvToggle.cpp",
-		"/Users/iMacSylvain/Documents/Arduino/libraries/EvGUI/src/code/EvTextBox.cpp",
-		"/Users/iMacSylvain/Documents/Arduino/libraries/EvGUI/src/code/EvSpectrum.cpp",
-		"/Users/iMacSylvain/Documents/Arduino/libraries/EvGUI/src/code/EvTextBlock.cpp",
-		"/Users/iMacSylvain/Documents/Arduino/libraries/EvGUI/src/code/EvSmeter.cpp"
+		"/Users/sylvainmasson/Documents/Arduino/libraries/EvGUI/src/code/EvTextCursor.cpp"
 	],
 	"find":
 	{
-		"height": 30.0
+		"height": 42.0
 	},
 	"find_in_files":
 	{
@@ -739,6 +734,10 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"\t",
+			"ChipID",
+			"\t",
+			"EvGUI",
 			"\t",
 			"\t\t\t",
 			"\t",
@@ -758,6 +757,7 @@
 		"regex": false,
 		"replace_history":
 		[
+			"  ",
 			"class       "
 		],
 		"reverse": false,
@@ -773,36 +773,6 @@
 		{
 			"sheets":
 			[
-				{
-					"buffer": 0,
-					"file": "src/code/system/EvSerial.cpp",
-					"selected": true,
-					"semi_transient": true,
-					"settings":
-					{
-						"buffer_size": 725,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.sublime-syntax"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 0,
-					"stack_multiselect": false,
-					"type": "text"
-				}
 			]
 		},
 		{
@@ -844,7 +814,7 @@
 		"rows":
 		[
 			0.0,
-			0.647759271978,
+			0.767063764608,
 			1.0
 		]
 	},
@@ -861,7 +831,7 @@
 	"project": "EvEGL.sublime-project",
 	"replace":
 	{
-		"height": 56.0
+		"height": 76.0
 	},
 	"save_all_on_build": true,
 	"select_file":
@@ -899,7 +869,7 @@
 	"show_open_files": false,
 	"show_tabs": true,
 	"side_bar_visible": true,
-	"side_bar_width": 267.0,
+	"side_bar_width": 311.0,
 	"status_bar_visible": true,
 	"template_settings":
 	{
